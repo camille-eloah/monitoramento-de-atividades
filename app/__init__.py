@@ -13,7 +13,7 @@ def get_db_connection():
         host='localhost',
         user='root',
         password='',
-        database='monitoramento_atividades',
+        database='monitoramento',
         cursorclass=pymysql.cursors.DictCursor
     )
     return connection
