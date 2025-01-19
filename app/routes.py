@@ -13,7 +13,11 @@ def cad_aluno():
 
 @app.route('/cad_disciplinas')
 def cad_disciplinas():
-    return render_template('disciplina/cad_disciplinas.html')
+    return render_template('disciplinas/cad_disciplinas.html')
+
+@app.route('/cad_atividades')
+def cad_atividades():
+    return render_template('atividades/cad_atividades.html')
 
 @app.route('/gestao_freq')
 def gestao_freq():
