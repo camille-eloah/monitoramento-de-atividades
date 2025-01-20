@@ -6,6 +6,17 @@
     <title>Document</title>
 </head>
 <body>
+    <h1>Cadastre suas atividades aqui!</h1>
+    <form action="{{url_for('cad_atividades')}}" method="post">
+        <label for="">Tipo:</label>
+        <input type="text" name="tipo">
+        <label for="">Descrição:</label>
+        <input type="text" name="descricao">
+        <label for="">Data de Entrega:</label>
+        <input type="datetime" name="data_entr">
+        <label for="">Peso:</label>
+        <input type="number" name="peso">
     
+    </form>
 </body>
 </html>

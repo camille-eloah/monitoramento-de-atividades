@@ -6,6 +6,18 @@
     <title>Cadastrar Aluno</title>
 </head>
 <body>
-    
+    <h1>Cadastre seu aluno aqui!</h1>
+    <form action="{{url_for('cad_aluno')}}" method="post">
+        <label for="">Nome:</label>
+        <input type="text" name="nome">
+        <label for="">Matrícula:</label>
+        <input type="number" name="matricula">
+        <label for="">Email:</label>
+        <input type="text" name="email">
+        <label for="">Curso:</label>
+        <input type="text" name="curso">
+        <label for="">Data Nascimento:</label>
+        <input type="datetime" name="data_nasc">
+    </form>
 </body>
 </html>

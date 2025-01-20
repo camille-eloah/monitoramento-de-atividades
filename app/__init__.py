@@ -10,7 +10,7 @@ login_manager.login_view = 'login'
 
 def get_db_connection():
     connection = pymysql.connect(
-        host='localhost',
+        host='127.0.0.1',
         user='root',
         password='',
         database='monitoramento',
@@ -18,11 +18,11 @@ def get_db_connection():
     )
     return connection
 
-from app.models import User  
+from app.models import Professor
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get(user_id)
+    return Professor.get(user_id)
 
 from app import routes
 from app import models

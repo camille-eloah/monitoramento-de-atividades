@@ -6,6 +6,13 @@
     <title>Document</title>
 </head>
 <body>
-    
+    <form action="{{url_for('cad_disciplinas')}}" method="post">
+        <label for="">Nome:</label>
+        <input type="text" name="nome">
+        <label for="">Professor Responsável:</label>
+        <input type="text" name="prof_responsavel">
+        <label for="">Carga Horária:</label>
+        <input type="time" name="carga_hr">
+    </form>
 </body>
 </html>
