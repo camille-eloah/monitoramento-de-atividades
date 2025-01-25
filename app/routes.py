@@ -204,8 +204,7 @@ def edit_atividades(ati_id):
     connection.close()
     return render_template('atividades/edit_atividades.html', atividade=atividade)
 
-#Cadastro de aulas
-
+# Cadastro de aulas
 @app.route('/cad_aulas', methods=['POST', 'GET'])
 def cad_aulas():
     connection = get_db_connection()
@@ -233,10 +232,10 @@ def cad_aulas():
                 mensagem_erro = "Erro ao cadastrar a aula. Tente novamente mais tarde."
             
             connection.close()
-            return render_template('aulas/cad_aulas.html', aulas = aulas, mensagem_erro=mensagem_erro)
+            return render_template('aulas/cad_aulas.html', aulas=aulas, mensagem_erro=mensagem_erro)
 
     connection.close()
-    return render_template('aulas/cad_aulas.html', aulas = aulas )
+    return render_template('aulas/cad_aulas.html', aulas=aulas )
 
 @app.route('/relatorios')
 def relatorios():
