@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
-from app import app, get_db_connection, routes
+from app import app, get_db_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 
 @app.route('/')
@@ -15,6 +15,13 @@ def cad_aluno():
         email = request.form['email']
         curso = request.form['curso']
         data_nasc = request.form['data_nasc']
+
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
+            cursor.execute('INSERT INTO tb_alunos (alu_nome, alu_matricula,alu_email,alu_curso,alu_data_nasc) VALUES (%s,%s,%s,%s,%s)', (nome, matricula,email,curso,data_nasc))
+            cursor.execute('SELECT * FROM tb_alunos')
+            connection.commit()
+        connection.close()
 
     return render_template('alunos/cad_aluno.html') 
 
