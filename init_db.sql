@@ -18,6 +18,21 @@ create table if not exists tb_alunos (
     alu_data_nasc datetime not null
 );
 
+create table if not exists tb_professores (
+    prof_id integer auto_increment primary key,
+    prof_nome VARCHAR(50) not null,
+    prof_email VARCHAR(100) not null unique,
+    prof_senha VARCHAR(50) not nul
+
+);
+
+create table if not exists tb_aulas (
+    aul_id integer auto_increment primary key,
+    ati_descricao VARCHAR(200) not null,
+    aul_data datetime not null,
+    foreign key (aul_id) references tb_professores(prof_id),
+    foreign key (aul_id) references tb_disciplinas(dis_id)
+);
 
 create table if not exists tb_alunos_disciplinas (
     ad_id integer auto_increment primary key,

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Aulas Cadastradas</h1>
+    {% if aulas %}
+    <ul>
+        {% for aula in aulas %}
+            <li>
+                {{ aula.aul_descricao }} - {{ aul_data }}
+                <br>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Nenhuma aula cadastrada ainda.</p>
+    {% endif %}
+
+    <h1>Cadastre uma Nova Aula</h1>
+    
+    <form action="{{ url_for('cad_aulas') }}" method="post">
+        <label for="descricao">Nome:</label>
+        <input type="text" id="descricao" name="descricao" required>
+
+        <label for="data">Professor Responsável:</label>
+        <input type="date" id="data" name="data" required>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+</body>
+</html>

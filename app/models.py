@@ -6,7 +6,6 @@ class Professor(UserMixin):
         self.prof_nome = prof_nome
         self.prof_email = prof_email
         self.prof_senha = prof_senha
-        self.prof_tipo = prof_tipo
 
 class Aluno(UserMixin):
     def __init__(self, alu_id, alu_nome, alu_matricula, alu_email, alu_curso , alu_data_nasc):

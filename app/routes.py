@@ -204,12 +204,38 @@ def edit_atividades(ati_id):
     connection.close()
     return render_template('atividades/edit_atividades.html', atividade=atividade)
 
-@app.route('/gestao_freq', methods=['POST', 'GET'])
-def gestao_freq():
-    if request.method== "POST":
-        chamada = request.form['chamada']
+#Cadastro de aulass
+@app.route('/cad_aulas', methods=['POST', 'GET'])
+def cad_aulas():
+    connection = get_db_connection()
+    aulas = []
 
-    return render_template('frequencia/gestao_freq.html')
+   
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM tb_aulas")
+        aulas = cursor.fetchall()
+
+    if request.method == "POST":
+        aul_descricao = request.form['descricao']
+        aul_data = request.form['data']
+
+        query = """
+        INSERT INTO tb_aulas (aul_descricao, aul_data)
+        VALUES (%s, %s)
+        """
+        try:
+            executar_query(query, (aul_descricao, aul_data))
+        except IntegrityError as e:
+            if "Duplicate entry" in str(e):
+                mensagem_erro = "Erro: Aula duplicada ou já cadastrada."
+            else:
+                mensagem_erro = "Erro ao cadastrar a aula. Tente novamente mais tarde."
+            
+            connection.close()
+            return render_template('aulas/cad_aulas.html', aulas = aulas, mensagem_erro=mensagem_erro)
+
+    connection.close()
+    return render_template('aulas/cad_aulas.html', aulas = aulas )
 
 @app.route('/relatorios')
 def relatorios():
