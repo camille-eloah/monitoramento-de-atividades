@@ -204,7 +204,8 @@ def edit_atividades(ati_id):
     connection.close()
     return render_template('atividades/edit_atividades.html', atividade=atividade)
 
-#Cadastro de aulass
+#Cadastro de aulas
+
 @app.route('/cad_aulas', methods=['POST', 'GET'])
 def cad_aulas():
     connection = get_db_connection()
