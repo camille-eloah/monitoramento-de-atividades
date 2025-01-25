@@ -66,7 +66,7 @@
     <ul>
         {% for disciplina in disciplinas %}
             <li>
-                {{ disciplina.dis_nome }} - {{ disciplina.prof_responsavel }} ({{ disciplina.carga_hr }})
+                {{ disciplina.dis_nome }} - {{ disciplina.dis_prof_responsavel }} ({{ disciplina.dis_carga_hr }})
                 <br>
                 <a href="/edit_disciplinas/{{ disciplina.dis_id }}">Editar</a>
             </li>
@@ -86,7 +86,7 @@
         <input type="text" id="prof_responsavel" name="prof_responsavel" required>
 
         <label for="carga_hr">Carga Horária:</label>
-        <input type="time" id="carga_hr" name="carga_hr" required>
+        <input type="number" id="carga_hr" name="carga_hr" required>
 
         <button type="submit">Cadastrar</button>
     </form>

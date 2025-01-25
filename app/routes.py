@@ -98,7 +98,6 @@ def cad_disciplinas():
         """)
         disciplinas = cursor.fetchall()
 
-
     if request.method== "POST":
         nome = request.form['nome']
         prof_responsavel = request.form['prof_responsavel']
@@ -125,15 +124,15 @@ def edit_disciplinas(dis_id):
     
     if request.method == 'POST':
         novo_nome = request.form['nome']
-        nova_prof_responsavel = request.form.get['prof_responsavel']
+        nova_prof_responsavel = request.form.get('prof_responsavel')
         novo_carga_hr = request.form['carga_hr']  
     
         query = """
         UPDATE tb_disciplinas 
-        SET dis_nome = %s, dis_prof_responsavel = %s, d s_carga_hr= %s
+        SET dis_nome = %s, dis_prof_responsavel = %s, dis_carga_hr= %s
         WHERE dis_id = %s
         """
-        executar_query(query, (novo_nome, nova_prof_responsavel, novo_carga_hr))
+        executar_query(query, (novo_nome, nova_prof_responsavel, novo_carga_hr, dis_id))
 
         return redirect('/cad_disciplinas')
 
