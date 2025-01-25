@@ -1,12 +1,12 @@
 from flask_login import UserMixin
 
 class Professor(UserMixin):
-    def __init__(self, user_id, user_nome, user_email, user_senha, user_tipo):
-        self.id = user_id
-        self.user_nome = user_nome
-        self.user_email = user_email
-        self.user_senha = user_senha
-        self.user_tipo = user_tipo
+    def __init__(self, prof_id, prof_nome, prof_email, prof_senha, prof_tipo):
+        self.id = prof_id
+        self.prof_nome = prof_nome
+        self.prof_email = prof_email
+        self.prof_senha = prof_senha
+        self.prof_tipo = prof_tipo
 
 class Aluno(UserMixin):
     def __init__(self, alu_id, alu_nome, alu_matricula, alu_email, alu_curso , alu_data_nasc):
@@ -38,7 +38,7 @@ class Frequencias(UserMixin):
         self.id = fre_id
         self.fre_chamada = fre_chamada
 
-    @staticmethod
+    '''@staticmethod
     def get(user_id):
         from app import get_db_connection
         
@@ -48,4 +48,4 @@ class Frequencias(UserMixin):
             usuario = cursor.fetchone()
             if usuario:
                 return User(usuario['user_id'], usuario['user_nome'], usuario['user_email'], usuario['user_senha'], usuario['user_tipo'])
-        return None
+        return None'''

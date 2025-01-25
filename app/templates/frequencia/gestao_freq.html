@@ -7,8 +7,12 @@
 </head>
 <body>
     <form action="{{url_for('gestao_freq')}}" method="post">
-        <label for="">Presente ou Ausente:</label>
-        <input type="text" name="chamada">
+        <label for="">Frequência:</label>
+        <input type="checkbox" name="presente">
+        <label for="">Presente</label>
+        <input type="checkbox" name="ausente">
+        <label for="">Ausente</label>
+    
     </form>
 </body>
 </html>

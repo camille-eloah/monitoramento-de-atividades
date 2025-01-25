@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Atividades</title>
+</head>
+<body>
+
+    <form action="/edit_disciplinas/{{ disciplina.dis_nome }}" method="POST">
+        Editar Nome: <input type="text" name="nome" value="{{ aluno.alu_nome }}"><br>
+
+        Editar Matrícula: <input type="number" name="matricula" value="{{ aluno.alu_matricula }}"><br>
+
+        Editar Email: <input type="text" name="email" value="{{ aluno.alu_email }}"><br>
+
+        <div>
+            <button type="submit">Atualizar</button>
+        </div>
+</body>
+</html>
