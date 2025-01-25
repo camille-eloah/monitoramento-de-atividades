@@ -7,12 +7,12 @@
 </head>
 <body>
 
-    <form action="/edit_disciplinas/{{ disciplina.dis_nome }}" method="POST">
-        Editar Nome: <input type="text" name="nome" value="{{ aluno.alu_nome }}"><br>
+    <form action="/edit_disciplinas/{{ disciplina.dis_id }}" method="POST">
+        Editar Nome: <input type="text" name="nome" value="{{ disciplina.dis_nome }}"><br>
 
-        Editar Matrícula: <input type="number" name="matricula" value="{{ aluno.alu_matricula }}"><br>
+        Editar Responsável: <input type="text" name="prof_responsavel" value="{{ disciplina.dis_prof_responsavel }}"><br>
 
-        Editar Email: <input type="text" name="email" value="{{ aluno.alu_email }}"><br>
+        Editar Carga Horária: <input type="time" name="carga_hr" value="{{ disciplina.dis_carga_hr }}"><br>
 
         <div>
             <button type="submit">Atualizar</button>

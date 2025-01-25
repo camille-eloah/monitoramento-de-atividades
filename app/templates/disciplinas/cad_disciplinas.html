@@ -3,16 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Cadastrar Disciplinas</title>
+    <style>
+        /* Variáveis de cor */
+        :root {
+            --primary-color: #044253;
+            --primary-color-dark: #056372;
+            --background-color: #f4f4f4;
+            --text-color: #333;
+            --button-color: #044253;
+            --button-hover-color: #056372;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            display: block;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        button {
+            background-color: var(--button-color);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-color);
+        }
+    </style>
 </head>
 <body>
-    <form action="{{url_for('cad_disciplinas')}}" method="post">
-        <label for="">Nome:</label>
-        <input type="text" name="nome">
-        <label for="">Professor Responsável:</label>
-        <input type="text" name="prof_responsavel">
-        <label for="">Carga Horária:</label>
-        <input type="time" name="carga_hr">
+
+    <h1>Disciplinas Cadastradas</h1>
+    {% if disciplinas %}
+    <ul>
+        {% for disciplina in disciplinas %}
+            <li>
+                {{ disciplina.dis_nome }} - {{ disciplina.prof_responsavel }} ({{ disciplina.carga_hr }})
+                <br>
+                <a href="/edit_disciplinas/{{ disciplina.dis_id }}">Editar</a>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Nenhuma disciplina cadastrada ainda.</p>
+    {% endif %}
+
+    <h1>Cadastre uma Nova Disciplina</h1>
+    
+    <form action="{{ url_for('cad_disciplinas') }}" method="post">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required>
+
+        <label for="prof_responsavel">Professor Responsável:</label>
+        <input type="text" id="prof_responsavel" name="prof_responsavel" required>
+
+        <label for="carga_hr">Carga Horária:</label>
+        <input type="time" id="carga_hr" name="carga_hr" required>
+
+        <button type="submit">Cadastrar</button>
     </form>
 </body>
 </html>

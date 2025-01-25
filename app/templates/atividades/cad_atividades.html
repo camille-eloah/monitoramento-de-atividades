@@ -3,20 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Cadastrar Atividades</title>
+    <style>
+        /* Definindo as variáveis de cor */
+        :root {
+            --primary-color: #044253;
+            --primary-color-dark: #056372;
+            --background-color: #f4f4f4;
+            --text-color: #333;
+            --button-color: #044253;
+            --button-hover-color: #056372;
+            --error-color: red;
+        }
+
+        /* Usando as variáveis de cor */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            display: block;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        button {
+            background-color: var(--button-color);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-color);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--primary-color-dark);
+        }
+    </style>
 </head>
 <body>
-    <h1>Cadastre suas atividades aqui!</h1>
-    <form action="{{url_for('cad_atividades')}}" method="post">
-        <label for="">Tipo:</label>
-        <input type="text" name="tipo">
-        <label for="">Descrição:</label>
-        <input type="text" name="descricao">
-        <label for="">Data de Entrega:</label>
-        <input type="datetime" name="data_entr">
-        <label for="">Peso:</label>
-        <input type="number" name="peso">
-    
+
+    <h1>Atividades Cadastradas</h1>
+    {% if atividades %}
+    <ul>
+        {% for atividade in atividades %}
+            <li>
+                {{ atividade.ati_tipo }} - {{ atividade.ati_descricao }} ({{ atividade.ati_data_entr }}, Peso: {{ atividade.ati_peso }})
+                <br>
+                <a href="/edit_atividades/{{ atividade.ati_id }}">Editar</a>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Nenhuma atividade cadastrada ainda.</p>
+    {% endif %}
+
+    <h1>Cadastre uma Nova Atividade</h1>
+
+    {% if mensagem_erro %}
+    <div class="error-message">{{ mensagem_erro }}</div>
+    {% endif %}
+
+    <form action="{{ url_for('cad_atividades') }}" method="post">
+        <label for="tipo">Tipo:</label>
+        <input type="text" id="tipo" name="tipo" required>
+
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" name="descricao" required>
+
+        <label for="data_entr">Data de Entrega:</label>
+        <input type="date" id="data_entr" name="data_entr" required>
+
+        <label for="peso">Peso:</label>
+        <input type="number" id="peso" name="peso" required>
+
+        <button type="submit">Cadastrar</button>
     </form>
+
 </body>
 </html>
