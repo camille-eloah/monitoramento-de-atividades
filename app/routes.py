@@ -85,7 +85,6 @@ def edit_aluno(alu_matricula):
     return render_template('alunos/edit_aluno.html', aluno=aluno)
 
 # Remover aluno
-# Remover aluno
 @app.route('/delete_aluno/<int:alu_matricula>', methods=['POST'])
 def delete_aluno(alu_matricula):
     connection = get_db_connection()
@@ -160,6 +159,22 @@ def edit_disciplinas(dis_id):
     connection.close()
 
     return render_template('disciplinas/edit_disciplina.html', disciplina = disciplina)
+
+# Remover disciplina
+@app.route('/delete_disciplina/<int:dis_id>', methods=['POST'])
+def delete_disciplina(dis_id):
+    connection = get_db_connection()
+
+    try:
+        query = "DELETE FROM tb_disciplinas WHERE dis_id = %s"
+        executar_query(query, (dis_id,))
+        flash("Disciplina removida com sucesso!", "success")
+    except Exception as e:
+        flash(f"Erro ao remover disciplina: {e}", "danger")
+    finally:
+        connection.close()
+
+    return redirect(url_for('cad_disciplinas'))
 
 # Cadastrar atividades
 @app.route('/cad_atividades', methods=['POST', 'GET'])

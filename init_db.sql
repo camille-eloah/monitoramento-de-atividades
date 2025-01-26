@@ -30,8 +30,10 @@ create table if not exists tb_aulas (
     aul_id integer auto_increment primary key,
     aul_descricao VARCHAR(200) not null,
     aul_data datetime not null,
-    foreign key (aul_id) references tb_professores(prof_id),
-    foreign key (aul_id) references tb_disciplinas(dis_id)
+    aul_prof_id integer not null,
+    aul_dis_id integer not null,
+    foreign key (aul_prof_id) references tb_professores(prof_id),
+    foreign key (aul_dis_id) references tb_disciplinas(dis_id)
 );
 
 create table if not exists tb_alunos_disciplinas (
@@ -63,5 +65,3 @@ create table if not exists tb_frequencia (
     foreign key (dis_id) references tb_disciplinas(dis_id),
     foreign key (alu_id) references tb_alunos(alu_id) 
 );
-
-

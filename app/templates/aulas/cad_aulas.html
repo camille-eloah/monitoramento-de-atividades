@@ -6,6 +6,19 @@
     <title>Cadastro de Aulas</title>
 </head>
 <body>
+
+    <h1>Cadastre uma Nova Aula</h1>
+    
+    <form action="{{ url_for('cad_aulas') }}" method="post">
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" name="descricao" required>
+
+        <label for="data">Data: </label>
+        <input type="date" id="data" name="data" required>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
     <h1>Aulas Cadastradas</h1>
     {% if aulas %}
     <ul>
@@ -19,18 +32,6 @@
     {% else %}
     <p>Nenhuma aula cadastrada ainda.</p>
     {% endif %}
-
-    <h1>Cadastre uma Nova Aula</h1>
-    
-    <form action="{{ url_for('cad_aulas') }}" method="post">
-        <label for="descricao">Descrição:</label>
-        <input type="text" id="descricao" name="descricao" required>
-
-        <label for="data">Data: </label>
-        <input type="date" id="data" name="data" required>
-
-        <button type="submit">Cadastrar</button>
-    </form>
 
 </body>
 </html>

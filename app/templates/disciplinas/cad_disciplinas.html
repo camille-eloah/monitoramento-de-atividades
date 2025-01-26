@@ -60,6 +60,18 @@
     </style>
 </head>
 <body>
+    <!-- Exibir mensagens flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <h1>Cadastre uma Nova Disciplina</h1>
     
@@ -82,14 +94,24 @@
         {% for disciplina in disciplinas %}
             <li>
                 {{ disciplina.dis_nome }} - {{ disciplina.dis_prof_responsavel }} ({{ disciplina.dis_carga_hr }})
-                <br>
-                <a href="/edit_disciplinas/{{ disciplina.dis_id }}">Editar</a>
+                <div class="actions">
+                    <!-- Botão para editar -->
+                    <form action="/edit_disciplinas/{{ disciplina.dis_id }}" method="get" style="display: inline;">
+                        <button type="submit" class="btn-edit">Editar</button>
+                    </form>
+
+                    <!-- Botão para remover -->
+                    <form action="{{ url_for('delete_disciplina', dis_id=disciplina.dis_id) }}" method="post" style="display: inline;">
+                        <button type="submit" class="btn-delete" onclick="return confirm('Tem certeza que deseja remover esta disciplina?');">Remover</button>
+                    </form>
+                </div>
             </li>
         {% endfor %}
     </ul>
     {% else %}
     <p>Nenhuma disciplina cadastrada ainda.</p>
     {% endif %}
+
 
 </body>
 </html>
