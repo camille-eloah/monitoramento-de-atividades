@@ -48,25 +48,7 @@
     </style>
 </head>
 
-<body>
-
-
-
-
-
-
-    <h1>Cadastre um Novo Aluno</h1>
-
-
-
-
-
-
-    <h1>Alunos Cadastrados</h1>
-</body>
-
 <!--Código adicionado-->
-
 <body>
     <main style="margin: 200px auto 0;
     padding: 20px;
@@ -78,11 +60,19 @@
             <div class="card-body">
                 <h4 class="card-title">Cadastre um Novo Aluno </h4>
                 <!-- Exibição de mensagem de erro -->
-                {% if mensagem_erro %}
-                <div class="error-message">
-                    {{ mensagem_erro }}
-                </div>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  <div>
+                    {% for category, message in messages %}
+                      <div class="alert alert-{{ category }}">
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  </div>
                 {% endif %}
+              {% endwith %}
+              
+
                 <form action="{{ url_for('cad_aluno') }}" method="post" class="forms-sample">
                     <div class="form-group">
 

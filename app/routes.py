@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from app import app, get_db_connection
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -22,12 +22,10 @@ def executar_query(query, params=None):
 @app.route('/cad_aluno', methods=['POST', 'GET'])
 def cad_aluno():
     connection = get_db_connection()
-    alunos = []
 
+    # Busca os alunos para exibir na página
     with connection.cursor() as cursor:
-        cursor.execute("""
-        SELECT * FROM tb_alunos
-        """)
+        cursor.execute("SELECT * FROM tb_alunos")
         alunos = cursor.fetchall()
 
     if request.method == "POST":
@@ -43,14 +41,14 @@ def cad_aluno():
         """
         try:
             executar_query(query, (nome, matricula, email, curso, data_nasc))
+            flash("Aluno cadastrado com sucesso!", "success")
         except IntegrityError as e:
             if "Duplicate entry" in str(e):
-                mensagem_erro = "Erro: Matrícula ou e-mail já cadastrados no sistema."
+                flash("Erro: Matrícula ou e-mail já cadastrados no sistema.", "danger")
             else:
-                mensagem_erro = "Erro ao cadastrar aluno. Tente novamente mais tarde."
-            
-            connection.close()
-            return render_template('alunos/cad_aluno.html', alunos=alunos, mensagem_erro=mensagem_erro)
+                flash("Erro ao cadastrar aluno. Tente novamente mais tarde.", "danger")
+
+        return redirect(url_for('cad_aluno'))
 
     connection.close()
     return render_template('alunos/cad_aluno.html', alunos=alunos)
