@@ -88,7 +88,7 @@
         <nav class="navbar navbar-expand-lg fixed-top navbar-light px-4 px-lg-5 py-3 py-lg-0">
 
             <a href="{{url_for('index')}}" class="navbar-brand p-0">
-                <h1 class="display-6 text-primary m-0"><i class="bi bi-buildings"></i>Hotel Campos</h1>
+                <h1 class="display-6 text-primary m-0"><i class="bi bi-buildings"></i>Sistema de Monitoramento Acadêmico Wendell</h1>
                 <!-- <img src="img/logo.png" alt="Logo"> -->
             </a>
 
@@ -101,11 +101,11 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Cadastros</a>
                         <div class="dropdown-menu m-0">
-                            <a href="/cadastro_func" class="dropdown-item">Cadastrar Alunos</a>
-                            <a href="/cadastro_hotel" class="dropdown-item">Cadastrar Disciplinas</a>
-                            <a href="/cadastro_quarto" class="dropdown-item">Cadastrar Atividades</a>
-                            <a href="/cadastro_hosp" class="dropdown-item">Cadastrar Aulas</a>
-                            <a href="/reservar_quarto" class="dropdown-item">Relatórios e Consultas</a>
+                            <a href="cad_aluno" class="dropdown-item">Cadastrar Alunos</a>
+                            <a href="cad_disciplinas" class="dropdown-item">Cadastrar Disciplinas</a>
+                            <a href="cad_atividades" class="dropdown-item">Cadastrar Atividades</a>
+                            <a href="cad_aulas" class="dropdown-item">Cadastrar Aulas</a>
+                            <a href="relatorios" class="dropdown-item">Relatórios e Consultas</a>
                             {% if current_user.is_authenticated %}
                             <li><a href="/logout">Logout</a></li>
                             {% else %}
