@@ -50,6 +50,7 @@
 
 <!--Código adicionado-->
 <body>
+    {% extends 'layout.html' %}
     <main style="margin: 200px auto 0;
     padding: 20px;
     max-width: 600px;
@@ -114,19 +115,37 @@
             <div id="lista-alunos">
                 {% if alunos %}
                 <h4 class="card-title">Alunos Cadastrados</h4>
-                <ul>
-                    {% for aluno in alunos %}
-                    <li>
-                        {{ aluno.alu_nome }} - {{ aluno.alu_matricula }}
-                        <br>
-                        <a href="/edit_aluno/{{ aluno.alu_matricula }}">Editar Aluno</a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f4f4f4; text-align: left;">
+                            <th style="padding: 8px; border: 1px solid #ddd;">Nome</th>
+                            <th style="padding: 8px; border: 1px solid #ddd;">Matrícula</th>
+                            <th style="padding: 8px; border: 1px solid #ddd;">E-mail</th>
+                            <th style="padding: 8px; border: 1px solid #ddd;">Curso</th>
+                            <th style="padding: 8px; border: 1px solid #ddd;">Data de Nascimento</th>
+                            <th style="padding: 8px; border: 1px solid #ddd;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aluno in alunos %}
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_nome }}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_matricula }}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_email }}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_curso }}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_data_nasc }}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <a href="/edit_aluno/{{ aluno.alu_matricula }}" style="color: var(--primary-color); text-decoration: none;">Editar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
                 {% else %}
                 <p>Nenhum aluno cadastrado ainda.</p>
                 {% endif %}
             </div>
+            
         </div>
     </div>
 
