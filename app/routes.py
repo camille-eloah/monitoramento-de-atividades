@@ -8,6 +8,40 @@ from pymysql.err import IntegrityError
 from app.models import Professor
 
 # Cadastro (usuário)
+@app.route('/add', methods=['POST'])
+def add_user():
+    nome = request.form['nome']
+    email = request.form['email']
+    senha = request.form['pass']
+
+    hashed_senha = generate_password_hash(senha)
+    
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('INSERT INTO tb_professores (prof_nome, prof_email, prof_senha) VALUES (%s, %s, %s)', 
+                           (nome, email, hashed_senha))
+            connection.commit()
+            flash('Usuário cadastrado com sucesso!', 'success')
+
+    except IntegrityError as e:
+        if e.args[0] == 1062:
+            flash("Já existe um usuário com esse nome ou e-mail.", 'error')
+        else:
+            flash("Erro ao cadastrar o usuário. Tente novamente mais tarde.", 'error')
+
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT * FROM tb_professores')
+            usuarios = cursor.fetchall()
+
+        return render_template('index.html', usuarios=usuarios)
+
+    finally:
+        connection.close()
+
+    return redirect('/index')
+
+
 # Login
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -17,16 +51,16 @@ def login():
 
         connection = get_db_connection()
         with connection.cursor() as cursor:
-            cursor.execute('SELECT * FROM tb_usuarios WHERE user_nome = %s', (nome,))
+            cursor.execute('SELECT * FROM tb_professores WHERE prof_nome = %s', (nome,))
             usuario = cursor.fetchone()
 
-            if usuario and check_password_hash(usuario['user_senha'], senha):
-                user = Professor(usuario['user_id'], usuario['user_nome'], usuario['user_email'], usuario['user_senha'], usuario['user_admin'])
-                login_user(user)
-                print("Autenticado")
+            if usuario and check_password_hash(usuario['prof_senha'], senha):
+                professor = Professor(usuario['prof_id'], usuario['prof_nome'], usuario['prof_email'], usuario['prof_senha'])
+                login_user(professor)
+                flash('Login realizado com sucesso!', 'success')
                 return redirect('/')
             else:
-                return "Nome de usuário ou senha inválidos."
+                flash('Nome de usuário ou senha inválidos.', 'error')
 
     return render_template('login.html')
 
@@ -35,7 +69,8 @@ def login():
 @login_required
 def logout():
     logout_user() 
-    return render_template('index.html')
+    flash('Você foi desconectado com sucesso.', 'success')
+    return redirect('/index')
 
 @app.route('/')
 def index():
@@ -272,6 +307,24 @@ def edit_atividades(ati_id):
     connection.close()
     return render_template('atividades/edit_atividades.html', atividade=atividade)
 
+# Deletar atividade
+@app.route('/delete_atividade/<int:ati_id>', methods=['POST'])
+def delete_atividade(ati_id):
+    connection = get_db_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM tb_atividades WHERE ati_id = %s", (ati_id,))
+            connection.commit()
+            flash("Atividade deletada com sucesso!", "success")
+    except Exception as e:
+        connection.rollback()
+        flash(f"Erro ao deletar atividade: {e}", "error")
+    finally:
+        connection.close()
+
+    return redirect('/cad_atividades')
+
 # Cadastro de aulas
 @app.route('/cad_aulas', methods=['POST', 'GET'])
 def cad_aulas():
@@ -317,6 +370,46 @@ def cad_aulas():
     connection.close()
     return render_template('aulas/cad_aulas.html', aulas=aulas, professores=professores, disciplinas=disciplinas)
 
+@app.route('/edit_aula')
+def edit_aula():
+    pass 
+
+@app.route('/delete_aula/<int:aul_id>', methods=['POST'])
+def delete_aula(aul_id):
+    pass
+
+#Cadastrar cursos
+@app.route('/cad_curso', methods=['POST', 'GET'])
+def cad_curso():
+    connection = get_db_connection()
+    cursos = []
+
+    # Exibe os cursos já cadastrados
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM tb_cursos")
+        cursos = cursor.fetchall()
+
+    if request.method == "POST":
+        cur_nome = request.form['nome']
+        cur_descricao = request.form['descricao']
+
+        query = """
+        INSERT INTO tb_cursos (cur_nome, cur_descricao)
+        VALUES (%s, %s)
+        """
+        try:
+            executar_query(query, (cur_nome, cur_descricao))
+            flash("Curso cadastrados", "success")
+        except IntegrityError as e:
+            if "Duplicate entry" in str(e):
+                flash("Erro: Curso duplicado ou já cadastrado.", "error")
+            else:
+                flash("Erro ao cadastrar o curso. Tente novamente mais tarde.", "error")
+        
+        return redirect(url_for('cad_curso'))
+
+    connection.close()
+    return render_template('cursos/cad_curso.html', cursos=cursos)
 
 @app.route('/relatorios')
 def relatorios():

@@ -21,8 +21,8 @@ def get_db_connection():
 from app.models import Professor
 
 @login_manager.user_loader
-def load_user(user_id):
-    return Professor.get(user_id)
+def load_user(prof_id):
+    return Professor.get(prof_id)
 
 from app import routes
 from app import models

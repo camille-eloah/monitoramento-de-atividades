@@ -1,0 +1,105 @@
+
+<body>
+    
+    <h1> Cursos Cadastrados</h1>
+    {% if cursos %}
+    <ul>
+        {% for curso in cursos %}
+            <li>
+                {{ curso.cur }} - {{ aula. }}
+                <br>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Nenhum curso cadastrado ainda.</p>
+    {% endif %}
+
+</body>
+</html>
+
+
+
+{% extends 'layout.html' %}
+
+{% block title %}
+Cadastro de Cursos
+{% endblock %}
+
+{% block content %}
+<main style="margin: 80px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Cadastre um novo curso</h4>
+            <!-- Exibição de mensagem de erro -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message\ }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            
+            <form action="{{ url_for('cad_curso') }}" method="post" class="forms-sample">
+                <div class="form-group">
+                    <label for="nome">Nome do  Curso:</label>
+                    <input class="form-control" type="text" id="nome" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <input class="form-control" type="datetime-local" id="descricao" name="descricao" required>
+                </div>
+                        
+                    </select>
+                </div>
+                <button class="btn btn-primary me-2" type="submit">Cadastrar Curso</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card-body">
+        <button class="btn btn-primary me-2" onclick="toggleListaAlunos()">Listar Aulas Cadastradas</button>
+        
+                    {% for curso in cursos %}
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ curso.cur_nome }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ curso.cur_descricao }}</td>
+                        <!-- Botão para editar -->
+                        <form action="/edit_curso/{{ curso.cur_nome }}" method="get" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
+                                Editar
+                            </button>
+                        </form>
+
+                        <!-- Botão para remover -->
+                        <form action="{{ url_for('delete_curso', alu_matricula=aluno.alu_matricula) }}" method="post" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover este aluno?');">
+                                Remover
+                            </button>
+                        </form>
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Nenhum curso cadastrado ainda.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleListaAlunos() {
+        const listaAlunos = document.getElementById("lista-alunos");
+        listaAlunos.style.display = listaAlunos.style.display === "none" || listaAlunos.style.display === "" ? "block" : "none";
+    }
+</script>
+{% endblock %}

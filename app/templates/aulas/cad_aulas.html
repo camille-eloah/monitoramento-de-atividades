@@ -1,46 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Aulas</title>
-</head>
-<body>
-
-    <h1>Cadastre uma Nova Aula</h1>
-    
-    <form action="{{ url_for('cad_aulas') }}" method="post">
-
-    
-        <label for="disciplina">Disciplina:</label>
-        <select name="disciplina" id="disciplina" required>
-            {% for disciplina in disciplinas %}
-                <option value="{{ disciplina.dis_id }}">{{ disciplina.dis_nome }}</option>
-            {% endfor %}
-        </select>
-    
-        <button type="submit">Cadastrar Aula</button>
-    </form>
-    
-    <h1>Aulas Cadastradas</h1>
-    {% if aulas %}
-    <ul>
-        {% for aula in aulas %}
-            <li>
-                {{ aula.aul_descricao }} - {{ aula.aul_data }}
-                <br>
-            </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>Nenhuma aula cadastrada ainda.</p>
-    {% endif %}
-
-</body>
-</html>
-
-
-
 {% extends 'layout.html' %}
 
 {% block title %}
@@ -76,22 +33,22 @@ Cadastro de Aulas
                 </div>
                 <div class="form-group">
                     <label for="professor">Professor:</label>
-                    <select class="form-control" name="professor" id="professor" required>
+                    <select class="js-example-basic-single w-100" name="professor" id="professor" required>
                         {% for professor in professores %}
-                            <option value="{{ professor.prof_id }}">{{ professor.prof_nome }}</option>
+                            <option style="vertical-align: inherit;" value="{{ professor.prof_id }}">{{ professor.prof_nome }}</option>
                         {% endfor %}
                     </select>
-
                 </div>
                 <div class="form-group">
-                    <label for="curso">Curso</label>
-                    <input class="form-control" type="text" id="curso" name="curso" required>
+                    <label for="disciplina">Disciplina:</label>
+                    <select class="js-example-basic-single w-100" name="disciplina" id="disciplina" required>
+                        {% for disciplina in disciplinas %}
+                            <option style="vertical-align: inherit;" value="{{ disciplina.dis_id }}">{{ disciplina.dis_nome }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="form-group">
-                    <label for="data-nascimento">Data de Nascimento</label>
-                    <input class="form-control" type="date" id="data_nasc" name="data_nasc" required>
-                </div>
-                <button class="btn btn-primary me-2" type="submit">Cadastrar</button>
+                
+                <button class="btn btn-primary me-2" type="submit">Cadastrar Aula</button>
             </form>
         </div>
     </div>
@@ -99,41 +56,36 @@ Cadastro de Aulas
 
 <div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
-        <button class="btn btn-primary me-2" onclick="toggleListaAlunos()">Listar Alunos</button>
+        <button class="btn btn-primary me-2" onclick="toggleListaAulas()">Listar Aulas Cadastradas</button>
 
-        <div id="lista-alunos" style="display: none;">
-            {% if alunos %}
-            <h4 class="card-title">Alunos Cadastrados</h4>
+        <div id="lista-aulas" style="display: none;">
+            
+            {% if aulas %}
+            <h4 class="card-title">Aulas</h4>
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="background-color: #f4f4f4; text-align: left;">
-                        <th style="padding: 8px; border: 1px solid #ddd;">Nome</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">Matrícula</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">E-mail</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">Curso</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">Data de Nascimento</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Descrição</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Data</th>
                         <th style="padding: 8px; border: 1px solid #ddd;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for aluno in alunos %}
+                    {% for aula in aulas %}
                     <tr>
-                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_nome }}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_matricula }}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_email }}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_curso }}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_data_nasc }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aula.aul_descricao }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aula.aul_data }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">
                         <!-- Botão para editar -->
-                        <form action="/edit_aluno/{{ aluno.alu_matricula }}" method="get" style="display: inline;">
+                        <form action="/edit_aula/{{ aula.aul_descricao }}" method="get" style="display: inline;">
                             <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
                                 Editar
                             </button>
                         </form>
 
                         <!-- Botão para remover -->
-                        <form action="{{ url_for('delete_aluno', alu_matricula=aluno.alu_matricula) }}" method="post" style="display: inline;">
-                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover este aluno?');">
+                        <form action="{{ url_for('delete_aula', aul_id=aula.aul_descricao) }}" method="post" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover esta aula?');">
                                 Remover
                             </button>
                         </form>
@@ -144,16 +96,16 @@ Cadastro de Aulas
                 </tbody>
             </table>
             {% else %}
-            <p>Nenhum aluno cadastrado ainda.</p>
+            <p class="card-description" style="vertical-align: inherit; margin: 80px auto 0; padding: 5px">Nenhuma aula cadastrada ainda.</p>
             {% endif %}
         </div>
     </div>
 </div>
 
 <script>
-    function toggleListaAlunos() {
-        const listaAlunos = document.getElementById("lista-alunos");
-        listaAlunos.style.display = listaAlunos.style.display === "none" || listaAlunos.style.display === "" ? "block" : "none";
+    function toggleListaAulas() {
+        const listaAulas = document.getElementById("lista-aulas");
+        listaAulas.style.display = listaAulas.style.display === "none" || listaAulas.style.display === "" ? "block" : "none";
     }
 </script>
 {% endblock %}
