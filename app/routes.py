@@ -90,13 +90,7 @@ def cad_disciplinas():
     connection = get_db_connection()
     disciplinas = []
 
-    with connection.cursor() as cursor:
-        cursor.execute("""
-        SELECT * FROM tb_disciplinas
-        """)
-        disciplinas = cursor.fetchall()
-
-    if request.method== "POST":
+    if request.method == "POST":
         nome = request.form['nome']
         prof_responsavel = request.form['prof_responsavel']
         carga_hr = request.form['carga_hr']
@@ -105,9 +99,22 @@ def cad_disciplinas():
         INSERT INTO tb_disciplinas (dis_nome, dis_prof_responsavel, dis_carga_hr)
         VALUES (%s, %s, %s)
         """
-        executar_query(query, (nome, prof_responsavel, carga_hr))
+        try:
+            executar_query(query, (nome, prof_responsavel, carga_hr))
+        except Exception as e:
+            flash(f"Erro ao cadastrar disciplina: {e}", category="error")
+
+    # Realiza a consulta novamente para obter a lista atualizada
+    with connection.cursor() as cursor:
+        cursor.execute("""
+        SELECT * FROM tb_disciplinas
+        """)
+        disciplinas = cursor.fetchall()
+
+    connection.close()
 
     return render_template('disciplinas/cad_disciplinas.html', disciplinas=disciplinas)
+
 
 # Editar disciplina
 @app.route('/edit_disciplinas/<int:dis_id>', methods=['POST', 'GET']) 
