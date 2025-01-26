@@ -5,6 +5,38 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from pymysql.err import IntegrityError
 
+from app.models import Professor
+
+# Cadastro (usuário)
+# Login
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        senha = request.form['senha'] 
+
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT * FROM tb_usuarios WHERE user_nome = %s', (nome,))
+            usuario = cursor.fetchone()
+
+            if usuario and check_password_hash(usuario['user_senha'], senha):
+                user = Professor(usuario['user_id'], usuario['user_nome'], usuario['user_email'], usuario['user_senha'], usuario['user_admin'])
+                login_user(user)
+                print("Autenticado")
+                return redirect('/')
+            else:
+                return "Nome de usuário ou senha inválidos."
+
+    return render_template('login.html')
+
+# Logout
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user() 
+    return render_template('index.html')
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -245,7 +277,18 @@ def edit_atividades(ati_id):
 def cad_aulas():
     connection = get_db_connection()
     aulas = []
+    professores = []
+    disciplinas = []
 
+    # Coleta os professores e disciplinas para o formulário
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM tb_professores")
+        professores = cursor.fetchall()
+
+        cursor.execute("SELECT * FROM tb_disciplinas")
+        disciplinas = cursor.fetchall()
+
+    # Exibe as aulas já cadastradas
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM tb_aulas")
         aulas = cursor.fetchall()
@@ -253,24 +296,27 @@ def cad_aulas():
     if request.method == "POST":
         aul_descricao = request.form['descricao']
         aul_data = request.form['data']
+        prof_id = request.form['professor']
+        dis_id = request.form['disciplina']
 
         query = """
-        INSERT INTO tb_aulas (aul_descricao, aul_data)
-        VALUES (%s, %s)
+        INSERT INTO tb_aulas (aul_descricao, aul_data, prof_id, dis_id)
+        VALUES (%s, %s, %s, %s)
         """
         try:
-            executar_query(query, (aul_descricao, aul_data))
+            executar_query(query, (aul_descricao, aul_data, prof_id, dis_id))
+            flash("Aula cadastrada com sucesso!", "success")
         except IntegrityError as e:
             if "Duplicate entry" in str(e):
-                mensagem_erro = "Erro: Aula duplicada ou já cadastrada."
+                flash("Erro: Aula duplicada ou já cadastrada.", "error")
             else:
-                mensagem_erro = "Erro ao cadastrar a aula. Tente novamente mais tarde."
-            
-            connection.close()
-            return render_template('aulas/cad_aulas.html', aulas=aulas, mensagem_erro=mensagem_erro)
+                flash("Erro ao cadastrar a aula. Tente novamente mais tarde.", "error")
+        
+        return redirect(url_for('cad_aulas'))
 
     connection.close()
-    return render_template('aulas/cad_aulas.html', aulas=aulas )
+    return render_template('aulas/cad_aulas.html', aulas=aulas, professores=professores, disciplinas=disciplinas)
+
 
 @app.route('/relatorios')
 def relatorios():

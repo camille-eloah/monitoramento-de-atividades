@@ -8,14 +8,14 @@ class Professor(UserMixin):
         self.prof_senha = prof_senha
 
 
-    '''@staticmethod
-    def get(user_id):
+    @staticmethod
+    def get(prof_id):
         from app import get_db_connection
         
         connection = get_db_connection()
         with connection.cursor() as cursor:
-            cursor.execute('SELECT * FROM tb_usuarios WHERE user_id = %s', (user_id,))
+            cursor.execute('SELECT * FROM tb_professores WHERE prof_id = %s', (prof_id,))
             usuario = cursor.fetchone()
             if usuario:
-                return User(usuario['user_id'], usuario['user_nome'], usuario['user_email'], usuario['user_senha'], usuario['user_tipo'])
-        return None'''
+                return Professor(usuario['prof_id'], usuario['prof_nome'], usuario['prof_email'], usuario['prof_senha'])
+        return None

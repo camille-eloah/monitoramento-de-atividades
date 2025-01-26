@@ -47,12 +47,12 @@ create table if not exists tb_alunos_disciplinas (
 
 create table if not exists tb_atividades (
     ati_id integer auto_increment primary key,
-    dis_id integer not null,
+    ati_dis_id integer not null,
     ati_tipo VARCHAR(200) not null,
     ati_descricao VARCHAR(200) not null,
     ati_data_entrega datetime not null,
     ati_peso int not null,
-    foreign key (dis_id) references tb_disciplinas(dis_id)
+    foreign key (ati_dis_id) references tb_disciplinas(dis_id)
 );
 
 
@@ -65,3 +65,5 @@ create table if not exists tb_frequencia (
     foreign key (dis_id) references tb_disciplinas(dis_id),
     foreign key (alu_id) references tb_alunos(alu_id) 
 );
+
+

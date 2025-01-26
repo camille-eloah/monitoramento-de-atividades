@@ -1,132 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
+
+
+
 {% extends 'layout.html' %}
 
-{% block title %}Cadastro Atividade {% endblock %}
+{% block title %}
+Cadastro de Atividades
+{% endblock %}
 
 {% block content %}
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Atividades</title>
-    <style>
-        /* Definindo as variáveis de cor */
-        :root {
-            --primary-color: #044253;
-            --primary-color-dark: #056372;
-            --background-color: #f4f4f4;
-            --text-color: #333;
-            --button-color: #044253;
-            --button-hover-color: #056372;
-            --error-color: red;
-        }
+<main style="margin: 80px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Cadastre uma Atividade</h4>
+            <!-- Exibição de mensagem de erro -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            
+            <form action="{{ url_for('cad_atividades') }}" method="post" class="forms-sample">
+                <div class="form-group">
+                    <label for="tipo">Tipo:</label>
+                    <input class="form-control" type="text" id="tipo" name="tipo" required>
+                </div>
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <input class="form-control" type="text" id="descricao" name="descricao" required>
+                </div>
+                <div class="form-group">
+                    <label for="data_entr">Data de Entrega:</label>
+                    <input class="form-control" type="date" id="data_entr" name="data_entr" required>
+                </div>
+                <div class="form-group">
+                    <label for="peso">Peso:</label>
+                    <input class="form-control" type="number" id="peso" name="peso" required>
+                </div>
+                <button class="btn btn-primary me-2" type="submit">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+</main>
 
-        /* Usando as variáveis de cor */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: var(--background-color);
-            color: var(--text-color);
-        }
+<div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card-body">
+        <button class="btn btn-primary me-2" onclick="toggleListaAtividades()">Listar Atividades</button>
 
-        h1 {
-            color: var(--primary-color);
-        }
+        <div id="lista-atividades" style="display: none;">
+            {% if atividade %}
+            <h4 class="card-title">Atividades Cadastrados</h4>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f4f4f4; text-align: left;">
+                        <th style="padding: 8px; border: 1px solid #ddd;">Nome</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Matrícula</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">E-mail</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Curso</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Data de Nascimento</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for atividade in atividades %}
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ atividade.ati_tipo }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ atividade.ati_descricao }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ atividade.ati_data }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ atividade.alu_curso }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ atividade.alu_data_nasc }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">
+                        <!-- Botão para editar -->
+                        <form action="/edit_aluno/{{ aluno.alu_matricula }}" method="get" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
+                                Editar
+                            </button>
+                        </form>
 
-        form {
-            margin-top: 20px;
-        }
+                        <!-- Botão para remover -->
+                        <form action="{{ url_for('delete_aluno', alu_matricula=aluno.alu_matricula) }}" method="post" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover este aluno?');">
+                                Remover
+                            </button>
+                        </form>
 
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Nenhuma atividade cadastrada ainda.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
-        input {
-            display: block;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            padding: 5px;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        button {
-            background-color: var(--button-color);
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: var(--button-hover-color);
-        }
-
-        .error-message {
-            color: var(--error-color);
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        a:hover {
-            color: var(--primary-color-dark);
-        }
-    </style>
-</head>
-<body>
-
-
-    <h1>Cadastre uma Nova Atividade</h1>
-
-    {% if mensagem_erro %}
-    <div class="error-message">{{ mensagem_erro }}</div>
-    {% endif %}
-
-    <form action="{{ url_for('cad_atividades') }}" method="post">
-        <label for="tipo">Tipo:</label>
-        <input type="text" id="tipo" name="tipo" required>
-
-        <label for="descricao">Descrição:</label>
-        <input type="text" id="descricao" name="descricao" required>
-
-        <label for="data_entr">Data de Entrega:</label>
-        <input type="date" id="data_entr" name="data_entr" required>
-
-        <label for="peso">Peso:</label>
-        <input type="number" id="peso" name="peso" required>
-
-        <button type="submit">Cadastrar</button>
-    </form>
-
-    <h1>Atividades Cadastradas</h1>
-    {% if atividades %}
-    <ul>
-        {% for atividade in atividades %}
-            <li>
-                {{ atividade.ati_tipo }} - {{ atividade.ati_descricao }} ({{ atividade.ati_data_entr }}, Peso: {{ atividade.ati_peso }})
-                <br>
-                <a href="/edit_atividades/{{ atividade.ati_id }}">Editar</a>
-            </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>Nenhuma atividade cadastrada ainda.</p>
-    {% endif %}
-
-    
-</body>
-</html>
+<script>
+    function toggleListaAtividades() {
+        const listaAtividades = document.getElementById("lista-atividades");
+        listaAtividades.style.display = listaAtividades.style.display === "none" || listaAlunos.style.display === "" ? "block" : "none";
+    }
+</script>
 {% endblock %}
+
