@@ -84,6 +84,22 @@ def edit_aluno(alu_matricula):
 
     return render_template('alunos/edit_aluno.html', aluno=aluno)
 
+# Remover aluno
+# Remover aluno
+@app.route('/delete_aluno/<int:alu_matricula>', methods=['POST'])
+def delete_aluno(alu_matricula):
+    connection = get_db_connection()
+    try:
+        query = "DELETE FROM tb_alunos WHERE alu_matricula = %s"
+        executar_query(query, (alu_matricula,))
+        flash("Aluno removido com sucesso!", "success")
+    except Exception as e:
+        flash(f"Erro ao remover aluno: {e}", "danger")
+    finally:
+        connection.close()
+    
+    return redirect(url_for('cad_aluno'))
+
 # Cadastrar disciplina
 @app.route('/cad_disciplinas', methods=['POST', 'GET'])
 def cad_disciplinas():

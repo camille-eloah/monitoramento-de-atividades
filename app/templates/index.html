@@ -6,6 +6,11 @@
     <title>Página Inicial</title>
 </head>
 <body>
+    {% extends 'layout.html' %}
+
+    {% block title %}Página Inicial{% endblock %}
+
+    {% block content %}
     <button><a href="cad_aluno">Cadastre alunos!</a>
     </button>
     <button><a href="cad_disciplinas">Cadastre disciplinas!</a>
@@ -18,4 +23,5 @@
     </button>
     <h1>Bem vindo ao nosso monitor de atividades acadêmicas</h1>
 </body>
+    {% endblock %}
 </html>

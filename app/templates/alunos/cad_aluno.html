@@ -49,7 +49,7 @@ Cadastro de Alunos
     </div>
 </main>
 
-<div class="card" style="margin: 10px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+<div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
         <button class="btn btn-primary me-2" onclick="toggleListaAlunos()">Listar Alunos</button>
 
@@ -76,7 +76,20 @@ Cadastro de Alunos
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_curso }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_data_nasc }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">
-                            <a href="/edit_aluno/{{ aluno.alu_matricula }}" style="color: var(--primary-color); text-decoration: none;">Editar</a>
+                        <!-- Botão para editar -->
+                        <form action="/edit_aluno/{{ aluno.alu_matricula }}" method="get" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
+                                Editar
+                            </button>
+                        </form>
+
+                        <!-- Botão para remover -->
+                        <form action="{{ url_for('delete_aluno', alu_matricula=aluno.alu_matricula) }}" method="post" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover este aluno?');">
+                                Remover
+                            </button>
+                        </form>
+
                         </td>
                     </tr>
                     {% endfor %}
