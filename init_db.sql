@@ -15,7 +15,7 @@ create table if not exists tb_alunos (
     alu_matricula int not null unique,
     alu_email VARCHAR(100) not null unique,
     alu_curso VARCHAR(50) not null,
-    alu_data_nasc datetime not null
+    alu_data_nasc date not null
 );
 
 create table if not exists tb_professores (
@@ -36,10 +36,10 @@ create table if not exists tb_aulas (
 
 create table if not exists tb_alunos_disciplinas (
     ad_id integer auto_increment primary key,
-    alu_id integer not null,
-    dis_id integer not null,
-    foreign key (alu_id) references tb_alunos(alu_id),
-    foreign key (dis_id) references tb_disciplinas(dis_id) 
+    ad_alu_id integer not null,
+    ad_dis_id integer not null,
+    foreign key (ad_alu_id) references tb_alunos(alu_id),
+    foreign key (ad_dis_id) references tb_disciplinas(dis_id) 
 );
 
 
@@ -63,6 +63,5 @@ create table if not exists tb_frequencia (
     foreign key (dis_id) references tb_disciplinas(dis_id),
     foreign key (alu_id) references tb_alunos(alu_id) 
 );
-
 
 
