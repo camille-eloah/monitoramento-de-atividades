@@ -95,6 +95,7 @@ def logout():
     flash('Você foi desconectado com sucesso.', 'success')
     return redirect('/index')
 
+@app.route('/index')
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -194,26 +195,66 @@ def delete_aluno(alu_matricula):
 def cad_disciplinas():
     connection = get_db_connection()
     disciplinas = []
+    cursos = []
+    professores = []
 
     if request.method == "POST":
         nome = request.form['nome']
         prof_responsavel = request.form['prof_responsavel']
         carga_hr = request.form['carga_hr']
-        
-        query = """
-        INSERT INTO tb_disciplinas (dis_nome, dis_prof_responsavel, dis_carga_hr)
-        VALUES (%s, %s, %s)
-        """
+        curso_ids = request.form.getlist('curso_id')  # Permite selecionar vários cursos
+
         try:
-            executar_query(query, (nome, prof_responsavel, carga_hr))
+            # Inserir a disciplina
+            query = """
+            INSERT INTO tb_disciplinas (dis_nome, dis_prof_responsavel, dis_carga_hr)
+            VALUES (%s, %s, %s)
+            """
+            print("Inserção em tb_disciplinas feita com sucesso!")
+
+            with connection.cursor() as cursor:
+                cursor.execute(query, (nome, prof_responsavel, carga_hr))
+                connection.commit()
+
+                print("Testando...")
+                # Recuperar o ID da disciplina recém inserida
+
+                disciplina_id = cursor.lastrowid
+                print(f"disciplina_id recuperado: {disciplina_id}")  # Depuração para ver o ID
+
+                print("Testando 2...")
+
+                # Verificar se o ID da disciplina foi recuperado corretamente
+                if disciplina_id == 0:
+                    raise Exception("Erro ao recuperar o ID da disciplina inserida.")
+
+                # Associar a disciplina aos cursos
+                for curso_id in curso_ids:
+                    cursor.execute("""
+                    INSERT INTO tb_cursos_disciplinas (cd_cur_id, cd_dis_id)
+                    VALUES (%s, %s)
+                    """, (curso_id, disciplina_id))
+                connection.commit()
+
+            flash("Disciplina cadastrada com sucesso!", category="success")
         except Exception as e:
             flash(f"Erro ao cadastrar disciplina: {e}", category="error")
+            print(f"Erro ao cadastrar disciplina: {e}")  # Imprimir erro no console para depuração
 
-    # Realiza a consulta novamente para obter a lista atualizada
+    # Consultar disciplinas, cursos e professores
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT * FROM tb_disciplinas')
+        disciplinas = cursor.fetchall()
+
+        cursor.execute('SELECT * FROM tb_cursos')
+        cursos = cursor.fetchall()
+
+        cursor.execute('SELECT * FROM tb_professores')
+        professores = cursor.fetchall()
 
     connection.close()
 
-    return render_template('disciplinas/cad_disciplinas.html', disciplinas=disciplinas)
+    return render_template('disciplinas/cad_disciplinas.html', disciplinas=disciplinas, cursos=cursos, professores=professores)
 
 
 # Editar disciplina

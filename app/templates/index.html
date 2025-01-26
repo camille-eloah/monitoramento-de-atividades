@@ -11,6 +11,15 @@
     {% block title %}Página Inicial{% endblock %}
 
     {% block content %}
+            <!-- Exibindo mensagens de flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert alert-{{ messages[0][0] }}">
+                    {{ messages[0][1] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
     <button><a href="cad_aluno">Cadastre alunos!</a>
     </button>
     <button><a href="cad_disciplinas">Cadastre disciplinas!</a>

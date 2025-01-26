@@ -22,7 +22,7 @@ create table if not exists tb_professores (
     prof_id integer auto_increment primary key,
     prof_nome VARCHAR(50) not null,
     prof_email VARCHAR(100) not null unique,
-    prof_senha VARCHAR(50) not null
+    prof_senha VARCHAR(255) not null
 
 );
 
@@ -36,7 +36,6 @@ create table if not exists tb_aulas (
     foreign key (aul_dis_id) references tb_disciplinas(dis_id)
 );
 
--- PROVAVELMENTE TB_ALUNOS_DISCIPLINAS SERÁ DESNECESSÁRIO...
 create table if not exists tb_alunos_disciplinas (
     ad_id integer auto_increment primary key,
     ad_alu_id integer not null,
@@ -81,5 +80,4 @@ create table if not exists tb_frequencia (
     foreign key (dis_id) references tb_disciplinas(dis_id),
     foreign key (alu_id) references tb_alunos(alu_id) 
 );
-
 

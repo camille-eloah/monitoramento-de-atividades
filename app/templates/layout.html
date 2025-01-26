@@ -30,23 +30,6 @@
     <link rel="stylesheet" href="../static/src/assets/css/style.css">
     <!-- endinject -->
     <link rel="shortcut icon" href="../static/src/assets/images/favicon.png" />
-    <style>
-        /* Definindo as variáveis de cor */
-        :root {
-            --primary-color: #044253;
-            --primary-color-dark: #056372;
-            --background-color: #f4f4f4;
-            --text-color: #333;
-            --button-color: #044253;
-            --button-hover-color: #056372;
-            --error-color: red;
-        }
-
-        /* Ocultar a lista de alunos por padrão */
-        #lista-alunos {
-            display: none;
-        }
-    </style>
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,6 +53,9 @@
 
     <!-- Template Stylesheet -->
     <link href="static/css/style.css" rel="stylesheet">
+
+    <!-- Bloco de Estilo -->
+    {% block styles %}{% endblock %}
 
 </head>
 
@@ -101,6 +87,7 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Cadastros</a>
                         <div class="dropdown-menu m-0">
+                            <a href="cadastro" class="dropdown-item">Registre-se</a>
                             <a href="cad_aluno" class="dropdown-item">Cadastrar Alunos</a>
                             <a href="cad_disciplinas" class="dropdown-item">Cadastrar Disciplinas</a>
                             <a href="cad_atividades" class="dropdown-item">Cadastrar Atividades</a>
