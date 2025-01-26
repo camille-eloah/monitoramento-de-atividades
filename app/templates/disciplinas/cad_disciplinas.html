@@ -61,20 +61,6 @@
 </head>
 <body>
 
-    <h1>Disciplinas Cadastradas</h1>
-    {% if disciplinas %}
-    <ul>
-        {% for disciplina in disciplinas %}
-            <li>
-                {{ disciplina.dis_nome }} - {{ disciplina.dis_prof_responsavel }} ({{ disciplina.dis_carga_hr }})
-                <br>
-                <a href="/edit_disciplinas/{{ disciplina.dis_id }}">Editar</a>
-            </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>Nenhuma disciplina cadastrada ainda.</p>
-    {% endif %}
 
     <h1>Cadastre uma Nova Disciplina</h1>
     
@@ -90,5 +76,21 @@
 
         <button type="submit">Cadastrar</button>
     </form>
+
+    <h1>Disciplinas Cadastradas</h1>
+    {% if disciplinas %}
+    <ul>
+        {% for disciplina in disciplinas %}
+            <li>
+                {{ disciplina.dis_nome }} - {{ disciplina.dis_prof_responsavel }} ({{ disciplina.dis_carga_hr }})
+                <br>
+                <a href="/edit_disciplinas/{{ disciplina.dis_id }}">Editar</a>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Nenhuma disciplina cadastrada ainda.</p>
+    {% endif %}
+
 </body>
 </html>

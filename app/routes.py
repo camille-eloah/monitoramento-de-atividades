@@ -210,7 +210,6 @@ def cad_aulas():
     connection = get_db_connection()
     aulas = []
 
-   
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM tb_aulas")
         aulas = cursor.fetchall()

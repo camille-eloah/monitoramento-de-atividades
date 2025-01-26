@@ -83,20 +83,6 @@
 </head>
 <body>
 
-    <h1>Atividades Cadastradas</h1>
-    {% if atividades %}
-    <ul>
-        {% for atividade in atividades %}
-            <li>
-                {{ atividade.ati_tipo }} - {{ atividade.ati_descricao }} ({{ atividade.ati_data_entr }}, Peso: {{ atividade.ati_peso }})
-                <br>
-                <a href="/edit_atividades/{{ atividade.ati_id }}">Editar</a>
-            </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>Nenhuma atividade cadastrada ainda.</p>
-    {% endif %}
 
     <h1>Cadastre uma Nova Atividade</h1>
 
@@ -120,5 +106,21 @@
         <button type="submit">Cadastrar</button>
     </form>
 
+    <h1>Atividades Cadastradas</h1>
+    {% if atividades %}
+    <ul>
+        {% for atividade in atividades %}
+            <li>
+                {{ atividade.ati_tipo }} - {{ atividade.ati_descricao }} ({{ atividade.ati_data_entr }}, Peso: {{ atividade.ati_peso }})
+                <br>
+                <a href="/edit_atividades/{{ atividade.ati_id }}">Editar</a>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Nenhuma atividade cadastrada ainda.</p>
+    {% endif %}
+
+    
 </body>
 </html>
