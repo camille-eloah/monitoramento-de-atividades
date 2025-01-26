@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,14 +9,53 @@
     <meta content="" name="description">
 
     <title>{% block title %}Sistema de Gerenciameto de Alunos{% endblock %}</title>
+    <link rel="stylesheet" href="..//static/style.css">
 
+
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="../static/src/assets/vendors/feather/feather.css">
+    <link rel="stylesheet" href="../static/src/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="../static/src/assets/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="../static/src/assets/vendors/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/src/assets/vendors/typicons/typicons.css">
+    <link rel="stylesheet" href="../static/src/assets/vendors/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="../static/src/assets/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="../static/src/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="../static/src/assets/vendors/select2/select2.min.css">
+    <link rel="stylesheet" href="../static/src/assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="../static/src/assets/css/style.css">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="../static/src/assets/images/favicon.png" />
+    <style>
+        /* Definindo as variáveis de cor */
+        :root {
+            --primary-color: #044253;
+            --primary-color-dark: #056372;
+            --background-color: #f4f4f4;
+            --text-color: #333;
+            --button-color: #044253;
+            --button-hover-color: #056372;
+            --error-color: red;
+        }
+
+        /* Ocultar a lista de alunos por padrão */
+        #lista-alunos {
+            display: none;
+        }
+    </style>
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Rubik:wght@400;500&display=swap" rel="stylesheet"> 
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Rubik:wght@400;500&display=swap"
+        rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -32,19 +72,21 @@
     <link href="static/css/style.css" rel="stylesheet">
 
 </head>
+
 <body>
     <!-- Spinner Start -->
-        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="sr-only">Loading...</span>
-             </div>
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
         </div>
+    </div>
     <!-- Spinner End -->
-    
-     <!-- Navbar & Hero Start -->
+
+    <!-- Navbar & Hero Start -->
     <div class="container-fluid header position-relative overflow-hidden p-0">
         <nav class="navbar navbar-expand-lg fixed-top navbar-light px-4 px-lg-5 py-3 py-lg-0">
-        
+
             <a href="{{url_for('index')}}" class="navbar-brand p-0">
                 <h1 class="display-6 text-primary m-0"><i class="bi bi-buildings"></i>Hotel Campos</h1>
                 <!-- <img src="img/logo.png" alt="Logo"> -->
@@ -53,7 +95,7 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="fa fa-bars"></span>
             </button>
-            
+
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav ms-auto py-0">
                     <div class="nav-item dropdown">
@@ -76,20 +118,20 @@
             </div>
         </nav>
 
-        
-            <!-- Hero Header Start -->
-            <div class="hero-header overflow-hidden px-5">
-                <div class="rotate-img">
-                    <img src="static/img/sty-1.png" class="img-fluid w-100" alt="">
-                    <div class="rotate-sty-2"></div>
-                </div>
-                <div class="row gy-5 align-items-center">
-                    <div class="conteudo">{% block content %}{% endblock %}</div>
-                </div>
+
+        <!-- Hero Header Start -->
+        <div class="hero-header overflow-hidden px-5">
+            <div class="rotate-img">
+                <img src="static/img/sty-1.png" class="img-fluid w-100" alt="">
+                <div class="rotate-sty-2"></div>
             </div>
-            <!-- Hero Header End -->
+            <div class="row gy-5 align-items-center">
+                <div class="conteudo">{% block content %}{% endblock %}</div>
+            </div>
         </div>
-        <!-- Navbar & Hero End -->
+        <!-- Hero Header End -->
+    </div>
+    <!-- Navbar & Hero End -->
 
 
     <!-- JavaScript Libraries -->
@@ -101,10 +143,11 @@
     <script src="static/lib/counterup/counterup.min.js"></script>
     <script src="static/lib/owlcarousel/owl.carousel.min.js"></script>
     <script src="static/lib/lightbox/js/lightbox.min.js"></script>
-    
+
 
     <!-- Template Javascript -->
     <script src="static/js/main.js"></script>
 
 </body>
+
 </html>

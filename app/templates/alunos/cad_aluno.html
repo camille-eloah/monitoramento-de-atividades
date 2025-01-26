@@ -1,162 +1,98 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'layout.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Alunos</title>
-    <link rel="stylesheet" href="..//static/style.css">
+{% block title %}
+Cadastro de Alunos
+{% endblock %}
 
-
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="../static/src/assets/vendors/feather/feather.css">
-    <link rel="stylesheet" href="../static/src/assets/vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="../static/src/assets/vendors/ti-icons/css/themify-icons.css">
-    <link rel="stylesheet" href="../static/src/assets/vendors/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../static/src/assets/vendors/typicons/typicons.css">
-    <link rel="stylesheet" href="../static/src/assets/vendors/simple-line-icons/css/simple-line-icons.css">
-    <link rel="stylesheet" href="../static/src/assets/vendors/css/vendor.bundle.base.css">
-    <link rel="stylesheet" href="../static/src/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="../static/src/assets/vendors/select2/select2.min.css">
-    <link rel="stylesheet" href="../static/src/assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <link rel="stylesheet" href="../static/src/assets/css/style.css">
-    <!-- endinject -->
-    <link rel="shortcut icon" href="../static/src/assets/images/favicon.png" />
-    <style>
-        /* Definindo as variáveis de cor */
-        :root {
-            --primary-color: #044253;
-            --primary-color-dark: #056372;
-            --background-color: #f4f4f4;
-            --text-color: #333;
-            --button-color: #044253;
-            --button-hover-color: #056372;
-            --error-color: red;
-        }
-
-        /* Ocultar a lista de alunos por padrão */
-        #lista-alunos {
-            display: none;
-        }
-    </style>
-</head>
-
-<!--Código adicionado-->
-<body>
-    {% extends 'layout.html' %}
-    <main style="margin: 200px auto 0;
-    padding: 20px;
-    max-width: 600px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Cadastre um Novo Aluno </h4>
-                <!-- Exibição de mensagem de erro -->
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                  <div>
-                    {% for category, message in messages %}
-                      <div class="alert alert-{{ category }}">
-                        {{ message }}
-                      </div>
-                    {% endfor %}
-                  </div>
-                {% endif %}
-              {% endwith %}
-              
-
-                <form action="{{ url_for('cad_aluno') }}" method="post" class="forms-sample">
-                    <div class="form-group">
-
-                    </div>
-                    <div class="form-group">
-                        <label for="nome">Nome</label>
-                        <input class="form-control" type="text" id="nome" name="nome" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="matricula">Matrícula</label>
-                        <input class="form-control" type="number" id="matricula" name="matricula" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">E-mail</label>
-                        <input class="form-control" type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="curso">Curso</label>
-                        <input class="form-control" type="text" id="curso" name="curso" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="data-nascimento">Data de Nascimento</label>
-                        <input class="form-control" type="date" id="data_nasc" name="data_nasc" required>
-                    </div>
-                    <button class="btn btn-primary me-2" type="submit">Cadastrar</button>
-                </form>
-            </div>
-        </div>
-    </main>
-    <div class="card" style="margin: 10px auto 0;
-    padding: 20px;
-    max-width: 600px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+{% block content %}
+<main style="margin: 80px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card">
         <div class="card-body">
-            <button class="btn btn-primary me-2" onclick="toggleListaAlunos()">Listar Alunos</button>
-
-            <div id="lista-alunos">
-                {% if alunos %}
-                <h4 class="card-title">Alunos Cadastrados</h4>
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background-color: #f4f4f4; text-align: left;">
-                            <th style="padding: 8px; border: 1px solid #ddd;">Nome</th>
-                            <th style="padding: 8px; border: 1px solid #ddd;">Matrícula</th>
-                            <th style="padding: 8px; border: 1px solid #ddd;">E-mail</th>
-                            <th style="padding: 8px; border: 1px solid #ddd;">Curso</th>
-                            <th style="padding: 8px; border: 1px solid #ddd;">Data de Nascimento</th>
-                            <th style="padding: 8px; border: 1px solid #ddd;">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for aluno in alunos %}
-                        <tr>
-                            <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_nome }}</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_matricula }}</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_email }}</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_curso }}</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_data_nasc }}</td>
-                            <td style="padding: 8px; border: 1px solid #ddd;">
-                                <a href="/edit_aluno/{{ aluno.alu_matricula }}" style="color: var(--primary-color); text-decoration: none;">Editar</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p>Nenhum aluno cadastrado ainda.</p>
-                {% endif %}
+            <h4 class="card-title">Cadastre um Novo Aluno</h4>
+            <!-- Exibição de mensagem de erro -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
             </div>
+            {% endif %}
+            {% endwith %}
             
+            <form action="{{ url_for('cad_aluno') }}" method="post" class="forms-sample">
+                <div class="form-group">
+                    <label for="nome">Nome</label>
+                    <input class="form-control" type="text" id="nome" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="matricula">Matrícula</label>
+                    <input class="form-control" type="number" id="matricula" name="matricula" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input class="form-control" type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="curso">Curso</label>
+                    <input class="form-control" type="text" id="curso" name="curso" required>
+                </div>
+                <div class="form-group">
+                    <label for="data-nascimento">Data de Nascimento</label>
+                    <input class="form-control" type="date" id="data_nasc" name="data_nasc" required>
+                </div>
+                <button class="btn btn-primary me-2" type="submit">Cadastrar</button>
+            </form>
         </div>
-    </div>c
+    </div>
+</main>
 
-    <script>
-        // Função para alternar a visibilidade da lista de alunos
-        function toggleListaAlunos() {
-            const listaAlunos = document.getElementById("lista-alunos");
-            if (listaAlunos.style.display === "none" || listaAlunos.style.display === "") {
-                listaAlunos.style.display = "block";  // Exibe a lista
-            } else {
-                listaAlunos.style.display = "none";   // Oculta a lista
-            }
-        }
-    </script>
-</body>
+<div class="card" style="margin: 10px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card-body">
+        <button class="btn btn-primary me-2" onclick="toggleListaAlunos()">Listar Alunos</button>
 
-</html>
+        <div id="lista-alunos" style="display: none;">
+            {% if alunos %}
+            <h4 class="card-title">Alunos Cadastrados</h4>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f4f4f4; text-align: left;">
+                        <th style="padding: 8px; border: 1px solid #ddd;">Nome</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Matrícula</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">E-mail</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Curso</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Data de Nascimento</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aluno in alunos %}
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_nome }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_matricula }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_email }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_curso }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_data_nasc }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">
+                            <a href="/edit_aluno/{{ aluno.alu_matricula }}" style="color: var(--primary-color); text-decoration: none;">Editar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Nenhum aluno cadastrado ainda.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleListaAlunos() {
+        const listaAlunos = document.getElementById("lista-alunos");
+        listaAlunos.style.display = listaAlunos.style.display === "none" || listaAlunos.style.display === "" ? "block" : "none";
+    }
+</script>
+{% endblock %}
