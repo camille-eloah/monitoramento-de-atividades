@@ -7,39 +7,45 @@ from pymysql.err import IntegrityError
 
 from app.models import Professor
 
+from passlib.context import CryptContext
+
+# Configuração do contexto do Passlib para usar bcrypt
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 # Cadastro (usuário)
-@app.route('/add', methods=['POST'])
-def add_user():
-    nome = request.form['nome']
-    email = request.form['email']
-    senha = request.form['pass']
+@app.route('/cadastro', methods=['POST', 'GET'])
+def cadastro():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        email = request.form['email']
+        senha = request.form['pass']
 
-    hashed_senha = generate_password_hash(senha)
-    
-    connection = get_db_connection()
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute('INSERT INTO tb_professores (prof_nome, prof_email, prof_senha) VALUES (%s, %s, %s)', 
-                           (nome, email, hashed_senha))
-            connection.commit()
+        # Gerar a senha criptografada com passlib
+        hashed_senha = pwd_context.hash(senha)
+        
+        connection = get_db_connection()
+        try:
+            # Inserir o novo usuário no banco de dados
+            with connection.cursor() as cursor:
+                cursor.execute('INSERT INTO tb_professores (prof_nome, prof_email, prof_senha) VALUES (%s, %s, %s)', 
+                               (nome, email, hashed_senha))
+                connection.commit()
+
+            # Mensagem de sucesso
             flash('Usuário cadastrado com sucesso!', 'success')
+            return redirect('login')  # Redireciona para o login
 
-    except IntegrityError as e:
-        if e.args[0] == 1062:
-            flash("Já existe um usuário com esse nome ou e-mail.", 'error')
-        else:
-            flash("Erro ao cadastrar o usuário. Tente novamente mais tarde.", 'error')
+        except IntegrityError as e:
+            # Tratamento de erro de duplicidade (e-mail ou nome já existente)
+            if e.args[0] == 1062:
+                flash("Já existe um usuário com esse nome ou e-mail.", 'error')
+            else:
+                flash("Erro ao cadastrar o usuário. Tente novamente mais tarde.", 'error')
 
-        with connection.cursor() as cursor:
-            cursor.execute('SELECT * FROM tb_professores')
-            usuarios = cursor.fetchall()
+        finally:
+            connection.close()
 
-        return render_template('index.html', usuarios=usuarios)
-
-    finally:
-        connection.close()
-
-    return redirect('/index')
+    return render_template('auth/cadastro.html')  # Renderiza o formulário de cadastro
 
 
 # Login
@@ -49,20 +55,37 @@ def login():
         nome = request.form['nome']
         senha = request.form['senha'] 
 
+        # Conectar ao banco de dados
         connection = get_db_connection()
         with connection.cursor() as cursor:
+            # Verifique se está pegando o usuário correto
             cursor.execute('SELECT * FROM tb_professores WHERE prof_nome = %s', (nome,))
             usuario = cursor.fetchone()
 
-            if usuario and check_password_hash(usuario['prof_senha'], senha):
-                professor = Professor(usuario['prof_id'], usuario['prof_nome'], usuario['prof_email'], usuario['prof_senha'])
-                login_user(professor)
-                flash('Login realizado com sucesso!', 'success')
-                return redirect('/')
+            # Depuração: Verifique o que está sendo recuperado
+            print("Usuário encontrado:", usuario)
+
+            if usuario:
+                # Depuração: Imprime a senha recuperada do banco e a senha informada
+                print("Nome do Usuário:", usuario['prof_nome'])
+                print("Senha informada:", senha)
+                print("Senha armazenada (hash):", usuario['prof_senha'])
+
+                # Usando passlib para verificar se a senha informada corresponde ao hash armazenado
+                if pwd_context.verify(senha, usuario['prof_senha']):
+                    # Se a senha estiver correta
+                    professor = Professor(usuario['prof_id'], usuario['prof_nome'], usuario['prof_email'], usuario['prof_senha'])
+                    login_user(professor)
+                    flash('Login realizado com sucesso!', 'success')
+                    return redirect('/')
+                else:
+                    flash('Nome de usuário ou senha inválidos.', 'error')
             else:
                 flash('Nome de usuário ou senha inválidos.', 'error')
 
-    return render_template('login.html')
+        connection.close()
+
+    return render_template('auth/login.html')  # Renderiza o template de login
 
 # Logout
 @app.route('/logout')
@@ -187,11 +210,6 @@ def cad_disciplinas():
             flash(f"Erro ao cadastrar disciplina: {e}", category="error")
 
     # Realiza a consulta novamente para obter a lista atualizada
-    with connection.cursor() as cursor:
-        cursor.execute("""
-        SELECT * FROM tb_disciplinas
-        """)
-        disciplinas = cursor.fetchall()
 
     connection.close()
 
@@ -409,7 +427,52 @@ def cad_curso():
         return redirect(url_for('cad_curso'))
 
     connection.close()
+
     return render_template('cursos/cad_curso.html', cursos=cursos)
+
+# Editar cursos
+@app.route('/edit_curso/<int:cur_id>', methods=['POST', 'GET'])
+def edit_curso(cur_id):
+    connection = get_db_connection()
+
+    # Selecionar atividade específica
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM tb_cursos WHERE cur_id = %s", (cur_id,))
+        curso = cursor.fetchone()
+
+    if request.method == 'POST':
+        novo_nome = request.form['nome']
+        nova_descricao = request.form['descricao']
+
+        query = """
+        UPDATE tb_cursos 
+        SET cur_nome = %s, cur_descricao = %s
+        WHERE cur_id = %s
+        """
+        executar_query(query, (novo_nome, nova_descricao, cur_id))
+
+        return redirect('/cad_curso')
+
+    connection.close()
+    return render_template('cursos/edit_curso.html', curso=curso)
+
+#Deletar Cursos
+@app.route('/delete_curso/<int:cur_id>', methods=['POST'])
+def delete_curso(cur_id):
+    connection = get_db_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM tb_cursos WHERE cur_id = %s", (cur_id,))
+            connection.commit()
+            flash("Curso deletado com sucesso!", "success")
+    except Exception as e:
+        connection.rollback()
+        flash(f"Erro ao deletar curso: {e}", "error")
+    finally:
+        connection.close()
+
+    return redirect('/cad_curso')
 
 @app.route('/relatorios')
 def relatorios():

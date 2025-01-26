@@ -1,25 +1,3 @@
-
-<body>
-    
-    <h1> Cursos Cadastrados</h1>
-    {% if cursos %}
-    <ul>
-        {% for curso in cursos %}
-            <li>
-                {{ curso.cur }} - {{ aula. }}
-                <br>
-            </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>Nenhum curso cadastrado ainda.</p>
-    {% endif %}
-
-</body>
-</html>
-
-
-
 {% extends 'layout.html' %}
 
 {% block title %}
@@ -37,7 +15,7 @@ Cadastro de Cursos
             <div>
                 {% for category, message in messages %}
                 <div class="alert alert-{{ category }}">
-                    {{ message\ }}
+                    {{ message }}
                 </div>
                 {% endfor %}
             </div>
@@ -46,12 +24,12 @@ Cadastro de Cursos
             
             <form action="{{ url_for('cad_curso') }}" method="post" class="forms-sample">
                 <div class="form-group">
-                    <label for="nome">Nome do  Curso:</label>
+                    <label for="nome">Nome do Curso:</label>
                     <input class="form-control" type="text" id="nome" name="nome" required>
                 </div>
                 <div class="form-group">
                     <label for="descricao">Descrição:</label>
-                    <input class="form-control" type="datetime-local" id="descricao" name="descricao" required>
+                    <input class="form-control" type="text" id="descricao" name="descricao" required>
                 </div>
                         
                     </select>
@@ -64,22 +42,36 @@ Cadastro de Cursos
 
 <div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
-        <button class="btn btn-primary me-2" onclick="toggleListaAlunos()">Listar Aulas Cadastradas</button>
+
+        {% if cursos %}
+            <h4 class="card-title">Cursos</h4>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f4f4f4; text-align: left;">
+                        <th style="padding: 8px; border: 1px solid #ddd;">Descrição</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Data</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+        
         
                     {% for curso in cursos %}
                     <tr>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ curso.cur_nome }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ curso.cur_descricao }}</td>
+
+                        <td style="padding: 8px; border: 1px solid #ddd;">
                         <!-- Botão para editar -->
-                        <form action="/edit_curso/{{ curso.cur_nome }}" method="get" style="display: inline;">
+                        <form action="/edit_curso/{{ curso.cur_id }}" method="get" style="display: inline;">
                             <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
                                 Editar
                             </button>
                         </form>
 
                         <!-- Botão para remover -->
-                        <form action="{{ url_for('delete_curso', alu_matricula=aluno.alu_matricula) }}" method="post" style="display: inline;">
-                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover este aluno?');">
+                        <form action="{{ url_for('delete_curso', cur_id=curso.cur_id) }}" method="post" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover este curso?');">
                                 Remover
                             </button>
                         </form>
@@ -90,16 +82,18 @@ Cadastro de Cursos
                 </tbody>
             </table>
             {% else %}
-            <p>Nenhum curso cadastrado ainda.</p>
+            <p class="card-description" style="vertical-align: inherit; margin: 80px auto 0; padding: 20px;">Nenhum curso cadastrado ainda.</p>
             {% endif %}
+
+
         </div>
     </div>
 </div>
 
-<script>
+<!-- <script>
     function toggleListaAlunos() {
         const listaAlunos = document.getElementById("lista-alunos");
         listaAlunos.style.display = listaAlunos.style.display === "none" || listaAlunos.style.display === "" ? "block" : "none";
     }
-</script>
+</script> -->
 {% endblock %}

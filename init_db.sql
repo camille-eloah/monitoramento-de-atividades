@@ -36,6 +36,7 @@ create table if not exists tb_aulas (
     foreign key (aul_dis_id) references tb_disciplinas(dis_id)
 );
 
+-- PROVAVELMENTE TB_ALUNOS_DISCIPLINAS SERÁ DESNECESSÁRIO...
 create table if not exists tb_alunos_disciplinas (
     ad_id integer auto_increment primary key,
     ad_alu_id integer not null,
@@ -44,7 +45,7 @@ create table if not exists tb_alunos_disciplinas (
     foreign key (ad_dis_id) references tb_disciplinas(dis_id) 
 );
 
-create table if not exists cursos (
+create table if not exists tb_cursos (
     cur_id integer auto_increment primary key,
     cur_nome VARCHAR(100) not null,
     cur_descricao VARCHAR(255)

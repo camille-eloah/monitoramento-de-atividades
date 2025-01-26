@@ -84,7 +84,13 @@
 
         <label for="carga_hr">Carga Horária:</label>
         <input type="number" id="carga_hr" name="carga_hr" required>
-
+        
+        <label for="curso_id">Curso:</label>
+    <select name="curso_id" id="curso_id" required>
+        {% for curso in cursos %}
+            <option value="{{ curso.cur_id }}">{{ curso.cur_nome }}</option>
+        {% endfor %}
+    </select>
         <button type="submit">Cadastrar</button>
     </form>
 
