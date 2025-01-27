@@ -169,16 +169,16 @@ Cadastro de Aulas
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="background-color: #f4f4f4; text-align: left;">
-                        <th style="padding: 8px; border: 1px solid #ddd;">Descrição</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">Data</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Disciplina</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Docente</th>
                         <th style="padding: 8px; border: 1px solid #ddd;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for diisciplina in disciplinas %}
                     <tr>
-                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aula.aul_descricao }}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aula.aul_data }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ disciplina.dis_nome }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ disciplina.prof_nome if disciplina.prof_nome else 'Professor não informado'  }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">
                         <!-- Botão para editar -->
                         <form action="/edit_aula/{{ aula.aul_id }}" method="get" style="display: inline;">
