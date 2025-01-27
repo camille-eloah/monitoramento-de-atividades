@@ -1,32 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Aula</title>
-</head>
-<body>
-    <h1>Editar Aula</h1>
+{% extends 'layout.html' %}
 
-    <form action="{{ url_for('edit_aula', aul_id=aula.aul_id) }}" method="post">
-        <div class="form-group">
-            <label for="descricao">Descrição da Aula:</label>
-            <input class="form-control" type="text" id="descricao" name="descricao" required>
-        </div>
-        <div class="form-group">
-            <label for="data">Data da Aula:</label>
-            <input class="form-control" type="datetime-local" id="data" name="data" required>
-        </div>
-        <div class="form-group">
-            <label for="professor">Professor:</label>
-            <select class="js-example-basic-single w-100" name="professor" id="professor" required>
-                {% for professor in professores %}
-                    <option style="vertical-align: inherit;" value="{{ professor.prof_id }}">{{ professor.prof_nome }}</option>
-                {% endfor %}
-            </select>
-        </div>
+{% block title %}
+Editar Aula
+{% endblock %}
 
-        <button type="submit">Atualizar</button>
-    </form>
-</body>
-</html>
+{% block content %}
+<main style="margin: 50px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Editar Aula</h4>
+            <form action="{{ url_for('edit_aula', aul_id=aula.aul_id) }}" method="post">
+                <div class="form-group">
+                    <label for="descricao">Editar Descrição da Aula:</label>
+                    <input class="form-control" type="text" id="descricao" name="descricao" value="{{ aula.aula_descricao }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="data">Editar Data da Aula:</label>
+                    <input class="form-control" type="datetime-local" id="data" name="data" value="{{ aula.aul_data }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="professor">Editar Professor:</label>
+                    <select class="js-example-basic-single w-100" name="professor" id="professor" required>
+                        {% for professor in professores %}
+                            <option style="vertical-align: inherit;" value="{{ professor.prof_id }}">{{ professor.prof_nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+        
+                <button type="submit">Atualizar</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

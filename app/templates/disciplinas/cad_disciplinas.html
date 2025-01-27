@@ -1,95 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Disciplinas</title>
-    <style>
-        /* Variáveis de cor */
-       
-    </style>
-</head>
-<body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="flash-message flash-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-
-    <h1>Cadastre uma Nova Disciplina</h1>
-    
-    <form action="{{ url_for('cad_disciplinas') }}" method="post">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" required>
-
-        <label for="prof_responsavel">Professor Responsável:</label>
-        <select name="prof_responsavel" id="prof_responsavel" required>
-            {% for professor in professores %}
-                <option value="{{ professor.prof_id }}">{{ professor.prof_nome }}</option>
-            {% endfor %}
-        </select>
-
-        <label for="carga_hr">Carga Horária:</label>
-        <input type="number" id="carga_hr" name="carga_hr" required>
-        
-        <label for="curso_id">Cursos:</label>
-        <select name="curso_id" id="curso_id" multiple required>
-            {% for curso in cursos %}
-                <option value="{{ curso.cur_id }}">{{ curso.cur_nome }}</option>
-            {% endfor %}
-        </select>
-
-        <button type="submit">Cadastrar</button>
-    </form>
-
-    <h1>Disciplinas Cadastradas</h1>
-    {% if disciplinas %}
-    <ul>
-        {% for disciplina in disciplinas %}
-            <li>
-                {{ disciplina.dis_nome }} - {{ disciplina.prof_nome if disciplina.prof_nome else 'Professor não informado' }} 
-                ({{ disciplina.dis_carga_hr }} horas)
-                <br>
-                <strong>Cursos Associados:</strong>
-                <ul>
-                    {% if disciplina.cursos_associados %}
-                        {% for curso in disciplina.cursos_associados %}
-                            <li>{{ curso }}</li>
-                        {% endfor %}
-                    {% else %}
-                        <li>Nenhum curso associado</li>
-                    {% endif %}
-                </ul>
-                <div class="actions">
-                    <!-- Botão para editar -->
-                    <form action="/edit_disciplinas/{{ disciplina.dis_id }}" method="get" style="display: inline;">
-                        <button type="submit" class="btn-edit">Editar</button>
-                    </form>
-    
-                    <!-- Botão para remover -->
-                    <form action="{{ url_for('delete_disciplina', dis_id=disciplina.dis_id) }}" method="post" style="display: inline;">
-                        <button type="submit" class="btn-delete" onclick="return confirm('Tem certeza que deseja remover esta disciplina?');">Remover</button>
-                    </form>
-                </div>
-            </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>Nenhuma disciplina cadastrada ainda.</p>
-    {% endif %}
-    
-
-</body>
-</html>
-
-
-
 {% extends 'layout.html' %}
 
 {% block title %}
@@ -97,22 +5,11 @@ Cadastro de Aulas
 {% endblock %}
 
 {% block content %}
-<!--Ver se é aqui mesmo-->
-{% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="flash-message flash-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+
 <main style="margin: 50px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">Cadastre uma Nova Aula</h4>
+            <h4 class="card-title">Cadastre uma Nova Disciplina</h4>
             <!-- Exibição de mensagem de erro -->
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -162,7 +59,7 @@ Cadastro de Aulas
     <div class="card-body">
         <button class="btn btn-primary me-2" onclick="toggleListaDisciplinas()">Listar Disciplinas Cadastradas</button>
 
-        <div id="lista-aulas" style="display: none;">
+        <div id="lista-disciplinas" style="display: none;">
             
             {% if disciplinas %}
             <h4 class="card-title">Disciplinas Cadastradas</h4>
@@ -171,25 +68,40 @@ Cadastro de Aulas
                     <tr style="background-color: #f4f4f4; text-align: left;">
                         <th style="padding: 8px; border: 1px solid #ddd;">Disciplina</th>
                         <th style="padding: 8px; border: 1px solid #ddd;">Docente</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Carga Horária</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Cursos Associados:</th>
                         <th style="padding: 8px; border: 1px solid #ddd;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for diisciplina in disciplinas %}
+                    {% for disciplina in disciplinas %}
                     <tr>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ disciplina.dis_nome }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ disciplina.prof_nome if disciplina.prof_nome else 'Professor não informado'  }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ disciplina.dis_carga_hr }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">
+                            <ul>
+                            {% if disciplina.cursos_associados %}
+                                {% for curso in disciplina.cursos_associados %}
+                                    <li>{{ curso }}</li>
+                                {% endfor %}
+                            {% else %}
+                                <li>Nenhum curso associado</li>
+                            {% endif %}
+                            </ul>
+                        </td>
+
                         <td style="padding: 8px; border: 1px solid #ddd;">
                         <!-- Botão para editar -->
-                        <form action="/edit_aula/{{ aula.aul_id }}" method="get" style="display: inline;">
+                        <form action="/edit_disciplinas/{{ disciplina.dis_id }}" method="get" style="display: inline;">
                             <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
                                 Editar
                             </button>
                         </form>
 
                         <!-- Botão para remover -->
-                        <form action="{{ url_for('delete_aula', aul_id=aula.aul_id) }}" method="post" style="display: inline;">
-                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover esta aula?');">
+                        <form action="{{ url_for('delete_disciplina', dis_id=disciplina.dis_id) }}" method="post" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover esta disciplina?');">
                                 Remover
                             </button>
                         </form>
@@ -200,57 +112,14 @@ Cadastro de Aulas
                 </tbody>
             </table>
             {% else %}
-            <p class="card-description" style="vertical-align: inherit; margin: 80px auto 0; padding: 20px;">Nenhuma aula cadastrada ainda.</p>
+            <p class="card-description" style="vertical-align: inherit; margin: 80px auto 0; padding: 20px;">Nenhuma disciplina cadastrada ainda.</p>
             {% endif %}
         </div>
     </div>
-
-    
-    <h1>Disciplinas Cadastradas</h1>
-    {% if disciplinas %}
-    <ul>
-        {% for disciplina in disciplinas %}
-            <li>
-                {{ disciplina.dis_nome }} - {{ disciplina.prof_nome if disciplina.prof_nome else 'Professor não informado' }} 
-                ({{ disciplina.dis_carga_hr }} horas)
-                <br>
-                <strong>Cursos Associados:</strong>
-                <ul>
-                    {% if disciplina.cursos_associados %}
-                        {% for curso in disciplina.cursos_associados %}
-                            <li>{{ curso }}</li>
-                        {% endfor %}
-                    {% else %}
-                        <li>Nenhum curso associado</li>
-                    {% endif %}
-                </ul>
-                <div class="actions">
-                    <!-- Botão para editar -->
-                    <form action="/edit_disciplinas/{{ disciplina.dis_id }}" method="get" style="display: inline;">
-                        <button type="submit" class="btn-edit">Editar</button>
-                    </form>
-    
-                    <!-- Botão para remover -->
-                    <form action="{{ url_for('delete_disciplina', dis_id=disciplina.dis_id) }}" method="post" style="display: inline;">
-                        <button type="submit" class="btn-delete" onclick="return confirm('Tem certeza que deseja remover esta disciplina?');">Remover</button>
-                    </form>
-                </div>
-            </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>Nenhuma disciplina cadastrada ainda.</p>
-    {% endif %}
-    
-
-
-
-</div>
-
 <script>
-    function toggleListaAulas() {
-        const listaAulas = document.getElementById("lista-aulas");
-        listaAulas.style.display = listaAulas.style.display === "none" || listaAulas.style.display === "" ? "block" : "none";
+    function toggleListaDisciplinas() {
+        const listaDisciplinas = document.getElementById("lista-disciplinas");
+        listaDisciplinas.style.display = listaDisciplinas.style.display === "none" || listaDisciplinas.style.display === "" ? "block" : "none";
     }
 </script>
 {% endblock %}

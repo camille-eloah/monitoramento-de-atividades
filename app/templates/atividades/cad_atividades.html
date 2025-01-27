@@ -1,6 +1,3 @@
-
-
-
 {% extends 'layout.html' %}
 
 {% block title %}
@@ -27,6 +24,15 @@ Cadastro de Atividades
             
             <form action="{{ url_for('cad_atividades') }}" method="post" class="forms-sample">
                 <div class="form-group">
+                    <label for="disciplina">Disciplina:</label>
+                    <select class="form-control" id="disciplina" name="disciplina" required>
+                        <option value="" disabled selected>Selecione uma disciplina</option>
+                        {% for disciplina in disciplinas %}
+                        <option value="{{ disciplina.dis_id }}">{{ disciplina.dis_nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="tipo">Tipo:</label>
                     <input class="form-control" type="text" id="tipo" name="tipo" required>
                 </div>
@@ -44,50 +50,51 @@ Cadastro de Atividades
                 </div>
                 <button class="btn btn-primary me-2" type="submit">Cadastrar</button>
             </form>
+            
         </div>
     </div>
 </main>
 
-<div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+<div class="card" style="margin: 20px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
         <button class="btn btn-primary me-2" onclick="toggleListaAtividades()">Listar Atividades</button>
 
-        <div id="lista-atividades" style="display: none;">
-            {% if atividade %}
-            <h4 class="card-title">Atividades Cadastrados</h4>
+        <div id="lista-atividades">
+            {% if atividades %}
+            <h4 class="card-title">Atividades Cadastradas</h4>
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="background-color: #f4f4f4; text-align: left;">
-                        <th style="padding: 8px; border: 1px solid #ddd;">Nome</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">Matrícula</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">E-mail</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">Curso</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">Data de Nascimento</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Disciplina</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Tipo</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Descrição</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Data de Entrega</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Peso</th>
                         <th style="padding: 8px; border: 1px solid #ddd;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for atividade in atividades %}
                     <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ atividade.dis_nome }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ atividade.ati_tipo }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ atividade.ati_descricao }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ atividade.ati_data_entrega }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ atividade.ati_peso }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">
-                        <!-- Botão para editar -->
-                        <form action="/edit_atividade/{{ atividade.ati_id }}" method="get" style="display: inline;">
-                            <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
-                                Editar
-                            </button>
-                        </form>
-
-                        <!-- Botão para remover -->
-                        <form action="{{ url_for('delete_atividade', alu_matricula=aluno.alu_matricula) }}" method="post" style="display: inline;">
-                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover este aluno?');">
-                                Remover
-                            </button>
-                        </form>
-
+                            <!-- Botão para editar -->
+                            <form action="/edit_atividade/{{ atividade.ati_id }}" method="get" style="display: inline;">
+                                <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
+                                    Editar
+                                </button>
+                            </form>
+        
+                            <!-- Botão para remover -->
+                            <form action="{{ url_for('delete_atividade', ati_id=atividade.ati_id) }}" method="post" style="display: inline;">
+                                <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover esta atividade?');">
+                                    Remover
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
@@ -97,14 +104,14 @@ Cadastro de Atividades
             <p>Nenhuma atividade cadastrada ainda.</p>
             {% endif %}
         </div>
+        
     </div>
 </div>
 
 <script>
     function toggleListaAtividades() {
         const listaAtividades = document.getElementById("lista-atividades");
-        listaAtividades.style.display = listaAtividades.style.display === "none" || listaAlunos.style.display === "" ? "block" : "none";
+        listaAtividades.style.display = listaAtividades.style.display === "none" || listaAtividades.style.display === "" ? "block" : "none";
     }
 </script>
 {% endblock %}
-

@@ -1,20 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Alunos</title>
-</head>
-<body>
-    
-    <form action="/edit_curso/{{ curso.cur_id }}" method="POST">
-        Editar Nome: <input type="text" name="nome" value="{{ curso.cur_nome }}"><br>
+{% extends 'layout.html' %}
 
-        Editar Descrição: <input type="text" name="descricao" value="{{ curso.cur_descricao }}"><br>
+{% block title %}
+Editar Curso
+{% endblock %}
 
-        <div>
-            <button type="submit">Atualizar</button>
+{% block content %}
+<main style="margin: 50px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Editar Curso</h4>
+            <form action="/edit_curso/{{ curso.cur_id }}" method="POST">
+                <div class="form-group">
+                    <label for="descricao">Editar Nome:</label>
+                    <input class="form-control" type="text" name="nome" value="{{ curso.cur_nome }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="data">Editar Descrição</label>
+                    <input class="form-control" type="text" name="descricao" value="{{ curso.cur_descricao }}" required>
+                </div>
+        
+                <button type="submit">Atualizar</button>
+            </form>
         </div>
-    </form>
-</body>
-</html>
+    </div>
+</main>
+
+{% endblock %}

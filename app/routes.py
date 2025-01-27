@@ -3,7 +3,8 @@ from flask_login import LoginManager, current_user, login_required, login_user, 
 from app import app, get_db_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from pymysql.err import IntegrityError
+import pymysql
+from pymysql.err import IntegrityError 
 
 from app.models import Professor, AulaFrequencia
 
@@ -125,6 +126,9 @@ def cad_aluno():
         cursor.execute("SELECT * FROM tb_alunos")
         alunos = cursor.fetchall()
 
+        cursor.execute('SELECT * FROM tb_cursos')
+        cursos = cursor.fetchall()
+
     if request.method == "POST":
         nome = request.form['nome']
         matricula = request.form['matricula']
@@ -148,38 +152,59 @@ def cad_aluno():
         return redirect(url_for('cad_aluno'))
 
     connection.close()
-    return render_template('alunos/cad_aluno.html', alunos=alunos)
+    return render_template('alunos/cad_aluno.html', alunos=alunos, cursos=cursos)
 
 # Editar aluno
-@app.route('/edit_aluno/<int:alu_matricula>', methods=['POST', 'GET']) 
+@app.route('/edit_aluno/<int:alu_matricula>', methods=['POST', 'GET'])
 def edit_aluno(alu_matricula):
     connection = get_db_connection()
+    aluno = None
+    cursos = []
 
-    with connection.cursor() as cursor:
-            cursor.execute("""
-            SELECT * from tb_alunos WHERE alu_matricula = "%s"
-            """, (alu_matricula,))
+    try:
+        # Selecionar aluno específico
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM tb_alunos WHERE alu_matricula = %s", (alu_matricula,))
             aluno = cursor.fetchone()
-    
-    if request.method == 'POST':
-        novo_nome = request.form['nome']
-        nova_matricula = request.form.get('matricula')
-        novo_email = request.form['email']  
-        novo_curso = request.form['curso']
-        nova_data_nasc = request.form['data_nasc']
 
-        query = """
-        UPDATE tb_alunos 
-        SET alu_nome = %s, alu_matricula = %s, alu_email = %s, alu_curso = %s, alu_data_nasc = %s
-        WHERE alu_matricula = %s
-        """
-        executar_query(query, (novo_nome, nova_matricula, novo_email, novo_curso, nova_data_nasc, alu_matricula))
+        # Selecionar cursos existentes
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT cur_id, cur_nome FROM tb_cursos")  # Ajuste para a tabela correta
+            cursos = cursor.fetchall()
 
-        return redirect('/cad_aluno')
+        if not aluno:
+            flash("Aluno não encontrado.", "warning")
+            return redirect('/cad_aluno')
 
-    connection.close()
+        if request.method == 'POST':
+            novo_nome = request.form['nome']
+            nova_matricula = request.form.get('matricula')
+            novo_email = request.form['email']
+            novo_curso = request.form['curso']  # ID do curso
+            nova_data_nasc = request.form['data_nasc']
 
-    return render_template('alunos/edit_aluno.html', aluno=aluno)
+            # Validação simples dos campos
+            if not all([novo_nome, nova_matricula, novo_email, novo_curso, nova_data_nasc]):
+                flash("Por favor, preencha todos os campos corretamente.", "warning")
+                return render_template('alunos/edit_aluno.html', aluno=aluno, cursos=cursos)
+
+            query = """
+            UPDATE tb_alunos 
+            SET alu_nome = %s, alu_matricula = %s, alu_email = %s, alu_curso = %s, alu_data_nasc = %s
+            WHERE alu_matricula = %s
+            """
+            with connection.cursor() as cursor:
+                cursor.execute(query, (novo_nome, nova_matricula, novo_email, novo_curso, nova_data_nasc, alu_matricula))
+            connection.commit()
+            flash("Aluno atualizado com sucesso!", "success")
+            return redirect('/cad_aluno')
+
+    except Exception as e:
+        flash(f"Erro inesperado: {str(e)}", "danger")
+    finally:
+        connection.close()
+
+    return render_template('alunos/edit_aluno.html', aluno=aluno, cursos=cursos)
 
 # Remover aluno
 @app.route('/delete_aluno/<int:alu_matricula>', methods=['POST'])
@@ -375,64 +400,103 @@ def delete_disciplina(dis_id):
 def cad_atividades():
     connection = get_db_connection()
     atividades = []
+    disciplinas = []
 
-    # Selecionar atividades existentes
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM tb_atividades")
-        atividades = cursor.fetchall()
+    try:
+        # Selecionar disciplinas existentes
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT dis_id, dis_nome FROM tb_disciplinas")
+            disciplinas = cursor.fetchall()
 
-    if request.method == "POST":
-        tipo = request.form['tipo']
-        descricao = request.form['descricao']
-        data_entr = request.form['data_entr']
-        peso = request.form['peso']
+        if request.method == "POST":
+            dis_id = request.form['disciplina']  # Obter ID da disciplina
+            tipo = request.form['tipo']
+            descricao = request.form['descricao']
+            data_entr = request.form['data_entr']
+            peso = request.form['peso']
 
-        query = """
-        INSERT INTO tb_atividades (ati_tipo, ati_descricao, ati_data_entr, ati_peso)
-        VALUES (%s, %s, %s, %s)
-        """
-        try:
-            executar_query(query, (tipo, descricao, data_entr, peso))
-        except IntegrityError as e:
-            if "Duplicate entry" in str(e):
-                mensagem_erro = "Erro: Atividade duplicada ou já cadastrada."
-            else:
-                mensagem_erro = "Erro ao cadastrar a atividade. Tente novamente mais tarde."
-            
-            connection.close()
-            return render_template('atividades/cad_atividades.html', atividades=atividades, mensagem_erro=mensagem_erro)
+            query = """
+            INSERT INTO tb_atividades (ati_dis_id, ati_tipo, ati_descricao, ati_data_entrega, ati_peso)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+            try:
+                executar_query(query, (dis_id, tipo, descricao, data_entr, peso))
+                flash("Atividade cadastrada com sucesso!", "success")
+            except IntegrityError as e:
+                if "Duplicate entry" in str(e):
+                    flash("Erro: Atividade duplicada ou já cadastrada.", "danger")
+                else:
+                    flash(f"Erro ao cadastrar a atividade: {str(e)}", "danger")
+            except Exception as e:
+                flash(f"Erro inesperado: {str(e)}", "danger")
 
-    connection.close()
-    return render_template('atividades/cad_atividades.html', atividades=atividades)
+        # Após cadastro ou ao carregar a página, buscar atividades novamente
+        with connection.cursor() as cursor:
+            cursor.execute("""
+            SELECT a.ati_id, a.ati_tipo, a.ati_descricao, a.ati_data_entrega, a.ati_peso, d.dis_nome
+            FROM tb_atividades a
+            INNER JOIN tb_disciplinas d ON a.ati_dis_id = d.dis_id
+            """)
+            atividades = cursor.fetchall()
 
+    finally:
+        connection.close()
+
+    return render_template(
+        'atividades/cad_atividades.html', atividades=atividades, disciplinas=disciplinas
+    )
 
 # Editar atividades
 @app.route('/edit_atividade/<int:ati_id>', methods=['POST', 'GET'])
-def edit_atividades(ati_id):
+def edit_atividade(ati_id):
     connection = get_db_connection()
+    atividade = None
+    disciplinas = []
 
-    # Selecionar atividade específica
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM tb_atividades WHERE ati_id = %s", (ati_id,))
-        atividade = cursor.fetchone()
+    try:
+        # Selecionar atividade específica
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM tb_atividades WHERE ati_id = %s", (ati_id,))
+            atividade = cursor.fetchone()
 
-    if request.method == 'POST':
-        novo_tipo = request.form['tipo']
-        nova_descricao = request.form['descricao']
-        nova_data_entr = request.form['data_entr']
-        novo_peso = request.form['peso']
+        # Selecionar disciplinas existentes para preencher o select
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT dis_id, dis_nome FROM tb_disciplinas")
+            disciplinas = cursor.fetchall()
 
-        query = """
-        UPDATE tb_atividades 
-        SET ati_tipo = %s, ati_descricao = %s, ati_data_entr = %s, ati_peso = %s
-        WHERE ati_id = %s
-        """
-        executar_query(query, (novo_tipo, nova_descricao, nova_data_entr, novo_peso, ati_id))
+        if not atividade:
+            flash("Atividade não encontrada.", "warning")
+            return redirect('/cad_atividades')
 
-        return redirect('/cad_atividades')
+        if request.method == 'POST':
+            dis_id = request.form.get('disciplina')  # Obter ID da disciplina
+            novo_tipo = request.form.get('tipo')
+            nova_descricao = request.form.get('descricao')
+            nova_data_entr = request.form.get('data_entr')
+            novo_peso = request.form.get('peso')
 
-    connection.close()
-    return render_template('atividades/edit_atividades.html', atividade=atividade)
+            # Validação simples dos campos
+            if not all([dis_id, novo_tipo, nova_descricao, nova_data_entr, novo_peso]):
+                flash("Por favor, preencha todos os campos corretamente.", "warning")
+                return render_template('atividades/edit_atividade.html', atividade=atividade, disciplinas=disciplinas)
+
+            query = """
+            UPDATE tb_atividades 
+            SET ati_dis_id = %s, ati_tipo = %s, ati_descricao = %s, ati_data_entrega = %s, ati_peso = %s
+            WHERE ati_id = %s
+            """
+            with connection.cursor() as cursor:
+                cursor.execute(query, (dis_id, novo_tipo, nova_descricao, nova_data_entr, novo_peso, ati_id))
+            connection.commit()
+            flash("Atividade atualizada com sucesso!", "success")
+            return redirect('/cad_atividades')
+
+    except Exception as e:
+        flash(f"Erro inesperado: {str(e)}", "danger")
+    finally:
+        connection.close()
+
+    return render_template('atividades/edit_atividade.html', atividade=atividade, disciplinas=disciplinas)
 
 # Deletar atividade
 @app.route('/delete_atividade/<int:ati_id>', methods=['POST'])
@@ -627,10 +691,12 @@ def add_frequencia(aul_id):
     # Obter a lista de alunos
     connection = get_db_connection()
     with connection.cursor() as cursor:
-        cursor.execute('SELECT aluno_id, aluno_nome FROM tb_alunos')
+        cursor.execute('SELECT alu_id, alu_nome FROM tb_alunos')
         alunos = cursor.fetchall()
 
-    return render_template('add_frequencia.html', alunos=alunos, aul_id=aul_id)
+
+
+    return render_template('aulas/add_frequencia.html', alunos=alunos, aul_id=aul_id)
 
 @app.route('/save_frequencia/<int:aul_id>', methods=['POST'])
 def save_frequencia(aul_id):
@@ -638,9 +704,9 @@ def save_frequencia(aul_id):
     frequencias = []
     for key, value in request.form.items():
         if key.startswith('frequencia_'):
-            aluno_id = int(key.split('_')[1])
+            aluno_id = int(value)
             presenca = int(value)
-            frequencias.append({'aluno_id': aluno_id, 'presenca': presenca})
+            frequencias.append({'freq_alu_id': aluno_id, 'freq_frequencia': presenca})
 
     # Salvar no banco de dados
     AulaFrequencia.salvar_frequencia(aul_id, frequencias)

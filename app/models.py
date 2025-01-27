@@ -23,9 +23,9 @@ class Professor(UserMixin):
 class AulaFrequencia:
     def __init__(self, freq_id, aul_id, aluno_id, presenca):
         self.freq_id = freq_id
-        self.aul_id = aul_id
-        self.aluno_id = aluno_id
-        self.presenca = presenca
+        self.freq_aul_id = aul_id
+        self.freq_alu_id = aluno_id
+        self.freq_frequencia = presenca
 
     @staticmethod
     def salvar_frequencia(aul_id, frequencias):
@@ -41,8 +41,8 @@ class AulaFrequencia:
         with connection.cursor() as cursor:
             for freq in frequencias:
                 cursor.execute(
-                    'INSERT INTO tb_aula_frequencia (aul_id, aluno_id, presenca) VALUES (%s, %s, %s)',
-                    (aul_id, freq['aluno_id'], freq['presenca'])
+                    'INSERT INTO tb_aula_frequencia (freq_aula_id, freq_alu_id, freq_frequencia) VALUES (%s, %s, %s)',
+                    (aul_id, freq['freq_alu_id'], freq['freq_frequencia'])
                 )
         connection.commit()
 
@@ -58,6 +58,6 @@ class AulaFrequencia:
 
         connection = get_db_connection()
         with connection.cursor() as cursor:
-            cursor.execute('SELECT * FROM tb_aula_frequencia WHERE aul_id = %s', (aul_id,))
+            cursor.execute('SELECT * FROM tb_aula_frequencia WHERE freq_aul_id = %s', (aul_id,))
             frequencias = cursor.fetchall()
             return frequencias

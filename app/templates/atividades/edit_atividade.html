@@ -1,27 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Atividade</title>
-</head>
-<body>
-    <h1>Editar Atividade</h1>
+{% extends 'layout.html' %}
 
-    <form action="{{ url_for('edit_atividades', ati_id=atividade.ati_id) }}" method="post">
-        <label for="tipo">Tipo:</label>
-        <input type="text" id="tipo" name="tipo" value="{{ atividade.ati_tipo }}" required>
+{% block title %}
+Editar Atividade
+{% endblock %}
 
-        <label for="descricao">Descrição:</label>
-        <input type="text" id="descricao" name="descricao" value="{{ atividade.ati_descricao }}" required>
-
-        <label for="data_entr">Data de Entrega:</label>
-        <input type="date" id="data_entr" name="data_entr" value="{{ atividade.ati_data_entr }}" required>
-
-        <label for="peso">Peso:</label>
-        <input type="number" id="peso" name="peso" value="{{ atividade.ati_peso }}" required>
-
-        <button type="submit">Atualizar</button>
-    </form>
-</body>
-</html>
+{% block content %}
+<main style="margin: 50px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Editar Atividade</h4>
+            <!-- Exibição de mensagem de erro -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            
+            <form action="{{ url_for('edit_atividade', ati_id=atividade.ati_id) }}" method="post" class="forms-sample">
+                <div class="form-group">
+                    <label for="disciplina">Disciplina:</label>
+                    <select class="form-control" id="disciplina" name="disciplina" required>
+                        {% for disciplina in disciplinas %}
+                            <option value="{{ disciplina.dis_id }}" {% if disciplina.dis_id == atividade.ati_dis_id %}selected{% endif %}>
+                                {{ disciplina.dis_nome }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tipo:</label>
+                    <input class="form-control" type="text" id="tipo" name="tipo" value="{{ atividade.ati_tipo }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <input class="form-control" type="text" id="descricao" name="descricao" value="{{ atividade.ati_descricao }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="data_entr">Data de Entrega:</label>
+                    <input class="form-control" type="date" id="data_entr" name="data_entr" value="{{ atividade.ati_data_entrega.strftime('%Y-%m-%d') }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="peso">Peso:</label>
+                    <input class="form-control" type="number" id="peso" name="peso" value="{{ atividade.ati_peso }}" required>
+                </div>
+                <button class="btn btn-primary me-2" type="submit">Atualizar</button>
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -1,27 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Alunos</title>
-</head>
-<body>
-    
-    <form action="/edit_aluno/{{ aluno.alu_matricula }}" method="POST">
-        Editar Nome: <input type="text" name="nome" value="{{ aluno.alu_nome }}"><br>
+{% extends 'layout.html' %}
 
-        Editar Matrícula: <input type="number" name="matricula" value="{{ aluno.alu_matricula }}"><br>
+{% block title %}
+Editar Alunos
+{% endblock %}
 
-        Editar Email: <input type="text" name="email" value="{{ aluno.alu_email }}"><br>
+{% block content %}
+<main style="margin: 50px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card">
+        <div class="card-body">
 
-        Editar Curso: <input type="text" name="curso" value="{{ aluno.alu_curso }}"><br>
+            <h4 class="card-title">Editar Aluno</h4>
 
-        Editar Data de Nascimento: <input type="text" name="data_nasc" value="{{ aluno.alu_data_nasc }}"><br>
-    
+                        <!-- Exibição de mensagem de erro -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        <div>
+                            {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+            
+            <form action="/edit_aluno/{{ aluno.alu_matricula }}" method="POST" class="forms-sample">
+                <div class="form-group">
+                    <label for="nome">Editar Nome:</label>
+                    <input class="form-control" type="text" id="nome" name="nome" value="{{ aluno.alu_nome }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="matricula">Editar Matrícula</label>
+                    <input class="form-control" type="number" name="matricula" value="{{ aluno.alu_matricula }}">
+                </div>
+                <div class="form-group">
+                    <label for="email">Editar E-mail</label>
+                    <input class="form-control" type="text" name="email" value="{{ aluno.alu_email }}">
+                </div>
+                <div class="form-group">
+                    <label for="curso">Editar Curso:</label>
+                    <!--É AQUI-->
+                    <select class="js-example-basic-single w-100" name="curso" id="curso_id" required>
+                        {% for curso in cursos %}
+                            <option style="vertical-align: inherit;" value="{{ curso.cur_nome }}">{{ curso.cur_nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="data-nascimento">Editar Data de Nascimento</label>
+                    <input class="form-control" type="text" name="data_nasc" value="{{ aluno.alu_data_nasc }}">
+                </div>
 
-        <div>
-            <button type="submit">Atualizar</button>
+                <button class="btn btn-primary me-2" type="submit">Atualizar</button>
+            </form>
         </div>
-    </form>
-</body>
-</html>
+    </div>
+</main>
+
+{% endblock %}
