@@ -54,12 +54,14 @@
     <!-- Template Stylesheet -->
     <link href="static/css/style.css" rel="stylesheet">
 
-    <!-- Bloco de Estilo -->
-    {% block styles %}{% endblock %}
 
 </head>
 
 <body>
+
+    {% block styles %}
+    
+    {% endblock %}
     <!-- Spinner Start -->
     <div id="spinner"
         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
@@ -88,6 +90,7 @@
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Cadastros</a>
                         <div class="dropdown-menu m-0">
                             <a href="cadastro" class="dropdown-item">Registre-se</a>
+                            <a href="cad_curso" class="dropdown-item">Cadastrar Cursos</a>
                             <a href="cad_aluno" class="dropdown-item">Cadastrar Alunos</a>
                             <a href="cad_disciplinas" class="dropdown-item">Cadastrar Disciplinas</a>
                             <a href="cad_atividades" class="dropdown-item">Cadastrar Atividades</a>

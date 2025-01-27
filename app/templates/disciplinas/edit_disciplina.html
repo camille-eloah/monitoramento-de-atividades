@@ -3,19 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Atividades</title>
+    <title>Editar Disciplina</title>
+    <style>
+        :root {
+            --primary-color: #044253;
+            --secondary-color: #056372;
+            --background-color: #f4f4f4;
+            --text-color: #333;
+            --button-color: #044253;
+            --button-hover-color: #056372;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .multi-select {
+            height: 120px; /* Espaço para múltiplas opções */
+        }
+
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        button {
+            background-color: var(--button-color);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-color);
+        }
+
+        .course-list {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .course-list span {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin: 5px 5px 0 0;
+        }
+    </style>
 </head>
 <body>
-
+    <h1>Editar Disciplina</h1>
     <form action="/edit_disciplinas/{{ disciplina.dis_id }}" method="POST">
-        Editar Nome: <input type="text" name="nome" value="{{ disciplina.dis_nome }}"><br>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" value="{{ disciplina.dis_nome }}" required>
 
-        Editar Responsável: <input type="text" name="prof_responsavel" value="{{ disciplina.dis_prof_responsavel }}"><br>
+        <label for="prof_responsavel">Professor Responsável:</label>
+        <input type="text" id="prof_responsavel" name="prof_responsavel" value="{{ disciplina.dis_prof_responsavel }}" required>
 
-        Editar Carga Horária: <input type="number" name="carga_hr" value="{{ disciplina.dis_carga_hr }}"><br>
+        <label for="carga_hr">Carga Horária:</label>
+        <input type="number" id="carga_hr" name="carga_hr" value="{{ disciplina.dis_carga_hr }}" required>
 
-        <div>
+        <label for="curso_id">Cursos Associados:</label>
+        <select name="curso_id" id="curso_id" class="multi-select" multiple>
+            {% for curso in cursos %}
+                <option value="{{ curso.cur_id }}" 
+                    {% if curso.cur_id in curso_ids_associados %}selected{% endif %}>
+                    {{ curso.cur_nome }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <div class="course-list">
+            <strong>Cursos Associados Atuais:</strong>
+            {% for curso in cursos_associados %}
+                <span>{{ curso.cur_nome }}</span>
+            {% endfor %}
+        </div>
+        
+        <div class="button-container">
             <button type="submit">Atualizar</button>
         </div>
+    </form>
 </body>
 </html>

@@ -77,14 +77,14 @@ Cadastro de Aulas
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ aula.aul_data }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">
                         <!-- Botão para editar -->
-                        <form action="/edit_aula/{{ aula.aul_descricao }}" method="get" style="display: inline;">
+                        <form action="/edit_aula/{{ aula.aul_id }}" method="get" style="display: inline;">
                             <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
                                 Editar
                             </button>
                         </form>
 
                         <!-- Botão para remover -->
-                        <form action="{{ url_for('delete_aula', aul_id=aula.aul_descricao) }}" method="post" style="display: inline;">
+                        <form action="{{ url_for('delete_aula', aul_id=aula.aul_id) }}" method="post" style="display: inline;">
                             <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover esta aula?');">
                                 Remover
                             </button>

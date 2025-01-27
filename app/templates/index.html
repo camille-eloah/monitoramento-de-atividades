@@ -1,37 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Inicial</title>
-</head>
-<body>
-    {% extends 'layout.html' %}
+{% extends 'layout.html' %}
 
-    {% block title %}Página Inicial{% endblock %}
-
-    {% block content %}
-            <!-- Exibindo mensagens de flash -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="alert alert-{{ messages[0][0] }}">
-                    {{ messages[0][1] }}
-                </div>
-            {% endif %}
-        {% endwith %}
-
-    <button><a href="cad_aluno">Cadastre alunos!</a>
-    </button>
-    <button><a href="cad_disciplinas">Cadastre disciplinas!</a>
-    </button>
-    <button><a href="cad_atividades">Cadastre atividades!</a>
-    </button>
-    <button><a href="cad_aulas">Cadastre sua aula!</a>
-    </button>
-    <button><a href="relatorios">Relatórios e Consultas Avançadas!</a>
-    <button><a href="cad_curso">Cadastre seu curso!</a>
-    </button>
-    <h1>Bem vindo ao nosso monitor de atividades acadêmicas</h1>
-</body>
-    {% endblock %}
-</html>
+{% block title %}Página Inicial{% endblock %}
+{% block styles %}
+    <style>
+        html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+<!-- Exibindo mensagens de flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="alert alert-{{ messages[0][0] }}">
+    {{ messages[0][1] }}
+</div>
+{% endif %}
+{% endwith %}
+<h1 >Bem-vindo ao nosso monitor de atividades acadêmicas</h1>
+{% endblock %}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Aula</title>
+</head>
+<body>
+    <h1>Editar Aula</h1>
+
+    <form action="{{ url_for('edit_aula', aul_id=aula.aul_id) }}" method="post">
+        <div class="form-group">
+            <label for="descricao">Descrição da Aula:</label>
+            <input class="form-control" type="text" id="descricao" name="descricao" required>
+        </div>
+        <div class="form-group">
+            <label for="data">Data da Aula:</label>
+            <input class="form-control" type="datetime-local" id="data" name="data" required>
+        </div>
+        <div class="form-group">
+            <label for="professor">Professor:</label>
+            <select class="js-example-basic-single w-100" name="professor" id="professor" required>
+                {% for professor in professores %}
+                    <option style="vertical-align: inherit;" value="{{ professor.prof_id }}">{{ professor.prof_nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit">Atualizar</button>
+    </form>
+</body>
+</html>

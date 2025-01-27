@@ -68,7 +68,7 @@
 
         /* Estilo para os selects multi */
         select[multiple] {
-            height: 200px; /* Deixa o select maior para permitir múltiplas seleções */
+            height: 100px; /* Deixa o select maior para permitir múltiplas seleções */
             padding: 10px;
         }
     </style>
@@ -117,13 +117,25 @@
     <ul>
         {% for disciplina in disciplinas %}
             <li>
-                {{ disciplina.dis_nome }} - {{ disciplina.dis_prof_responsavel }} ({{ disciplina.dis_carga_hr }} horas)
+                {{ disciplina.dis_nome }} - {{ disciplina.prof_nome if disciplina.prof_nome else 'Professor não informado' }} 
+                ({{ disciplina.dis_carga_hr }} horas)
+                <br>
+                <strong>Cursos Associados:</strong>
+                <ul>
+                    {% if disciplina.cursos_associados %}
+                        {% for curso in disciplina.cursos_associados %}
+                            <li>{{ curso }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li>Nenhum curso associado</li>
+                    {% endif %}
+                </ul>
                 <div class="actions">
                     <!-- Botão para editar -->
                     <form action="/edit_disciplinas/{{ disciplina.dis_id }}" method="get" style="display: inline;">
                         <button type="submit" class="btn-edit">Editar</button>
                     </form>
-
+    
                     <!-- Botão para remover -->
                     <form action="{{ url_for('delete_disciplina', dis_id=disciplina.dis_id) }}" method="post" style="display: inline;">
                         <button type="submit" class="btn-delete" onclick="return confirm('Tem certeza que deseja remover esta disciplina?');">Remover</button>
@@ -135,6 +147,7 @@
     {% else %}
     <p>Nenhuma disciplina cadastrada ainda.</p>
     {% endif %}
+    
 
 </body>
 </html>

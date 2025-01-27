@@ -19,6 +19,12 @@ def cadastro():
         nome = request.form['nome']
         email = request.form['email']
         senha = request.form['pass']
+        confirmar_senha = request.form['confirm_pass']
+
+        # Verificar se as senhas coincidem
+        if senha != confirmar_senha:
+            flash("As senhas não coincidem. Por favor, tente novamente.", category="error")
+            return redirect(url_for('cadastro'))
 
         # Gerar a senha criptografada com passlib
         hashed_senha = pwd_context.hash(senha)
@@ -210,23 +216,12 @@ def cad_disciplinas():
             INSERT INTO tb_disciplinas (dis_nome, dis_prof_responsavel, dis_carga_hr)
             VALUES (%s, %s, %s)
             """
-            print("Inserção em tb_disciplinas feita com sucesso!")
-
             with connection.cursor() as cursor:
                 cursor.execute(query, (nome, prof_responsavel, carga_hr))
                 connection.commit()
 
-                print("Testando...")
                 # Recuperar o ID da disciplina recém inserida
-
                 disciplina_id = cursor.lastrowid
-                print(f"disciplina_id recuperado: {disciplina_id}")  # Depuração para ver o ID
-
-                print("Testando 2...")
-
-                # Verificar se o ID da disciplina foi recuperado corretamente
-                if disciplina_id == 0:
-                    raise Exception("Erro ao recuperar o ID da disciplina inserida.")
 
                 # Associar a disciplina aos cursos
                 for curso_id in curso_ids:
@@ -238,23 +233,48 @@ def cad_disciplinas():
 
             flash("Disciplina cadastrada com sucesso!", category="success")
         except Exception as e:
+            connection.rollback()
             flash(f"Erro ao cadastrar disciplina: {e}", category="error")
-            print(f"Erro ao cadastrar disciplina: {e}")  # Imprimir erro no console para depuração
 
     # Consultar disciplinas, cursos e professores
     with connection.cursor() as cursor:
-        cursor.execute('SELECT * FROM tb_disciplinas')
+        # Buscar todas as disciplinas
+        cursor.execute("""
+        SELECT d.*, p.prof_nome 
+        FROM tb_disciplinas d
+        LEFT JOIN tb_professores p ON d.dis_prof_responsavel = p.prof_id
+        """)
         disciplinas = cursor.fetchall()
 
+        # Para cada disciplina, buscar os cursos associados
+        disciplinas_com_cursos = []
+        for disciplina in disciplinas:
+            cursor.execute("""
+            SELECT c.cur_nome 
+            FROM tb_cursos_disciplinas cd
+            JOIN tb_cursos c ON cd.cd_cur_id = c.cur_id
+            WHERE cd.cd_dis_id = %s
+            """, (disciplina['dis_id'],))
+            cursos_associados = [row['cur_nome'] for row in cursor.fetchall()]
+            disciplina['cursos_associados'] = cursos_associados
+            disciplinas_com_cursos.append(disciplina)
+
+        # Buscar todos os cursos
         cursor.execute('SELECT * FROM tb_cursos')
         cursos = cursor.fetchall()
 
+        # Buscar todos os professores
         cursor.execute('SELECT * FROM tb_professores')
         professores = cursor.fetchall()
 
     connection.close()
 
-    return render_template('disciplinas/cad_disciplinas.html', disciplinas=disciplinas, cursos=cursos, professores=professores)
+    return render_template(
+        'disciplinas/cad_disciplinas.html',
+        disciplinas=disciplinas_com_cursos,
+        cursos=cursos,
+        professores=professores
+    )
 
 
 # Editar disciplina
@@ -262,29 +282,77 @@ def cad_disciplinas():
 def edit_disciplinas(dis_id):
     connection = get_db_connection()
 
+    # Obter detalhes da disciplina
     with connection.cursor() as cursor:
-            cursor.execute("""
-            SELECT * from tb_disciplinas WHERE dis_id = "%s"
-            """, (dis_id,))
-            disciplina = cursor.fetchone()
-    
+        cursor.execute("""
+        SELECT * FROM tb_disciplinas WHERE dis_id = %s
+        """, (dis_id,))
+        disciplina = cursor.fetchone()
+
+        # Obter IDs dos cursos associados à disciplina
+        cursor.execute("""
+        SELECT cd_cur_id FROM tb_cursos_disciplinas WHERE cd_dis_id = %s
+        """, (dis_id,))
+        cursos_associados_ids = [row['cd_cur_id'] for row in cursor.fetchall()]
+
+        # Obter todos os cursos
+        cursor.execute("""
+        SELECT * FROM tb_cursos
+        """)
+        cursos = cursor.fetchall()
+
+        # Obter nomes dos cursos associados
+        cursos_associados = [
+            curso for curso in cursos if curso['cur_id'] in cursos_associados_ids
+        ]
+
     if request.method == 'POST':
         novo_nome = request.form['nome']
         nova_prof_responsavel = request.form.get('prof_responsavel')
-        novo_carga_hr = request.form['carga_hr']  
-    
-        query = """
-        UPDATE tb_disciplinas 
-        SET dis_nome = %s, dis_prof_responsavel = %s, dis_carga_hr= %s
-        WHERE dis_id = %s
-        """
-        executar_query(query, (novo_nome, nova_prof_responsavel, novo_carga_hr, dis_id))
+        nova_carga_hr = request.form['carga_hr']
+        novos_cursos_ids = request.form.getlist('curso_id')  # Cursos selecionados no formulário
+
+        try:
+            with connection.cursor() as cursor:
+                # Atualizar detalhes da disciplina
+                cursor.execute("""
+                UPDATE tb_disciplinas 
+                SET dis_nome = %s, dis_prof_responsavel = %s, dis_carga_hr = %s
+                WHERE dis_id = %s
+                """, (novo_nome, nova_prof_responsavel, nova_carga_hr, dis_id))
+
+                # Atualizar associações de cursos
+                # Remover associações antigas
+                cursor.execute("""
+                DELETE FROM tb_cursos_disciplinas WHERE cd_dis_id = %s
+                """, (dis_id,))
+
+                # Inserir novas associações
+                for curso_id in novos_cursos_ids:
+                    cursor.execute("""
+                    INSERT INTO tb_cursos_disciplinas (cd_cur_id, cd_dis_id)
+                    VALUES (%s, %s)
+                    """, (curso_id, dis_id))
+
+                connection.commit()
+
+            flash("Disciplina atualizada com sucesso!", category="success")
+        except Exception as e:
+            connection.rollback()
+            flash(f"Erro ao atualizar disciplina: {e}", category="error")
 
         return redirect('/cad_disciplinas')
 
     connection.close()
 
-    return render_template('disciplinas/edit_disciplina.html', disciplina = disciplina)
+    return render_template(
+        'disciplinas/edit_disciplina.html',
+        disciplina=disciplina,
+        cursos=cursos,
+        cursos_associados_ids=cursos_associados_ids,
+        cursos_associados=cursos_associados
+    )
+
 
 # Remover disciplina
 @app.route('/delete_disciplina/<int:dis_id>', methods=['POST'])
@@ -406,17 +474,17 @@ def cad_aulas():
         aulas = cursor.fetchall()
 
     if request.method == "POST":
-        aul_descricao = request.form['descricao']
+        aul_descricao = request.form['descricao']  # Mantendo como string
         aul_data = request.form['data']
-        prof_id = request.form['professor']
-        dis_id = request.form['disciplina']
+        aul_prof_id = int(request.form['professor'])  # Garantir que professor seja tratado como inteiro
+        aul_dis_id = int(request.form['disciplina'])  # Garantir que disciplina seja tratada como inteiro
 
         query = """
-        INSERT INTO tb_aulas (aul_descricao, aul_data, prof_id, dis_id)
+        INSERT INTO tb_aulas (aul_descricao, aul_data, aul_prof_id, aul_dis_id)
         VALUES (%s, %s, %s, %s)
         """
         try:
-            executar_query(query, (aul_descricao, aul_data, prof_id, dis_id))
+            executar_query(query, (aul_descricao, aul_data, aul_prof_id, aul_dis_id))
             flash("Aula cadastrada com sucesso!", "success")
         except IntegrityError as e:
             if "Duplicate entry" in str(e):
@@ -429,13 +497,51 @@ def cad_aulas():
     connection.close()
     return render_template('aulas/cad_aulas.html', aulas=aulas, professores=professores, disciplinas=disciplinas)
 
-@app.route('/edit_aula')
-def edit_aula():
-    pass 
+#Editar aulas
+@app.route('/edit_aula/<int:aul_id>', methods=['POST', 'GET'])
+def edit_aula(aul_id):
+    connection = get_db_connection()
 
+    # Selecionar aula específica
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM tb_aulas WHERE aul_id = %s", (aul_id,))
+        aula = cursor.fetchone()
+
+    if request.method == 'POST':
+        nova_descricao = request.form['descricao']
+        nova_data = request.form['data']
+        
+
+        query = """
+        UPDATE tb_aulas 
+        SET aul_descricao = %s, aul_data = %s,
+        WHERE aul_id = %s
+        """
+        executar_query(query, (nova_descricao, nova_data, aul_id))
+
+        return redirect('/cad_aulas')
+
+    connection.close()
+    return render_template('aulas/edit_aula.html', aula=aula)
+
+#Deletar aulas
 @app.route('/delete_aula/<int:aul_id>', methods=['POST'])
 def delete_aula(aul_id):
-    pass
+    connection = get_db_connection()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM tb_aulas WHERE aul_id = %s", (aul_id,))
+            connection.commit()
+            flash("Aula deletada com sucesso!", "success")
+    except Exception as e:
+        connection.rollback()
+        flash(f"Erro ao deletar aula: {e}", "error")
+    finally:
+        connection.close()
+
+    return redirect('/cad_aulas')
+
 
 #Cadastrar cursos
 @app.route('/cad_curso', methods=['POST', 'GET'])
