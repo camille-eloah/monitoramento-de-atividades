@@ -5,7 +5,8 @@ Cadastro de Cursos
 {% endblock %}
 
 {% block content %}
-<main style="margin: 80px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+<main
+    style="margin: 80px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Cadastre um novo curso</h4>
@@ -21,7 +22,7 @@ Cadastro de Cursos
             </div>
             {% endif %}
             {% endwith %}
-            
+
             <form action="{{ url_for('cad_curso') }}" method="post" class="forms-sample">
                 <div class="form-group">
                     <label for="nome">Nome do Curso:</label>
@@ -31,19 +32,23 @@ Cadastro de Cursos
                     <label for="descricao">Descrição:</label>
                     <input class="form-control" type="text" id="descricao" name="descricao" required>
                 </div>
-                        
-                    </select>
-                </div>
-                <button class="btn btn-primary me-2" type="submit">Cadastrar Curso</button>
-            </form>
+
+                </select>
         </div>
+        <button class="btn btn-primary me-2" type="submit">Cadastrar Curso</button>
+        </form>
+    </div>
     </div>
 </main>
 
-<div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+<div class="card"
+    style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
+        <button class="btn btn-primary me-2" onclick="toggleListaCursos()">Listar Cursos</button>
 
-        {% if cursos %}
+        <div id="lista-curso" style="display: none;">
+
+            {% if cursos %}
             <h4 class="card-title">Cursos</h4>
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
@@ -54,27 +59,31 @@ Cadastro de Cursos
                     </tr>
                 </thead>
                 <tbody>
-        
-        
+
+
                     {% for curso in cursos %}
                     <tr>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ curso.cur_nome }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ curso.cur_descricao }}</td>
 
                         <td style="padding: 8px; border: 1px solid #ddd;">
-                        <!-- Botão para editar -->
-                        <form action="/edit_curso/{{ curso.cur_id }}" method="get" style="display: inline;">
-                            <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
-                                Editar
-                            </button>
-                        </form>
+                            <!-- Botão para editar -->
+                            <form action="/edit_curso/{{ curso.cur_id }}" method="get" style="display: inline;">
+                                <button type="submit"
+                                    style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
+                                    Editar
+                                </button>
+                            </form>
 
-                        <!-- Botão para remover -->
-                        <form action="{{ url_for('delete_curso', cur_id=curso.cur_id) }}" method="post" style="display: inline;">
-                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover este curso?');">
-                                Remover
-                            </button>
-                        </form>
+                            <!-- Botão para remover -->
+                            <form action="{{ url_for('delete_curso', cur_id=curso.cur_id) }}" method="post"
+                                style="display: inline;">
+                                <button type="submit"
+                                    style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;"
+                                    onclick="return confirm('Tem certeza que deseja remover este curso?');">
+                                    Remover
+                                </button>
+                            </form>
 
                         </td>
                     </tr>
@@ -82,18 +91,20 @@ Cadastro de Cursos
                 </tbody>
             </table>
             {% else %}
-            <p class="card-description" style="vertical-align: inherit; margin: 80px auto 0; padding: 20px;">Nenhum curso cadastrado ainda.</p>
+            <p class="card-description" style="vertical-align: inherit; margin: 80px auto 0; padding: 20px;">Nenhum
+                curso cadastrado ainda.</p>
             {% endif %}
 
 
         </div>
     </div>
 </div>
+</div>
 
-<!-- <script>
-    function toggleListaAlunos() {
-        const listaAlunos = document.getElementById("lista-alunos");
-        listaAlunos.style.display = listaAlunos.style.display === "none" || listaAlunos.style.display === "" ? "block" : "none";
+<script>
+    function toggleListaCursos() {
+        const listaCurso = document.getElementById("lista-curso");
+        listaCurso.style.display = listaCurso.style.display === "none" || listaCurso.style.display === "" ? "block" : "none";
     }
-</script> -->
+</script>
 {% endblock %}

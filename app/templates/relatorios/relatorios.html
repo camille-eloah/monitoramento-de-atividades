@@ -1,11 +1,140 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
+{% extends 'layout.html' %}
+
+{% block title %}
+Cadastro de Aulas
+{% endblock %}
+
+{% block content %}
+<main>
+    <h2>Filtrar Informações</h2>
+    <div class="filter-container">
+        <button onclick="listarBaixaFrequencia()">Listar Alunos com Baixa Frequência</button>
+        <button onclick="mostrarMediaNotas()">Mostrar Relatório de Média de Notas por Disciplina</button>
+        <button onclick="listarForaPrazo()">Listar Trabalhos Fora do Prazo</button>
+        <button onclick="listarTrabalhosEntregues()">Listar Trabalhos Entregues</button>
+    </div>
+
+    <h2>Resultados</h2>
+    <div id="resultado">
+        <p>Selecione uma das opções acima para visualizar os dados.</p>
+    </div>
+</main>
+
+<script>
+    function listarBaixaFrequencia() {
+        const resultado = document.getElementById("resultado");
+        resultado.innerHTML = `
+            <h3>Alunos com Baixa Frequência</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Matrícula</th>
+                        <th>Frequência (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>João Silva</td>
+                        <td>12345</td>
+                        <td>70%</td>
+                    </tr>
+                    <tr>
+                        <td>Maria Oliveira</td>
+                        <td>67890</td>
+                        <td>72%</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+    }
+
+    function mostrarMediaNotas() {
+        const resultado = document.getElementById("resultado");
+        resultado.innerHTML = `
+            <h3>Média de Notas por Disciplina</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Disciplina</th>
+                        <th>Média de Notas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Matemática</td>
+                        <td>8.5</td>
+                    </tr>
+                    <tr>
+                        <td>História</td>
+                        <td>7.8</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+    }
+
+    function listarForaPrazo() {
+        const resultado = document.getElementById("resultado");
+        resultado.innerHTML = `
+            <h3>Trabalhos Entregues Fora do Prazo</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Disciplina</th>
+                        <th>Data de Entrega</th>
+                        <th>Prazo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ana Costa</td>
+                        <td>Português</td>
+                        <td>2025-01-10</td>
+                        <td>2025-01-08</td>
+                    </tr>
+                    <tr>
+                        <td>Pedro Santos</td>
+                        <td>Geografia</td>
+                        <td>2025-01-15</td>
+                        <td>2025-01-12</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+    }
+
+    function listarTrabalhosEntregues() {
+        const resultado = document.getElementById("resultado");
+        resultado.innerHTML = `
+            <h3>Lista de Trabalhos Entregues</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Disciplina</th>
+                        <th>Título do Trabalho</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lucas Martins</td>
+                        <td>Ciências</td>
+                        <td>Sistema Solar</td>
+                    </tr>
+                    <tr>
+                        <td>Clara Silva</td>
+                        <td>Física</td>
+                        <td>Leis de Newton</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+    }
+</script>
+
 </body>
 </html>
+
+{% endblock %}

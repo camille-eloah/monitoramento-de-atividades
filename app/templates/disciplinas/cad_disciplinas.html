@@ -106,6 +106,12 @@ Cadastro de Aulas
                             </button>
                         </form>
 
+                        <!-- Botão para adicionar alunos -->
+                        <form action="{{ url_for('adicionar_alunos_disciplina', dis_id=disciplina.dis_id) }}" method="get" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
+                                Adicionar Alunos
+                            </button>
+                        </form>
                         </td>
                     </tr>
                     {% endfor %}

@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import pymysql
 from pymysql.err import IntegrityError 
 
-from app.models import Professor, AulaFrequencia
+from app.models import Professor
 
 from passlib.context import CryptContext
 
@@ -395,6 +395,47 @@ def delete_disciplina(dis_id):
 
     return redirect(url_for('cad_disciplinas'))
 
+# Adicionar alunos na disciplina
+@app.route('/adicionar_alunos_disciplina/<int:dis_id>', methods=['GET', 'POST'])
+def adicionar_alunos_disciplina(dis_id):
+    connection = get_db_connection()
+    alunos = []
+    disciplina = None
+
+    # Busca todos os alunos
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM tb_alunos")
+        alunos = cursor.fetchall()
+
+        # Busca a disciplina
+        cursor.execute("SELECT * FROM tb_disciplinas WHERE dis_id = %s", (dis_id,))
+        disciplina = cursor.fetchone()
+
+    if request.method == "POST":
+        # Recebe os alunos selecionados para associar
+        alunos_selecionados = request.form.getlist('alunos')  # Lista de IDs dos alunos selecionados
+
+        try:
+            with connection.cursor() as cursor:
+                for aluno_id in alunos_selecionados:
+                    # Insere na tabela de relacionamento tb_alunos_disciplinas
+                    cursor.execute("""
+                    INSERT INTO tb_alunos_disciplinas (ad_alu_id, ad_dis_id)
+                    VALUES (%s, %s)
+                    """, (aluno_id, dis_id))
+
+            connection.commit()
+            flash("Alunos adicionados à disciplina com sucesso!", "success")
+        except Exception as e:
+            connection.rollback()
+            flash(f"Erro ao adicionar alunos: {str(e)}", "error")
+
+        return redirect(url_for('adicionar_alunos_disciplina', dis_id=dis_id))
+
+    connection.close()
+    return render_template('disciplinas/adicionar_aluno_disciplina.html', alunos=alunos, disciplina=disciplina)
+
+
 # Cadastrar atividades
 @app.route('/cad_atividades', methods=['POST', 'GET'])
 def cad_atividades():
@@ -538,28 +579,56 @@ def cad_aulas():
         aulas = cursor.fetchall()
 
     if request.method == "POST":
-        aul_descricao = request.form['descricao']  # Mantendo como string
+        aul_descricao = request.form['descricao']  
         aul_data = request.form['data']
-        aul_prof_id = int(request.form['professor'])  # Garantir que professor seja tratado como inteiro
-        aul_dis_id = int(request.form['disciplina'])  # Garantir que disciplina seja tratada como inteiro
+        aul_prof_id = request.form['professor'] 
+        aul_dis_id = request.form['disciplina'] 
 
-        query = """
+        query_aula = """
         INSERT INTO tb_aulas (aul_descricao, aul_data, aul_prof_id, aul_dis_id)
         VALUES (%s, %s, %s, %s)
         """
         try:
-            executar_query(query, (aul_descricao, aul_data, aul_prof_id, aul_dis_id))
-            flash("Aula cadastrada com sucesso!", "success")
+            with connection.cursor() as cursor:
+                # Inserir a nova aula
+                cursor.execute(query_aula, (aul_descricao, aul_data, aul_prof_id, aul_dis_id))
+                aula_id = connection.insert_id()  # Obter o ID da aula recém-criada
+
+                # Obter os alunos da disciplina correspondente
+                cursor.execute("""
+                SELECT ad_alu_id 
+                FROM tb_alunos_disciplinas
+                WHERE ad_dis_id = %s
+                """, (aul_dis_id,))
+                alunos = cursor.fetchall()
+
+                # Inicializar frequência com "1" para cada aluno
+                query_frequencia = """
+                INSERT INTO tb_aula_frequencia (freq_aula_id, freq_alu_id, freq_frequencia)
+                VALUES (%s, %s, %s)
+                """
+                for aluno in alunos:
+                    cursor.execute(query_frequencia, (aula_id, aluno['alu_id'], 1))
+
+                # Confirmar as alterações
+                connection.commit()
+
+            flash("Aula cadastrada com sucesso e frequência inicializada!", "success")
         except IntegrityError as e:
+            connection.rollback()
             if "Duplicate entry" in str(e):
                 flash("Erro: Aula duplicada ou já cadastrada.", "error")
             else:
                 flash("Erro ao cadastrar a aula. Tente novamente mais tarde.", "error")
+        except Exception as e:
+            connection.rollback()
+            flash(f"Erro inesperado: {str(e)}", "error")
         
         return redirect(url_for('cad_aulas'))
 
     connection.close()
     return render_template('aulas/cad_aulas.html', aulas=aulas, professores=professores, disciplinas=disciplinas)
+
 
 #Editar aulas
 @app.route('/edit_aula/<int:aul_id>', methods=['POST', 'GET'])
@@ -685,33 +754,43 @@ def delete_curso(cur_id):
 
     return redirect('/cad_curso')
 
-# Frequência
-@app.route('/add_frequencia/<int:aul_id>', methods=['GET'])
+@app.route('/add_frequencia/<int:aul_id>', methods=['GET', 'POST'])
 def add_frequencia(aul_id):
-    # Obter a lista de alunos
     connection = get_db_connection()
+    if request.method == "POST":
+        frequencias = request.form.getlist('frequencias')  # Frequências enviadas do formulário
+        try:
+            with connection.cursor() as cursor:
+                # Atualiza a frequência de cada aluno
+                for alu_id, frequencia in request.form.getlist('frequencias'):
+                    cursor.execute("""
+                    UPDATE tb_aula_frequencia
+                    SET freq_frequencia = %s
+                    WHERE freq_aula_id = %s AND freq_alu_id = %s
+                    """, (int(frequencia), aul_id, int(alu_id)))
+
+            connection.commit()
+            flash("Frequência salva com sucesso!", "success")
+        except Exception as e:
+            connection.rollback()
+            flash(f"Erro ao salvar frequência: {str(e)}", "error")
+
+        return redirect(url_for('add_frequencia', aul_id=aul_id))
+
+    # Busca alunos e frequências da aula
     with connection.cursor() as cursor:
-        cursor.execute('SELECT alu_id, alu_nome FROM tb_alunos')
-        alunos = cursor.fetchall()
+        cursor.execute("""
+            SELECT a.alu_id, a.alu_nome, IFNULL(f.freq_frequencia, 1) AS freq_frequencia
+            FROM tb_alunos a
+            LEFT JOIN tb_aula_frequencia f ON a.alu_id = f.freq_alu_id AND f.freq_aula_id = %s
+            WHERE a.alu_id IN (SELECT ad_alu_id FROM tb_alunos_disciplinas WHERE ad_dis_id = (SELECT aul_dis_id FROM tb_aulas WHERE aul_id = %s))
+        """, (aul_id, aul_id))
 
+        alunos_frequencia = cursor.fetchall()
+        print("alunos_frequencia:", alunos_frequencia)
 
-
-    return render_template('aulas/add_frequencia.html', alunos=alunos, aul_id=aul_id)
-
-@app.route('/save_frequencia/<int:aul_id>', methods=['POST'])
-def save_frequencia(aul_id):
-    # Processar os dados do formulário
-    frequencias = []
-    for key, value in request.form.items():
-        if key.startswith('frequencia_'):
-            aluno_id = int(value)
-            presenca = int(value)
-            frequencias.append({'freq_alu_id': aluno_id, 'freq_frequencia': presenca})
-
-    # Salvar no banco de dados
-    AulaFrequencia.salvar_frequencia(aul_id, frequencias)
-    flash('Frequência salva com sucesso!', 'success')
-    return redirect(url_for('cad_aulas'))
+    connection.close()
+    return render_template('aulas/add_frequencia.html', alunos=alunos_frequencia, aul_id=aul_id)
 
 
 @app.route('/relatorios')

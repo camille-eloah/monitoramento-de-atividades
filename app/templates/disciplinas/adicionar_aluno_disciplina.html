@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Adicionar Alunos à Disciplina
+{% endblock %}
+
+{% block content %}
+<main style="margin: 50px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Adicionar Alunos à Disciplina: {{ disciplina.dis_nome }}</h4>
+            
+            <!-- Exibição de mensagem de erro -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        <div>
+                            {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+
+            <form action="{{ url_for('adicionar_alunos_disciplina', dis_id=disciplina.dis_id) }}" method="post">
+                <div class="form-group">
+                    <label for="alunos">Selecione os Alunos:</label>
+                    <select name="alunos" id="alunos" multiple class="form-control" style="height: 200px;">
+                        {% for aluno in alunos %}
+                        <option value="{{ aluno.alu_id }}">{{ aluno.alu_nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Adicionar Alunos</button>
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -26,19 +26,19 @@ Editar Alunos
             
             <form action="/edit_aluno/{{ aluno.alu_matricula }}" method="POST" class="forms-sample">
                 <div class="form-group">
-                    <label for="nome">Editar Nome:</label>
+                    <label for="nome">Nome:</label>
                     <input class="form-control" type="text" id="nome" name="nome" value="{{ aluno.alu_nome }}" required>
                 </div>
                 <div class="form-group">
-                    <label for="matricula">Editar Matrícula</label>
+                    <label for="matricula">Matrícula</label>
                     <input class="form-control" type="number" name="matricula" value="{{ aluno.alu_matricula }}">
                 </div>
                 <div class="form-group">
-                    <label for="email">Editar E-mail</label>
+                    <label for="email">E-mail</label>
                     <input class="form-control" type="text" name="email" value="{{ aluno.alu_email }}">
                 </div>
                 <div class="form-group">
-                    <label for="curso">Editar Curso:</label>
+                    <label for="curso">Curso:</label>
                     <!--É AQUI-->
                     <select class="js-example-basic-single w-100" name="curso" id="curso_id" required>
                         {% for curso in cursos %}

@@ -10,7 +10,20 @@ Adicionar Frequência
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Adicionar Frequência para a Aula</h4>
-            <form action="{{ url_for('save_frequencia', aul_id=aul_id) }}" method="post">
+                        <!-- Exibição de mensagem de erro -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        <div>
+                            {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+            
+            <form action="{{ url_for('add_frequencia', aul_id=aul_id) }}" method="post">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="background-color: #f4f4f4; text-align: left;">
@@ -23,9 +36,8 @@ Adicionar Frequência
                         <tr>
                             <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_nome }}</td>
                             <td style="padding: 8px; border: 1px solid #ddd;">
-                                <input type="number" name="frequencia_{{ aluno.alu_id }}" value="1"
-                                    required>
-                            </td>
+                                <input type="checkbox" name="frequencias[{{ aluno.alu_id }}]" 
+                                value="1" {% if aluno.freq_frequencia == 1 %}checked{% endif %}> </td>
                         </tr>
                         {% endfor %}
                     </tbody>
