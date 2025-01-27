@@ -70,14 +70,11 @@ create table if not exists tb_atividades (
     foreign key (ati_dis_id) references tb_disciplinas(dis_id)
 );
 
-
-create table if not exists tb_frequencia (
-    fre_id integer auto_increment primary key,
-    dis_id integer not null,
-    alu_id integer not null,
-    fre_tipo varchar(50) not null,
-    fre_quantidade integer not null,
-    foreign key (dis_id) references tb_disciplinas(dis_id),
-    foreign key (alu_id) references tb_alunos(alu_id) 
+CREATE TABLE tb_aula_frequencia (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aula_id INT NOT NULL,
+    aluno_id INT NOT NULL,
+    frequencia INT NOT NULL,
+    FOREIGN KEY (aula_id) REFERENCES tb_aulas(aul_id) ON DELETE CASCADE,
+    FOREIGN KEY (aluno_id) REFERENCES tb_alunos(aluno_id) ON DELETE CASCADE
 );
-

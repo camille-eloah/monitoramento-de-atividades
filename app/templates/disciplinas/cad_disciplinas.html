@@ -6,71 +6,7 @@
     <title>Cadastrar Disciplinas</title>
     <style>
         /* Variáveis de cor */
-        :root {
-            --primary-color: #044253;
-            --primary-color-dark: #056372;
-            --background-color: #f4f4f4;
-            --text-color: #333;
-            --button-color: #044253;
-            --button-hover-color: #056372;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: var(--background-color);
-            color: var(--text-color);
-        }
-
-        h1 {
-            color: var(--primary-color);
-        }
-
-        form {
-            margin-top: 20px;
-        }
-
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        input, select {
-            display: block;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            padding: 10px;
-            width: 100%;
-            max-width: 400px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
-
-        select {
-            height: 40px;
-            padding: 5px;
-        }
-
-        button {
-            background-color: var(--button-color);
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: var(--button-hover-color);
-        }
-
-        /* Estilo para os selects multi */
-        select[multiple] {
-            height: 100px; /* Deixa o select maior para permitir múltiplas seleções */
-            padding: 10px;
-        }
+       
     </style>
 </head>
 <body>
@@ -151,3 +87,171 @@
 
 </body>
 </html>
+
+
+
+{% extends 'layout.html' %}
+
+{% block title %}
+Cadastro de Aulas
+{% endblock %}
+
+{% block content %}
+<!--Ver se é aqui mesmo-->
+{% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+<main style="margin: 50px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Cadastre uma Nova Aula</h4>
+            <!-- Exibição de mensagem de erro -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            
+            <form action="{{ url_for('cad_disciplinas') }}" method="post" class="forms-sample">
+                <div class="form-group">
+                    <label for="nome">Nome:</label>
+                    <input class="form-control" type="text" id="nome" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="prof_responsavel">Professor:</label>
+                    <select class="js-example-basic-single w-100" name="prof_responsavel" id="prof_responsavel" required>
+                        {% for professor in professores %}
+                            <option style="vertical-align: inherit;" value="{{ professor.prof_id }}">{{ professor.prof_nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="carga_hr">Carga Horária:</label>
+                    <input class="form-control" type="number" id="carga_hr" name="carga_hr" required>
+                </div>
+                <div class="form-group">
+                    <label for="curso_id">Curso:</label>
+                    <select class="js-example-basic-single w-100" name="curso_id" id="curso_id" multiple required>
+                        {% for curso in cursos %}
+                            <option style="vertical-align: inherit;" value="{{ curso.cur_id }}">{{ curso.cur_nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button class="btn btn-primary me-2" type="submit">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card-body">
+        <button class="btn btn-primary me-2" onclick="toggleListaDisciplinas()">Listar Disciplinas Cadastradas</button>
+
+        <div id="lista-aulas" style="display: none;">
+            
+            {% if disciplinas %}
+            <h4 class="card-title">Disciplinas Cadastradas</h4>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f4f4f4; text-align: left;">
+                        <th style="padding: 8px; border: 1px solid #ddd;">Descrição</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Data</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for diisciplina in disciplinas %}
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aula.aul_descricao }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">{{ aula.aul_data }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">
+                        <!-- Botão para editar -->
+                        <form action="/edit_aula/{{ aula.aul_id }}" method="get" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
+                                Editar
+                            </button>
+                        </form>
+
+                        <!-- Botão para remover -->
+                        <form action="{{ url_for('delete_aula', aul_id=aula.aul_id) }}" method="post" style="display: inline;">
+                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover esta aula?');">
+                                Remover
+                            </button>
+                        </form>
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="card-description" style="vertical-align: inherit; margin: 80px auto 0; padding: 20px;">Nenhuma aula cadastrada ainda.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    
+    <h1>Disciplinas Cadastradas</h1>
+    {% if disciplinas %}
+    <ul>
+        {% for disciplina in disciplinas %}
+            <li>
+                {{ disciplina.dis_nome }} - {{ disciplina.prof_nome if disciplina.prof_nome else 'Professor não informado' }} 
+                ({{ disciplina.dis_carga_hr }} horas)
+                <br>
+                <strong>Cursos Associados:</strong>
+                <ul>
+                    {% if disciplina.cursos_associados %}
+                        {% for curso in disciplina.cursos_associados %}
+                            <li>{{ curso }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li>Nenhum curso associado</li>
+                    {% endif %}
+                </ul>
+                <div class="actions">
+                    <!-- Botão para editar -->
+                    <form action="/edit_disciplinas/{{ disciplina.dis_id }}" method="get" style="display: inline;">
+                        <button type="submit" class="btn-edit">Editar</button>
+                    </form>
+    
+                    <!-- Botão para remover -->
+                    <form action="{{ url_for('delete_disciplina', dis_id=disciplina.dis_id) }}" method="post" style="display: inline;">
+                        <button type="submit" class="btn-delete" onclick="return confirm('Tem certeza que deseja remover esta disciplina?');">Remover</button>
+                    </form>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Nenhuma disciplina cadastrada ainda.</p>
+    {% endif %}
+    
+
+
+
+</div>
+
+<script>
+    function toggleListaAulas() {
+        const listaAulas = document.getElementById("lista-aulas");
+        listaAulas.style.display = listaAulas.style.display === "none" || listaAulas.style.display === "" ? "block" : "none";
+    }
+</script>
+{% endblock %}
+

@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from pymysql.err import IntegrityError
 
-from app.models import Professor
+from app.models import Professor, AulaFrequencia
 
 from passlib.context import CryptContext
 
@@ -620,6 +620,33 @@ def delete_curso(cur_id):
         connection.close()
 
     return redirect('/cad_curso')
+
+# Frequência
+@app.route('/add_frequencia/<int:aul_id>', methods=['GET'])
+def add_frequencia(aul_id):
+    # Obter a lista de alunos
+    connection = get_db_connection()
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT aluno_id, aluno_nome FROM tb_alunos')
+        alunos = cursor.fetchall()
+
+    return render_template('add_frequencia.html', alunos=alunos, aul_id=aul_id)
+
+@app.route('/save_frequencia/<int:aul_id>', methods=['POST'])
+def save_frequencia(aul_id):
+    # Processar os dados do formulário
+    frequencias = []
+    for key, value in request.form.items():
+        if key.startswith('frequencia_'):
+            aluno_id = int(key.split('_')[1])
+            presenca = int(value)
+            frequencias.append({'aluno_id': aluno_id, 'presenca': presenca})
+
+    # Salvar no banco de dados
+    AulaFrequencia.salvar_frequencia(aul_id, frequencias)
+    flash('Frequência salva com sucesso!', 'success')
+    return redirect(url_for('cad_aulas'))
+
 
 @app.route('/relatorios')
 def relatorios():
