@@ -897,20 +897,23 @@ def add_frequencia(aul_id):
 def relatorios():
     connection = get_db_connection()
 
-    # Busca os alunos para exibir na página
+    # Busca os dados necessários para os relatórios
     with connection.cursor() as cursor:
+        # Consulta os alunos
         cursor.execute("SELECT * FROM tb_alunos")
         alunos = cursor.fetchall()
 
+        # Consulta a frequência nas aulas
         cursor.execute('SELECT * FROM tb_aula_frequencia')
         aula_frequencia = cursor.fetchall()
 
+        # Consulta as atividades
         cursor.execute('SELECT * FROM tb_atividades')
         atividades = cursor.fetchall()
 
+        # Consulta o relacionamento aluno-atividade
         cursor.execute('SELECT * FROM tb_aluno_atividade')
         alu_atividade = cursor.fetchall()
-        print(alu_atividade)
 
         # Consultar o relatório de faltas por aluno
         cursor.execute("""
@@ -930,7 +933,26 @@ def relatorios():
                 a.alu_nome;
         """)
         alunos_faltas = cursor.fetchall()
-        print("aluno_faltas:", alunos_faltas)
+
+        cursor.execute("""
+            SELECT 
+                a.alu_nome AS Aluno,
+                d.dis_nome AS Disciplina,
+                ROUND(AVG(aa.alunoativ_nota), 2) AS Media
+            FROM 
+                tb_aluno_atividade aa
+            JOIN 
+                tb_atividades atv ON aa.alunoativ_ati_id = atv.ati_id
+            JOIN 
+                tb_disciplinas d ON atv.ati_dis_id = d.dis_id
+            JOIN 
+                tb_alunos a ON aa.alunoativ_alu_id = a.alu_id
+            GROUP BY 
+                a.alu_id, d.dis_id
+            ORDER BY 
+                a.alu_nome, d.dis_nome;
+        """)
+        medias = cursor.fetchall()
 
         # Calcular percentual de frequência por aluno e filtrar os abaixo de 75%
         alunos_baixa_frequencia = []
@@ -943,16 +965,59 @@ def relatorios():
                     aluno['Percentual'] = frequencia
                     alunos_baixa_frequencia.append(aluno)
 
-    # Renderiza a página de relatórios com os dados
+        # Consultar relatório de trabalhos entregues, divididos por aluno e disciplina
+        cursor.execute("""
+            SELECT 
+                d.dis_nome AS disciplina,
+                a.alu_nome AS aluno,
+                t.ati_descricao AS atividade,
+                aa.alunoativ_situacao AS situacao,
+                aa.alunoativ_nota AS nota,
+                aa.alunoativ_data_entrega AS data_entrega
+            FROM 
+                tb_aluno_atividade aa
+            JOIN 
+                tb_atividades t ON aa.alunoativ_ati_id = t.ati_id
+            JOIN 
+                tb_disciplinas d ON t.ati_dis_id = d.dis_id
+            JOIN 
+                tb_alunos a ON aa.alunoativ_alu_id = a.alu_id
+            WHERE 
+                aa.alunoativ_situacao = 'Entregue'
+            ORDER BY 
+                d.dis_nome, a.alu_nome, t.ati_descricao
+        """)
+        trabalhos_entregues = cursor.fetchall()
+
+        # Organizar os dados em formato estruturado por disciplina e aluno
+        trabalhos_por_aluno_e_disciplina = {}
+        for trabalho in trabalhos_entregues:
+            disciplina = trabalho['disciplina']
+            aluno = trabalho['aluno']
+            if disciplina not in trabalhos_por_aluno_e_disciplina:
+                trabalhos_por_aluno_e_disciplina[disciplina] = {}
+            if aluno not in trabalhos_por_aluno_e_disciplina[disciplina]:
+                trabalhos_por_aluno_e_disciplina[disciplina][aluno] = []
+            trabalhos_por_aluno_e_disciplina[disciplina][aluno].append({
+                'atividade': trabalho['atividade'],
+                'situacao': trabalho['situacao'],
+                'nota': trabalho['nota'],
+                'data_entrega': trabalho['data_entrega'].strftime('%d/%m/%Y %H:%M') if trabalho['data_entrega'] else 'Não informado'
+            })
+
+    # Renderiza a página de relatórios com todos os dados
     return render_template(
         'relatorios/relatorios.html',
         alunos=alunos,
         aula_frequencia=aula_frequencia,
         atividades=atividades,
         alu_atividade=alu_atividade,
-        alunos_faltas=alunos_faltas,  
-        alunos_baixa_frequencia=alunos_baixa_frequencia
+        alunos_faltas=alunos_faltas,
+        alunos_baixa_frequencia=alunos_baixa_frequencia,
+        trabalhos_por_aluno_e_disciplina=trabalhos_por_aluno_e_disciplina,
+        medias=medias
     )
+
 
 @app.route('/registro_entrega/<int:ati_id>', methods=['GET', 'POST'])
 def registro_entrega(ati_id):
@@ -991,13 +1056,23 @@ def registro_entrega(ati_id):
         return redirect(f'/registro_entrega/{ati_id}')
 
     with connection.cursor() as cursor:
+        # Buscar informações da atividade
         cursor.execute("""
-            SELECT ati_tipo, ati_descricao, ati_data_entrega
+            SELECT ati_tipo, ati_descricao, ati_data_entrega, ati_dis_id
             FROM tb_atividades
             WHERE ati_id = %s
         """, (ati_id,))
         atividade = cursor.fetchone()
 
+        # Buscar o nome da disciplina associada à atividade
+        cursor.execute("""
+            SELECT dis_nome
+            FROM tb_disciplinas
+            WHERE dis_id = %s
+        """, (atividade['ati_dis_id'],))
+        disciplina = cursor.fetchone()
+
+        # Buscar os alunos e suas informações de entrega
         cursor.execute("""
             SELECT a.alu_id, a.alu_nome, 
                    COALESCE(aa.alunoativ_situacao, 'Em andamento') AS situacao,
@@ -1007,8 +1082,8 @@ def registro_entrega(ati_id):
             JOIN tb_alunos_disciplinas ad ON a.alu_id = ad.ad_alu_id
             LEFT JOIN tb_aluno_atividade aa 
                    ON a.alu_id = aa.alunoativ_alu_id AND aa.alunoativ_ati_id = %s
-            WHERE ad.ad_dis_id = (SELECT ati_dis_id FROM tb_atividades WHERE ati_id = %s)
-        """, (ati_id, ati_id))
+            WHERE ad.ad_dis_id = %s
+        """, (ati_id, atividade['ati_dis_id']))
         alunos = cursor.fetchall()
 
     # Formatar a data de entrega no formato necessário
@@ -1016,4 +1091,10 @@ def registro_entrega(ati_id):
         if aluno['data_entrega']:
             aluno['data_entrega'] = aluno['data_entrega'].strftime('%Y-%m-%dT%H:%M')
 
-    return render_template('atividades/registro_entrega.html', atividade=atividade, alunos=alunos, ati_id=ati_id)
+    return render_template(
+        'atividades/registro_entrega.html',
+        atividade=atividade,
+        disciplina=disciplina,
+        alunos=alunos,
+        ati_id=ati_id
+    )

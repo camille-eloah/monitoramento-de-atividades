@@ -6,7 +6,7 @@
 main
 <div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 700px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
-        <h4 class="card-title">Registro de Entrega de Trabalho</h4>
+        <h4 class="card-title">Registro de Entrega de Atividade</h4>
         
         <!-- Exibição de mensagem de erro -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -23,6 +23,7 @@ main
         {% endwith %}
 
         <h5>{{ atividade.ati_tipo }} - {{ atividade.ati_descricao }}</h5>
+        <p><strong>Disciplina:</strong> {{ disciplina.dis_nome }}</p>
         <p><strong>Prazo:</strong> {{ atividade.ati_data_entrega }}</p>
 
         <form action="/registro_entrega/{{ ati_id }}" method="POST">

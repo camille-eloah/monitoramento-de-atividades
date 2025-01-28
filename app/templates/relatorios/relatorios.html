@@ -65,7 +65,7 @@ Relatórios
 
 <div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
-        <button class="btn btn-primary me-2" onclick="relatorioMediaAlunos()">Mostrar Relatório de Média de Notas por Disciplina</button>
+        <button class="btn btn-primary me-2" onclick="relatorioMediaAlunos()">Mostrar Média por Disciplina</button>
         
         <div id="lista-relatorio-media-alunos" style="display: none;">
             {% if alunos %}
@@ -84,7 +84,7 @@ Relatórios
                             <tr>
                                 <td>{{ aluno.alu_nome }}</td>
                                 <td>{{ aluno.alu_curso }}</td>
-                                <td>{{ aluno.alu_id }}</td>
+                                <td>{{ aluno. }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -136,30 +136,26 @@ Relatórios
         <button class="btn btn-primary me-2" onclick="listarTrabalhosEntregues()">Listar Trabalhos Entregues</button>
 
         <div id="listar-trabalhos-entregues" style="display: none;">
-            {% if alunos %}
-                <h4 class="card-title">Trabalhos Entregues</h4>
-                {% if alu_atividade %}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Disciplina</th>
-                                <th>Situação</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for aluno in alunos %}
-                            <tr>
-                                <td>{{ aluno.alu_nome }}</td>
-                                <td>{{ aluno.alu_curso }}</td>
-                                <td>{{ alu_atividade.alunoativ_situacao }}</td>
-                            </tr>
+            <h4 class="card-title">Relatório de Trabalhos Entregues</h4>
+            {% if trabalhos_por_aluno_e_disciplina %}
+                {% for disciplina, alunos in trabalhos_por_aluno_e_disciplina.items() %}
+                    <h5>{{ disciplina }}</h5>
+                    {% for aluno, trabalhos in alunos.items() %}
+                        <h6 style="margin-left: 20px;">{{ aluno }}</h6>
+                        <ul style="margin-left: 40px;">
+                            {% for trabalho in trabalhos %}
+                                <li>
+                                    <strong>Atividade:</strong> {{ trabalho.atividade }} <br>
+                                    <strong>Situação:</strong> {{ trabalho.situacao }} <br>
+                                    <strong>Nota:</strong> {{ trabalho.nota }} <br>
+                                    <strong>Data de Entrega:</strong> {{ trabalho.data_entrega }}
+                                </li>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p class="no-data">Nenhum trabalho foi encontrado</p>
-                {% endif %}
+                        </ul>
+                    {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">Nenhum trabalho entregue foi encontrado.</p>
             {% endif %}
         </div>
     </div>
