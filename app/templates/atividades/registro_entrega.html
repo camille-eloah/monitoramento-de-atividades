@@ -3,14 +3,27 @@
 {% block title %}Registro de Entrega de Atividades{% endblock %}
 
 {% block content %}
-<div class="card"
-    style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+main
+<div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 700px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
         <h4 class="card-title">Registro de Entrega de Trabalho</h4>
-
+        
+        <!-- Exibição de mensagem de erro -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div>
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="margin-bottom: 20px;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
 
         <h5>{{ atividade.ati_tipo }} - {{ atividade.ati_descricao }}</h5>
-        <p><strong>Data de Entrega:</strong> {{ atividade.ati_data_entrega }}</p>
+        <p><strong>Prazo:</strong> {{ atividade.ati_data_entrega }}</p>
 
         <form action="/registro_entrega/{{ ati_id }}" method="POST">
             <table class="table table-bordered">
@@ -19,6 +32,7 @@
                         <th>Aluno</th>
                         <th>Situação</th>
                         <th>Nota</th>
+                        <th>Data de Entrega</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,15 +41,17 @@
                         <td>{{ aluno.alu_nome }}</td>
                         <td>
                             <select class="form-control" name="situacao_{{ aluno.alu_id }}">
-                                <option value="Atrasado">Atrasado</option>
-                                <option value="Em andamento">Em andamento</option>
-                                <option value="Entregue">Entregue</option>
+                                <option value="Atrasado" {% if aluno.situacao == 'Atrasado' %}selected{% endif %}>Atrasado</option>
+                                <option value="Em andamento" {% if aluno.situacao == 'Em andamento' %}selected{% endif %}>Em andamento</option>
+                                <option value="Entregue" {% if aluno.situacao == 'Entregue' %}selected{% endif %}>Entregue</option>
                             </select>
                         </td>
                         <td>
-                            <input class="form-control" type="number" step="0.1" name="nota_{{ aluno.alu_id }}"
-                                required>
+                            <input class="form-control" type="number" step="0.1" name="nota_{{ aluno.alu_id }}" value="{{ aluno.nota }}" required>
                             <input type="hidden" name="aluno_id" value="{{ aluno.alu_id }}">
+                        </td>
+                        <td>
+                            <input class="form-control" type="datetime-local" name="data_entrega_{{ aluno.alu_id }}" value="{{ aluno.data_entrega|default('') }}" required>
                         </td>
                     </tr>
                     {% endfor %}

@@ -138,7 +138,7 @@ Relatórios
         <div id="listar-trabalhos-entregues" style="display: none;">
             {% if alunos %}
                 <h4 class="card-title">Trabalhos Entregues</h4>
-                {% if alu_atividades %}
+                {% if alu_atividade %}
                     <table>
                         <thead>
                             <tr>
@@ -152,7 +152,7 @@ Relatórios
                             <tr>
                                 <td>{{ aluno.alu_nome }}</td>
                                 <td>{{ aluno.alu_curso }}</td>
-                                <td>{{ alu_atividades.alunoativ_situacao }}</td>
+                                <td>{{ alu_atividade.alunoativ_situacao }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

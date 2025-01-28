@@ -97,7 +97,7 @@ Cadastro de Atividades
                             </form>
 
                             <!-- Botão para entregar atividade -->
-                            <form action="{{ url_for('registro_entrega' ati_id=atividade.ati_id) }}" method="get" style="display: inline;">
+                            <form action="{{ url_for('registro_entrega', ati_id=atividade.ati_id) }}" method="get" style="display: inline;">
                                 <button type="submit" style="background: none; border: none; color: green; cursor: pointer; text-decoration: underline;">
                                     Entregar Atividade
                                 </button>
