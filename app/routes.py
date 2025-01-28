@@ -774,6 +774,7 @@ def cad_curso():
     return render_template('cursos/cad_curso.html', cursos=cursos)
 
 # Editar cursos
+# Editar cursos
 @app.route('/edit_curso/<int:cur_id>', methods=['POST', 'GET'])
 def edit_curso(cur_id):
     connection = get_db_connection()
@@ -787,17 +788,26 @@ def edit_curso(cur_id):
         novo_nome = request.form['nome']
         nova_descricao = request.form['descricao']
 
-        query = """
-        UPDATE tb_cursos 
-        SET cur_nome = %s, cur_descricao = %s
-        WHERE cur_id = %s
-        """
-        executar_query(query, (novo_nome, nova_descricao, cur_id))
+        try:
+            query = """
+            UPDATE tb_cursos 
+            SET cur_nome = %s, cur_descricao = %s
+            WHERE cur_id = %s
+            """
+            executar_query(query, (novo_nome, nova_descricao, cur_id))
 
-        return redirect('/cad_curso')
+            # Mensagem flash de sucesso
+            flash("Curso atualizado com sucesso!", "success")
+            return redirect('/cad_curso')
+        
+        except Exception as e:
+            # Mensagem flash de erro
+            flash(f"Erro ao atualizar o curso: {str(e)}", "error")
+            return render_template('cursos/edit_curso.html', curso=curso)
 
     connection.close()
     return render_template('cursos/edit_curso.html', curso=curso)
+
 
 #Deletar Cursos
 @app.route('/delete_curso/<int:cur_id>', methods=['POST'])

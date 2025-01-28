@@ -12,29 +12,30 @@ Relatórios
 
         <div id="lista-alunos-baixa-frequencia" style="display: none;">
             {% if alunos %}
-            <h4 class="card-title">Alunos Cadastrados</h4>
-            {% if aula_frequencia %}
-            <h2>1. Alunos com maior número de faltas</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Percentual de Frequência</th>
-                        <th>Disciplina</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for aluno in alunos %}
-                    <tr>
-                        <td>{{ aluno.alu_nome }}</td>
-                        <td>{{ aluno.alu_id }}%</td>
-                        <td>{{ aluno.alu_curso }}%</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p class="no-data">Nenhum aluno com baixa frequência encontrado.</p>
+                <h4 class="card-title">Alunos Cadastrados</h4>
+                {% if aula_frequencia %}
+                    <h2>1. Alunos com maior número de faltas</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Disciplina</th>
+                                <th>Percentual de Frequência</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for aluno in alunos %}
+                            <tr>
+                                <td>{{ aluno.alu_nome }}</td>
+                                <td>{{ aluno.alu_curso }}%</td>
+                                <td>{{ aluno.alu_id }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="no-data">Nenhum aluno com baixa frequência encontrado.</p>
+                {% endif %}
             {% endif %}
         </div>
     </div>
@@ -42,7 +43,36 @@ Relatórios
 
 <div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
-        <button class="btn btn-primary me-2" onclick="toggleListaAlunos()">Mostrar Relatório de Média de Notas por Disciplina</button>
+        <button class="btn btn-primary me-2" onclick="relatorioMediaAlunos()">Mostrar Relatório de Média de Notas por Disciplina</button>
+        
+        <div id="lista-relatorio-media-alunos" style="display: none;">
+            {% if alunos %}
+                <h4 class="card-title">Alunos Cadastrados</h4>
+                {% if aula_frequencia %}
+                    <h2>1. Alunos com maior número de faltas</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Disciplina</th>
+                                <th>Média</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for aluno in alunos %}
+                            <tr>
+                                <td>{{ aluno.alu_nome }}</td>
+                                <td>{{ aluno.alu_curso }}%</td>
+                                <td>{{ aluno.alu_id }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="no-data">Nenhum aluno foi</p>
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
 </div>
 
@@ -59,13 +89,20 @@ Relatórios
 </div>
 
 <script>
-    function toggleListaAlunos() {
-        const listaAlunos = document.getElementById("lista-alunos");
-        listaAlunos.style.display = listaAlunos.style.display === "none" || listaAlunos.style.display === "" ? "block" : "none";
+    function listarBaixaFrequencia() {
+        const listaAlunosBaixaFrequencia = document.getElementById("lista-alunos-baixa-frequencia");
+        listaAlunosBaixaFrequencia.style.display = listaAlunosBaixaFrequencia.style.display === "none" || listaAlunosBaixaFrequencia.style.display === "" ? "block" : "none";
+    }
+
+    function relatorioMediaAlunos() {
+        const relatorioMediaAlunos = document.getElementById("lista-relatorio-media-alunos");
+        relatorioMediaAlunos.style.display = relatorioMediaAlunos.style.display === "none" || relatorioMediaAlunos.style.display === "" ? "block" : "none";
+    }
+
+    function relatorioMediaAlunos() {
+        const relatorioMediaAlunos = document.getElementById("lista-relatorio-media-alunos");
+        relatorioMediaAlunos.style.display = relatorioMediaAlunos.style.display === "none" || relatorioMediaAlunos.style.display === "" ? "block" : "none";
     }
 </script>
-
-</body>
-</html>
 
 {% endblock %}

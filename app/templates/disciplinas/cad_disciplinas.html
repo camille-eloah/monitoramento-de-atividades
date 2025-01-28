@@ -94,14 +94,14 @@ Cadastro de Aulas
                         <td style="padding: 8px; border: 1px solid #ddd;">
                         <!-- Botão para editar -->
                         <form action="/edit_disciplinas/{{ disciplina.dis_id }}" method="get" style="display: inline;">
-                            <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
+                            <button type="submit" style="background: none; border: none; color: blue; cursor: pointer; text-decoration: underline;">
                                 Editar
                             </button>
                         </form>
 
                         <!-- Botão para remover -->
                         <form action="{{ url_for('delete_disciplina', dis_id=disciplina.dis_id) }}" method="post" style="display: inline;">
-                            <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover esta disciplina?');">
+                            <button type="submit" style="background: none; border: none; color: red; cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover esta disciplina?');">
                                 Remover
                             </button>
                         </form>
@@ -109,7 +109,7 @@ Cadastro de Aulas
                         <!-- Botão para adicionar alunos -->
                         <form action="{{ url_for('adicionar_alunos_disciplina', dis_id=disciplina.dis_id) }}" method="get" style="display: inline;">
                             <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
-                                Adicionar Alunos
+                                Alunos
                             </button>
                         </form>
                         </td>
