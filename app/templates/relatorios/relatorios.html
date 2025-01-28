@@ -8,10 +8,11 @@ Relatórios
 
 <div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
-        <button class="btn btn-primary me-2" onclick="listarFrequenciaAlunos()">Listar Alunos com Baixa Frequência</button>
+        <button class="btn btn-primary me-2" onclick="listarFrequenciaAlunos()">Listar Frequência dos Alunos</button>
 
         <div id="lista-frequencia-alunos" style="display: none;">
-                <h4 class="card-title">Alunos Baixa Frequência</h4>
+
+                <h4 class="card-title">Frequência dos Alunos</h4>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -40,31 +41,24 @@ Relatórios
         <button class="btn btn-primary me-2" onclick="listarBaixaFrequencia()">Listar Alunos com Baixa Frequência</button>
 
         <div id="lista-alunos-baixa-frequencia" style="display: none;">
-            {% if alunos %}
                 <h4 class="card-title">Alunos Baixa Frequência</h4>
-                {% if aula_frequencia %}
-                    <table>
+                    <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Nome</th>
-                                <th>Disciplina</th>
+                                <th>Aluno</th>
                                 <th>Percentual de Frequência</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for aluno in alunos %}
-                            <tr>
-                                <td>{{ aluno.alu_nome }}</td>
-                                <td>{{ aluno.alu_curso }}</td>
-                                <td>{{ aluno.alu_id }}</td>
-                            </tr>
+                            {% for aluno in alunos_baixa_frequencia %}
+                                <tr>
+                                    <td>{{ aluno['Aluno'] }}</td>
+                                    <td>{{ aluno['Percentual'] | round(2) }}%</td>
+                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>
-                {% else %}
-                    <p class="no-data">Nenhum aluno com baixa frequência encontrado.</p>
-                {% endif %}
-            {% endif %}
+
         </div>
     </div>
 </div>
@@ -89,8 +83,8 @@ Relatórios
                             {% for aluno in alunos %}
                             <tr>
                                 <td>{{ aluno.alu_nome }}</td>
-                                <td>{{ aluno.alu_curso }}%</td>
-                                <td>{{ aluno.alu_id }}%</td>
+                                <td>{{ aluno.alu_curso }}</td>
+                                <td>{{ aluno.alu_id }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -123,8 +117,8 @@ Relatórios
                             {% for aluno in alunos %}
                             <tr>
                                 <td>{{ aluno.alu_nome }}</td>
-                                <td>{{ aluno.alu_curso }}%</td>
-                                <td>{{ atividades.ati_data_entrega }}%</td>
+                                <td>{{ aluno.alu_curso }}</td>
+                                <td>{{ atividades.ati_data_entrega }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -144,27 +138,27 @@ Relatórios
         <div id="listar-trabalhos-entregues" style="display: none;">
             {% if alunos %}
                 <h4 class="card-title">Trabalhos Entregues</h4>
-                {% if atividades %}
+                {% if alu_atividades %}
                     <table>
                         <thead>
                             <tr>
                                 <th>Nome</th>
                                 <th>Disciplina</th>
-                                <th>Data de Entrega</th>
+                                <th>Situação</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for aluno in alunos %}
                             <tr>
                                 <td>{{ aluno.alu_nome }}</td>
-                                <td>{{ aluno.alu_curso }}%</td>
-                                <td>{{ atividades.ati_data_entrega }}%</td>
+                                <td>{{ aluno.alu_curso }}</td>
+                                <td>{{ alu_atividades.alunoativ_situacao }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 {% else %}
-                    <p class="no-data">Nenhum aluno foi encontrado</p>
+                    <p class="no-data">Nenhum trabalho foi encontrado</p>
                 {% endif %}
             {% endif %}
         </div>
@@ -173,7 +167,7 @@ Relatórios
 
 <script>
     function listarFrequenciaAlunos() {
-        const listarFrequenciaAlunos = document.getElementById("listar-frequencia-alunos");
+        const listarFrequenciaAlunos = document.getElementById("lista-frequencia-alunos");
         listarFrequenciaAlunos.style.display = listarFrequenciaAlunos.style.display === "none" || listarFrequenciaAlunos.style.display === "" ? "block" : "none";
     }
 

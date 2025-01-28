@@ -84,14 +84,14 @@ Cadastro de Atividades
                         <td style="padding: 8px; border: 1px solid #ddd;">
                             <!-- Botão para editar -->
                             <form action="/edit_atividade/{{ atividade.ati_id }}" method="get" style="display: inline;">
-                                <button type="submit" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">
+                                <button type="submit" style="background: none; border: none; color: blue; cursor: pointer; text-decoration: underline;">
                                     Editar
                                 </button>
                             </form>
         
                             <!-- Botão para remover -->
                             <form action="{{ url_for('delete_atividade', ati_id=atividade.ati_id) }}" method="post" style="display: inline;">
-                                <button type="submit" style="background: none; border: none; color: var(--error-color); cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover esta atividade?');">
+                                <button type="submit" style="background: none; border: none; color: red; cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover esta atividade?');">
                                     Remover
                                 </button>
                             </form>

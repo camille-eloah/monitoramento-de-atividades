@@ -904,40 +904,53 @@ def relatorios():
         cursor.execute("SELECT * FROM tb_alunos")
         alunos = cursor.fetchall()
 
-        cursor.execute('SELECT * FROM tb_aula_frequencia ')
+        cursor.execute('SELECT * FROM tb_aula_frequencia')
         aula_frequencia = cursor.fetchall()
 
-        cursor.execute('SELECT * FROM tb_atividades ')
+        cursor.execute('SELECT * FROM tb_atividades')
         atividades = cursor.fetchall()
 
-    return render_template('relatorios/relatorios.html', alunos=alunos, aula_frequencia=aula_frequencia, atividades=atividades)
+        cursor.execute('SELECT * FROM tb_aluno_atividade')
+        alu_atividade = cursor.fetchall()
 
-@app.route('/relatorio_faltas')
-def relatorio_faltas():
-    connection = get_db_connection()
-    alunos_faltas = []
+        # Consultar o relatório de faltas por aluno
+        cursor.execute("""
+            SELECT
+                a.alu_nome AS Aluno,
+                COUNT(af.freq_aula_id) AS Aulas,
+                SUM(CASE WHEN af.freq_frequencia = 0 THEN 1 ELSE 0 END) AS Faltas
+            FROM
+                tb_aula_frequencia af
+            JOIN
+                tb_alunos a ON af.freq_alu_id = a.alu_id
+            JOIN
+                tb_aulas au ON af.freq_aula_id = au.aul_id
+            GROUP BY
+                a.alu_nome
+            ORDER BY
+                a.alu_nome;
+        """)
+        alunos_faltas = cursor.fetchall()
+        print("aluno_faltas:", alunos_faltas)
 
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT
-                    a.alu_nome AS Aluno,
-                    COUNT(af.freq_aula_id) AS Aulas,
-                    SUM(CASE WHEN af.freq_frequencia = 0 THEN 1 ELSE 0 END) AS Faltas
-                FROM
-                    tb_aula_frequencia af
-                JOIN
-                    tb_alunos a ON af.freq_alu_id = a.alu_id
-                JOIN
-                    tb_aulas au ON af.freq_aula_id = au.aul_id
-                GROUP BY
-                    a.alu_nome
-                ORDER BY
-                    a.alu_nome;
-            """)
-            alunos_faltas = cursor.fetchall()
+        # Calcular percentual de frequência por aluno e filtrar os abaixo de 75%
+        alunos_baixa_frequencia = []
+        for aluno in alunos_faltas:
+            aulas = aluno['Aulas']
+            faltas = aluno['Faltas']
+            if aulas > 0:
+                frequencia = ((aulas - faltas) / aulas) * 100  # Calcular percentual de frequência
+                if frequencia < 75:  # Filtrar alunos com frequência abaixo de 75%
+                    aluno['Percentual'] = frequencia
+                    alunos_baixa_frequencia.append(aluno)
 
-    finally:
-        connection.close()
-
-    return render_template('relatorios/relatorio_faltas.html', alunos_faltas=alunos_faltas)
+    # Renderiza a página de relatórios com os dados
+    return render_template(
+        'relatorios/relatorios.html',
+        alunos=alunos,
+        aula_frequencia=aula_frequencia,
+        atividades=atividades,
+        alu_atividade=alu_atividade,
+        alunos_faltas=alunos_faltas,  
+        alunos_baixa_frequencia=alunos_baixa_frequencia
+    )
