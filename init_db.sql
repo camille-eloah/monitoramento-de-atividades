@@ -32,16 +32,16 @@ create table if not exists tb_aulas (
     aul_data datetime not null,
     aul_prof_id integer not null,
     aul_dis_id integer not null,
-    foreign key (aul_prof_id) references tb_professores(prof_id),
-    foreign key (aul_dis_id) references tb_disciplinas(dis_id)
+    foreign key (aul_prof_id) references tb_professores(prof_id) ON DELETE CASCADE,
+    foreign key (aul_dis_id) references tb_disciplinas(dis_id) ON DELETE CASCADE
 );
 
 create table if not exists tb_alunos_disciplinas (
     ad_id integer auto_increment primary key,
     ad_alu_id integer not null,
     ad_dis_id integer not null,
-    foreign key (ad_alu_id) references tb_alunos(alu_id),
-    foreign key (ad_dis_id) references tb_disciplinas(dis_id) 
+    foreign key (ad_alu_id) references tb_alunos(alu_id) ON DELETE CASCADE,
+    foreign key (ad_dis_id) references tb_disciplinas(dis_id) ON DELETE CASCADE 
 );
 
 create table if not exists tb_cursos (
@@ -54,8 +54,8 @@ create table if not exists tb_cursos_disciplinas (
     cd_id integer auto_increment primary key,
     cd_cur_id integer not null,
     cd_dis_id integer not null,0
-    foreign key (cd_cur_id) references tb_cursos(cur_id),
-    foreign key (cd_dis_id) references tb_disciplinas(dis_id)
+    foreign key (cd_cur_id) references tb_cursos(cur_id) ON DELETE CASCADE,
+    foreign key (cd_dis_id) references tb_disciplinas(dis_id) ON DELETE CASCADE
 );
 
 
@@ -66,7 +66,7 @@ create table if not exists tb_atividades (
     ati_descricao VARCHAR(200) not null,
     ati_data_entrega datetime not null,
     ati_peso int not null,
-    foreign key (ati_dis_id) references tb_disciplinas(dis_id)
+    foreign key (ati_dis_id) references tb_disciplinas(dis_id) ON DELETE CASCADE
 );
 
 CREATE TABLE tb_aula_frequencia (

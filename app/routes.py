@@ -314,21 +314,11 @@ def edit_disciplinas(dis_id):
         """, (dis_id,))
         disciplina = cursor.fetchone()
 
-        cursor.execute("""
-        SELECT * FROM tb_disciplinas WHERE dis_id = %s
-        """, (dis_id,))
-        disciplinas = cursor.fetchall()
-
+        # Obter todos os professores para exibição
         cursor.execute("""
         SELECT * FROM tb_professores
         """)
         professores = cursor.fetchall()
-
-        # Obter IDs dos cursos associados à disciplina
-        cursor.execute("""
-        SELECT cd_cur_id FROM tb_cursos_disciplinas WHERE cd_dis_id = %s
-        """, (dis_id,))
-        cursos_associados_ids = [row['cd_cur_id'] for row in cursor.fetchall()]
 
         # Obter todos os cursos
         cursor.execute("""
@@ -336,20 +326,17 @@ def edit_disciplinas(dis_id):
         """)
         cursos = cursor.fetchall()
 
-        # Obter nomes dos cursos associados
-        cursos_associados = [
-            curso for curso in cursos if curso['cur_id'] in cursos_associados_ids
-        ]
+        # Obter IDs dos cursos associados à disciplina
+        cursor.execute("""
+        SELECT cd_cur_id FROM tb_cursos_disciplinas WHERE cd_dis_id = %s
+        """, (dis_id,))
+        cursos_associados_ids = [row['cd_cur_id'] for row in cursor.fetchall()]
 
     if request.method == 'POST':
         novo_nome = request.form['nome']
         nova_prof_responsavel = request.form.get('prof_responsavel')
         nova_carga_hr = request.form['carga_hr']
-        novos_cursos_ids = request.form.getlist('curso_id')  # Cursos selecionados no formulário
-        print("Novo_nome:", novo_nome)
-        print("Nova_prof_responsavel:", nova_prof_responsavel)
-        print("Nova_carga_hr", nova_carga_hr)
-        print("Novos_cursos_ids", novos_cursos_ids)
+        novos_cursos_ids = request.form.getlist('curso_id')  # IDs dos cursos selecionados
 
         try:
             with connection.cursor() as cursor:
@@ -386,11 +373,9 @@ def edit_disciplinas(dis_id):
 
     return render_template(
         'disciplinas/edit_disciplina.html',
-        disciplinas=disciplinas,
         disciplina=disciplina,
         cursos=cursos,
         cursos_associados_ids=cursos_associados_ids,
-        cursos_associados=cursos_associados,
         professores=professores
     )
 

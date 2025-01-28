@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-Cadastro de Aulas
+Editar Disciplina
 {% endblock %}
 
 {% block content %}
@@ -15,32 +15,43 @@ Cadastro de Aulas
                     <label for="nome">Nome:</label>
                     <input class="form-control" type="text" id="nome" name="nome" value="{{ disciplina.dis_nome }}" required>
                 </div>
-                <!--Corrigir esse select-->
+                
                 <div class="form-group">
                     <label for="professor">Professor:</label>
                     <select class="form-control" name="prof_responsavel" id="professor" required>
                         {% for professor in professores %}
-                            <option style="vertical-align: inherit;" value="{{ professor.prof_id }}" {% if disciplina.dis_prof_responsavel == professor.prof_id %}selected{% endif %}>{{ professor.prof_nome }}</option>
+                            <option value="{{ professor.prof_id }}" 
+                                {% if professor.prof_id == disciplina.dis_prof_responsavel %}selected{% endif %}>
+                                {{ professor.prof_nome }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
+                
+                
                 <div class="form-group">
                     <label for="carga_hr">Carga Horária:</label>
                     <input class="form-control" type="number" id="carga_hr" name="carga_hr" value="{{ disciplina.dis_carga_hr }}" required>
                 </div>
-                <!--Corrigir esse select-->
+
+                <!-- Select corrigido para mostrar todos os cursos e permitir múltiplas seleções -->
                 <div class="form-group">
                     <label for="curso_id">Cursos Associados:</label>
-                    <select class="form-control" name="curso_id">
-                    {% for curso in cursos_associados %}
-                        <option style="vertical-align: inherit;" value="{{ curso.cur_id }}">{{ curso.cur_nome }}</option>
-                    {% endfor %}
+                    <select class="form-control" name="curso_id" id="curso_id" multiple>
+                        {% for curso in cursos %}
+                            <option value="{{ curso.cur_id }}" 
+                                {% if curso.cur_id in cursos_associados_ids %}selected{% endif %}>
+                                {{ curso.cur_nome }}
+                            </option>
+                        {% endfor %}
                     </select>
+                    <small class="form-text text-muted">Segure CTRL para selecionar múltiplos cursos</small>
                 </div>
-                    
-                <button type="submit">Atualizar</button>
+                
+                <button class="btn btn-primary mt-3" type="submit">Atualizar</button>
             </form>
         </div>
     </div>
 </main>
-{% endblock %}                                                                                                                 
+
+{% endblock %}
