@@ -18,7 +18,7 @@ Cadastro de Aulas
                 <!--Corrigir esse select-->
                 <div class="form-group">
                     <label for="professor">Professor:</label>
-                    <select class="form-control" name="professor" id="professor" required>
+                    <select class="form-control" name="prof_responsavel" id="professor" required>
                         {% for professor in professores %}
                             <option style="vertical-align: inherit;" value="{{ professor.prof_id }}" {% if disciplina.dis_prof_responsavel == professor.prof_id %}selected{% endif %}>{{ professor.prof_nome }}</option>
                         {% endfor %}
@@ -28,9 +28,10 @@ Cadastro de Aulas
                     <label for="carga_hr">Carga Horária:</label>
                     <input class="form-control" type="number" id="carga_hr" name="carga_hr" value="{{ disciplina.dis_carga_hr }}" required>
                 </div>
+                <!--Corrigir esse select-->
                 <div class="form-group">
                     <label for="curso_id">Cursos Associados:</label>
-                    <select class="form-control">
+                    <select class="form-control" name="curso_id">
                     {% for curso in cursos_associados %}
                         <option style="vertical-align: inherit;" value="{{ curso.cur_id }}">{{ curso.cur_nome }}</option>
                     {% endfor %}

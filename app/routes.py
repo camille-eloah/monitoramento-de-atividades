@@ -346,6 +346,10 @@ def edit_disciplinas(dis_id):
         nova_prof_responsavel = request.form.get('prof_responsavel')
         nova_carga_hr = request.form['carga_hr']
         novos_cursos_ids = request.form.getlist('curso_id')  # Cursos selecionados no formulário
+        print("Novo_nome:", novo_nome)
+        print("Nova_prof_responsavel:", nova_prof_responsavel)
+        print("Nova_carga_hr", nova_carga_hr)
+        print("Novos_cursos_ids", novos_cursos_ids)
 
         try:
             with connection.cursor() as cursor:
@@ -623,6 +627,8 @@ def cad_aulas():
                 WHERE ad_dis_id = %s
                 """, (aul_dis_id,))
                 alunos = cursor.fetchall()
+                
+                print("Resultado da consulta alunos:", alunos)
 
                 # Inicializar frequência com "1" para cada aluno
                 query_frequencia = """
@@ -630,7 +636,7 @@ def cad_aulas():
                 VALUES (%s, %s, %s)
                 """
                 for aluno in alunos:
-                    cursor.execute(query_frequencia, (aula_id, aluno['alu_id'], 1))
+                    cursor.execute(query_frequencia, (aula_id, aluno['ad_alu_id'], 1))  # Use 'ad_alu_id' corretamente
 
                 # Confirmar as alterações
                 connection.commit()
@@ -675,7 +681,7 @@ def edit_aula(aul_id):
 
         query = """
         UPDATE tb_aulas 
-        SET aul_descricao = %s, aul_data = %s,
+        SET aul_descricao = %s, aul_data = %s
         WHERE aul_id = %s
         """
         executar_query(query, (nova_descricao, nova_data, aul_id))
