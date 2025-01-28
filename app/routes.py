@@ -402,6 +402,8 @@ def adicionar_alunos_disciplina(dis_id):
     connection = get_db_connection()
     alunos = []
     disciplina = None
+    alunos_associados = []
+    ids_alunos_associados = []  # Lista para armazenar os ids dos alunos associados
 
     # Busca todos os alunos
     with connection.cursor() as cursor:
@@ -411,6 +413,18 @@ def adicionar_alunos_disciplina(dis_id):
         # Busca a disciplina
         cursor.execute("SELECT * FROM tb_disciplinas WHERE dis_id = %s", (dis_id,))
         disciplina = cursor.fetchone()
+
+        # Busca alunos já associados à disciplina
+        cursor.execute("""
+            SELECT a.alu_id, a.alu_nome
+            FROM tb_alunos a
+            JOIN tb_alunos_disciplinas ad ON a.alu_id = ad.ad_alu_id
+            WHERE ad.ad_dis_id = %s
+        """, (dis_id,))
+        alunos_associados = cursor.fetchall()
+
+        # Criar a lista de ids de alunos associados
+        ids_alunos_associados = [aluno['alu_id'] for aluno in alunos_associados]
 
     if request.method == "POST":
         # Recebe os alunos selecionados para associar
@@ -434,8 +448,11 @@ def adicionar_alunos_disciplina(dis_id):
         return redirect(url_for('adicionar_alunos_disciplina', dis_id=dis_id))
 
     connection.close()
-    return render_template('disciplinas/adicionar_aluno_disciplina.html', alunos=alunos, disciplina=disciplina)
-
+    return render_template('disciplinas/adicionar_aluno_disciplina.html', 
+                           alunos=alunos, 
+                           alunos_associados=alunos_associados, 
+                           ids_alunos_associados=ids_alunos_associados,  # Passando os ids para o template
+                           disciplina=disciplina)
 
 # Cadastrar atividades
 @app.route('/cad_atividades', methods=['POST', 'GET'])
@@ -777,16 +794,42 @@ def delete_curso(cur_id):
 def add_frequencia(aul_id):
     connection = get_db_connection()
     if request.method == "POST":
-        frequencias = request.form.getlist('frequencias')  # Frequências enviadas do formulário
+        print("Conteúdo do form:", request.form)
+        
         try:
             with connection.cursor() as cursor:
-                # Atualiza a frequência de cada aluno
-                for alu_id, frequencia in request.form.getlist('frequencias'):
-                    cursor.execute("""
-                    UPDATE tb_aula_frequencia
-                    SET freq_frequencia = %s
-                    WHERE freq_aula_id = %s AND freq_alu_id = %s
-                    """, (int(frequencia), aul_id, int(alu_id)))
+                # Processa cada aluno e sua frequência
+                for alu_id in request.form:
+                    if alu_id.startswith('frequencias['):  # Verifica se a chave pertence à frequência
+                        # Extrai o ID do aluno
+                        aluno_id = int(alu_id.split('[')[1].split(']')[0])  # Extraindo o alu_id
+                        
+                        # Obtém o valor da frequência (0 ou 1)
+                        frequencia = int(request.form[alu_id])  # Pega o valor inserido pelo usuário (0 ou 1)
+
+                        print(f"Aluno ID: {aluno_id}, Frequência: {frequencia}")  # Debug
+
+                        # Verifica se já existe uma entrada na tabela de frequências
+                        cursor.execute("""
+                            SELECT * FROM tb_aula_frequencia
+                            WHERE freq_aula_id = %s AND freq_alu_id = %s
+                        """, (aul_id, aluno_id))
+
+                        existing = cursor.fetchone()
+
+                        if existing:
+                            # Se já existir, atualiza a frequência
+                            cursor.execute("""
+                                UPDATE tb_aula_frequencia
+                                SET freq_frequencia = %s
+                                WHERE freq_aula_id = %s AND freq_alu_id = %s
+                            """, (frequencia, aul_id, aluno_id))
+                        else:
+                            # Se não existir, insere uma nova entrada
+                            cursor.execute("""
+                                INSERT INTO tb_aula_frequencia (freq_aula_id, freq_alu_id, freq_frequencia)
+                                VALUES (%s, %s, %s)
+                            """, (aul_id, aluno_id, frequencia))
 
             connection.commit()
             flash("Frequência salva com sucesso!", "success")
@@ -799,14 +842,14 @@ def add_frequencia(aul_id):
     # Busca alunos e frequências da aula
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT a.alu_id, a.alu_nome, IFNULL(f.freq_frequencia, 1) AS freq_frequencia
+            SELECT a.alu_id, a.alu_nome, IFNULL(f.freq_frequencia, 0) AS freq_frequencia
             FROM tb_alunos a
             LEFT JOIN tb_aula_frequencia f ON a.alu_id = f.freq_alu_id AND f.freq_aula_id = %s
             WHERE a.alu_id IN (SELECT ad_alu_id FROM tb_alunos_disciplinas WHERE ad_dis_id = (SELECT aul_dis_id FROM tb_aulas WHERE aul_id = %s))
         """, (aul_id, aul_id))
 
         alunos_frequencia = cursor.fetchall()
-        print("alunos_frequencia:", alunos_frequencia)
+        print("alunos_frequencia:", alunos_frequencia)  # Verificando os alunos e suas frequências
 
     connection.close()
     return render_template('aulas/add_frequencia.html', alunos=alunos_frequencia, aul_id=aul_id)

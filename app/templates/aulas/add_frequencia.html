@@ -6,7 +6,7 @@ Adicionar Frequência
 
 {% block content %}
 <main
-    style="margin: 50px auto; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    style="margin: 50px auto; padding: 20px; padding-bottom: 100px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Adicionar Frequência para a Aula</h4>
@@ -28,7 +28,7 @@ Adicionar Frequência
                     <thead>
                         <tr style="background-color: #f4f4f4; text-align: left;">
                             <th style="padding: 8px; border: 1px solid #ddd;">Nome do Aluno</th>
-                            <th style="padding: 8px; border: 1px solid #ddd;">Presença</th>
+                            <th style="padding: 8px; border: 1px solid #ddd;">Presença (0 ou 1)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,8 +36,9 @@ Adicionar Frequência
                         <tr>
                             <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_nome }}</td>
                             <td style="padding: 8px; border: 1px solid #ddd;">
-                                <input type="checkbox" name="frequencias[{{ aluno.alu_id }}]" 
-                                value="1" {% if aluno.freq_frequencia == 1 %}checked{% endif %}> </td>
+                                <input type="number" name="frequencias[{{ aluno.alu_id }}]" 
+                                value="{{ aluno.freq_frequencia }}" min="0" max="1">
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

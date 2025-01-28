@@ -67,6 +67,7 @@ Cadastro de Aulas
                     <tr style="background-color: #f4f4f4; text-align: left;">
                         <th style="padding: 8px; border: 1px solid #ddd;">Descrição</th>
                         <th style="padding: 8px; border: 1px solid #ddd;">Data</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Disciplina</th>
                         <th style="padding: 8px; border: 1px solid #ddd;">Ações</th>
                     </tr>
                 </thead>
@@ -75,6 +76,13 @@ Cadastro de Aulas
                     <tr>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ aula.aul_descricao }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ aula.aul_data }}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">
+                            {% for disciplina in disciplinas %}
+                                {% if disciplina.dis_id == aula.aul_dis_id %}
+                                    {{ disciplina.dis_nome }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
                         <td style="padding: 8px; border: 1px solid #ddd;">
                         <!-- Botão para editar -->
                         <form action="/edit_aula/{{ aula.aul_id }}" method="get" style="display: inline;">
