@@ -973,7 +973,8 @@ def relatorios():
                 t.ati_descricao AS atividade,
                 aa.alunoativ_situacao AS situacao,
                 aa.alunoativ_nota AS nota,
-                aa.alunoativ_data_entrega AS data_entrega
+                aa.alunoativ_data_entrega AS data_entrega,
+                t.ati_data_entrega AS data_limite_entrega
             FROM 
                 tb_aluno_atividade aa
             JOIN 
@@ -1002,8 +1003,52 @@ def relatorios():
                 'atividade': trabalho['atividade'],
                 'situacao': trabalho['situacao'],
                 'nota': trabalho['nota'],
-                'data_entrega': trabalho['data_entrega'].strftime('%d/%m/%Y %H:%M') if trabalho['data_entrega'] else 'Não informado'
+                'data_entrega': trabalho['data_entrega'].strftime('%d/%m/%Y %H:%M') if trabalho['data_entrega'] else 'Não informado',
+                'data_limite_entrega': trabalho['data_limite_entrega'].strftime('%d/%m/%Y %H:%M') if trabalho['data_limite_entrega'] else 'Não informado'
             })
+
+        # Consultar trabalhos entregues fora do prazo
+        cursor.execute("""
+            SELECT 
+                d.dis_nome AS disciplina,
+                a.alu_nome AS aluno,
+                t.ati_descricao AS atividade,
+                aa.alunoativ_situacao AS situacao,
+                aa.alunoativ_nota AS nota,
+                aa.alunoativ_data_entrega AS data_entrega,
+                t.ati_data_entrega AS data_limite_entrega
+            FROM 
+                tb_aluno_atividade aa
+            JOIN 
+                tb_atividades t ON aa.alunoativ_ati_id = t.ati_id
+            JOIN 
+                tb_disciplinas d ON t.ati_dis_id = d.dis_id
+            JOIN 
+                tb_alunos a ON aa.alunoativ_alu_id = a.alu_id
+            WHERE 
+                aa.alunoativ_situacao = 'Entregue'
+                AND aa.alunoativ_data_entrega > t.ati_data_entrega
+            ORDER BY 
+                d.dis_nome, a.alu_nome, t.ati_descricao
+        """)
+        trabalhos_fora_prazo = cursor.fetchall()
+
+    # Organizar os dados de trabalhos fora do prazo
+    trabalhos_fora_prazo_por_aluno_e_disciplina = {}
+    for trabalho in trabalhos_fora_prazo:
+        disciplina = trabalho['disciplina']
+        aluno = trabalho['aluno']
+        if disciplina not in trabalhos_fora_prazo_por_aluno_e_disciplina:
+            trabalhos_fora_prazo_por_aluno_e_disciplina[disciplina] = {}
+        if aluno not in trabalhos_fora_prazo_por_aluno_e_disciplina[disciplina]:
+            trabalhos_fora_prazo_por_aluno_e_disciplina[disciplina][aluno] = []
+        trabalhos_fora_prazo_por_aluno_e_disciplina[disciplina][aluno].append({
+            'atividade': trabalho['atividade'],
+            'situacao': trabalho['situacao'],
+            'nota': trabalho['nota'],
+            'data_entrega': trabalho['data_entrega'].strftime('%d/%m/%Y %H:%M') if trabalho['data_entrega'] else 'Não informado',
+            'data_limite_entrega': trabalho['data_limite_entrega'].strftime('%d/%m/%Y %H:%M') if trabalho['data_limite_entrega'] else 'Não informado'
+        })
 
     # Renderiza a página de relatórios com todos os dados
     return render_template(
@@ -1015,7 +1060,8 @@ def relatorios():
         alunos_faltas=alunos_faltas,
         alunos_baixa_frequencia=alunos_baixa_frequencia,
         trabalhos_por_aluno_e_disciplina=trabalhos_por_aluno_e_disciplina,
-        medias=medias
+        medias=medias,
+        trabalhos_fora_prazo_por_aluno_e_disciplina=trabalhos_fora_prazo_por_aluno_e_disciplina
     )
 
 @app.route('/registro_entrega/<int:ati_id>', methods=['GET', 'POST'])

@@ -80,30 +80,28 @@ Relatórios
         <button class="btn btn-primary me-2" onclick="listarForaPrazo()">Listar Trabalhos Entregues Fora do Prazo</button>
 
         <div id="listar-fora-prazo" style="display: none;">
-            {% if alunos %}
-                <h4 class="card-title">Trabalhos Entregues Fora do Prazo</h4>
-                {% if atividades %}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Disciplina</th>
-                                <th>Data de Entrega</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for aluno in alunos %}
-                            <tr>
-                                <td>{{ aluno.alu_nome }}</td>
-                                <td>{{ aluno.alu_curso }}</td>
-                                <td>{{ atividades.ati_data_entrega }}</td>
-                            </tr>
+            <h4 class="card-title">Trabalhos Entregues Fora do Prazo</h4>
+            
+            {% if trabalhos_fora_prazo_por_aluno_e_disciplina %}
+                {% for disciplina, alunos in trabalhos_fora_prazo_por_aluno_e_disciplina.items() %}
+                    <h5>{{ disciplina }}</h5>
+                    {% for aluno, trabalhos in alunos.items() %}
+                        <h6 style="margin-left: 20px;">{{ aluno }}</h6>
+                        <ul style="margin-left: 40px;">
+                            {% for trabalho in trabalhos %}
+                                <li>
+                                    <strong>Atividade:</strong> {{ trabalho.atividade }} <br>
+                                    <strong>Situação:</strong> {{ trabalho.situacao }} <br>
+                                    <strong>Nota:</strong> {{ trabalho.nota }} <br>
+                                    <strong>Data de Entrega:</strong> {{ trabalho.data_entrega }} <br>
+                                    <strong>Data Limite de Entrega:</strong> {{ trabalho.data_limite_entrega }}
+                                </li>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p class="no-data">Nenhum aluno foi encontrado</p>
-                {% endif %}
+                        </ul>
+                    {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">Nenhum trabalho entregue fora do prazo foi encontrado.</p>
             {% endif %}
         </div>
     </div>
