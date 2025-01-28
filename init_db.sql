@@ -53,10 +53,11 @@ create table if not exists tb_cursos (
 create table if not exists tb_cursos_disciplinas (
     cd_id integer auto_increment primary key,
     cd_cur_id integer not null,
-    cd_dis_id integer not null,0
+    cd_dis_id integer not null,
     foreign key (cd_cur_id) references tb_cursos(cur_id) ON DELETE CASCADE,
     foreign key (cd_dis_id) references tb_disciplinas(dis_id) ON DELETE CASCADE
 );
+
 
 
 create table if not exists tb_atividades (
