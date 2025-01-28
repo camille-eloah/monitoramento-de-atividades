@@ -911,3 +911,33 @@ def relatorios():
         atividades = cursor.fetchall()
 
     return render_template('relatorios/relatorios.html', alunos=alunos, aula_frequencia=aula_frequencia, atividades=atividades)
+
+@app.route('/relatorio_faltas')
+def relatorio_faltas():
+    connection = get_db_connection()
+    alunos_faltas = []
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    a.alu_nome AS Aluno,
+                    COUNT(af.freq_aula_id) AS Aulas,
+                    SUM(CASE WHEN af.freq_frequencia = 0 THEN 1 ELSE 0 END) AS Faltas
+                FROM
+                    tb_aula_frequencia af
+                JOIN
+                    tb_alunos a ON af.freq_alu_id = a.alu_id
+                JOIN
+                    tb_aulas au ON af.freq_aula_id = au.aul_id
+                GROUP BY
+                    a.alu_nome
+                ORDER BY
+                    a.alu_nome;
+            """)
+            alunos_faltas = cursor.fetchall()
+
+    finally:
+        connection.close()
+
+    return render_template('relatorios/relatorio_faltas.html', alunos_faltas=alunos_faltas)

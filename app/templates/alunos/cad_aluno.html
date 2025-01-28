@@ -40,7 +40,7 @@ Cadastro de Alunos
                     <label for="curso">Curso:</label>
                     <select class="form-control" id="curso" name="curso" required>
                         {% for curso in cursos %}
-                            <option value="{{ curso.cur_id }}">
+                            <option value="{{ curso.cur_nome}}">
                                 {{ curso.cur_nome }}
                             </option>
                         {% endfor %}
