@@ -84,6 +84,7 @@ CREATE TABLE if not exists tb_aluno_atividade (
     alunoativ_alu_id integer not null,
     alunoativ_ati_id integer not null,
     alunoativ_situacao ENUM('Atrasado', 'Em andamento', 'Entregue') NOT NULL,
+    alunoativ_nota FLOAT not null,
     foreign key (alunoativ_alu_id) references tb_alunos(alu_id) ON DELETE CASCADE,
     foreign key (alunoativ_ati_id) references tb_atividades(ati_id) ON DELETE CASCADE
 
