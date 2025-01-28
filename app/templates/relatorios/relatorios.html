@@ -12,9 +12,8 @@ Relatórios
 
         <div id="lista-alunos-baixa-frequencia" style="display: none;">
             {% if alunos %}
-                <h4 class="card-title">Alunos Cadastrados</h4>
+                <h4 class="card-title">Alunos Baixa Frequência</h4>
                 {% if aula_frequencia %}
-                    <h2>1. Alunos com maior número de faltas</h2>
                     <table>
                         <thead>
                             <tr>
@@ -47,9 +46,8 @@ Relatórios
         
         <div id="lista-relatorio-media-alunos" style="display: none;">
             {% if alunos %}
-                <h4 class="card-title">Alunos Cadastrados</h4>
+                <h4 class="card-title">Relatório de Média</h4>
                 {% if aula_frequencia %}
-                    <h2>1. Alunos com maior número de faltas</h2>
                     <table>
                         <thead>
                             <tr>
@@ -69,7 +67,7 @@ Relatórios
                         </tbody>
                     </table>
                 {% else %}
-                    <p class="no-data">Nenhum aluno foi</p>
+                    <p class="no-data">Nenhum aluno foi encontrado</p>
                 {% endif %}
             {% endif %}
         </div>
@@ -78,13 +76,69 @@ Relatórios
 
 <div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
-        <button class="btn btn-primary me-2" onclick="listarForaPrazo()">Listar Trabalhos Fora do Prazo</button>
+        <button class="btn btn-primary me-2" onclick="listarForaPrazo()">Listar Trabalhos Entregues Fora do Prazo</button>
+
+        <div id="listar-fora-prazo" style="display: none;">
+            {% if alunos %}
+                <h4 class="card-title">Trabalhos Entregues Fora do Prazo</h4>
+                {% if atividades %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Disciplina</th>
+                                <th>Data de Entrega</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for aluno in alunos %}
+                            <tr>
+                                <td>{{ aluno.alu_nome }}</td>
+                                <td>{{ aluno.alu_curso }}%</td>
+                                <td>{{ atividades.ati_data_entrega }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="no-data">Nenhum aluno foi encontrado</p>
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
 </div>
 
 <div class="card" style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
         <button class="btn btn-primary me-2" onclick="listarTrabalhosEntregues()">Listar Trabalhos Entregues</button>
+
+        <div id="listar-trabalhos-entregues" style="display: none;">
+            {% if alunos %}
+                <h4 class="card-title">Trabalhos Entregues Fora </h4>
+                {% if atividades %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Disciplina</th>
+                                <th>Data de Entrega</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for aluno in alunos %}
+                            <tr>
+                                <td>{{ aluno.alu_nome }}</td>
+                                <td>{{ aluno.alu_curso }}%</td>
+                                <td>{{ atividades.ati_data_entrega }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="no-data">Nenhum aluno foi encontrado</p>
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
 </div>
 
@@ -99,10 +153,16 @@ Relatórios
         relatorioMediaAlunos.style.display = relatorioMediaAlunos.style.display === "none" || relatorioMediaAlunos.style.display === "" ? "block" : "none";
     }
 
-    function relatorioMediaAlunos() {
-        const relatorioMediaAlunos = document.getElementById("lista-relatorio-media-alunos");
-        relatorioMediaAlunos.style.display = relatorioMediaAlunos.style.display === "none" || relatorioMediaAlunos.style.display === "" ? "block" : "none";
+    function listarForaPrazo() {
+        const listarForaPrazo = document.getElementById("listar-fora-prazo");
+        listarForaPrazo.style.display = listarForaPrazo.style.display === "none" || listarForaPrazo.style.display === "" ? "block" : "none";
     }
+
+    function listarTrabalhosEntregues() {
+        const listarTrabalhosEntregues = document.getElementById("listar-trabalhos-entregues");
+        listarTrabalhosEntregues.style.display = listarTrabalhosEntregues.style.display === "none" || listarTrabalhosEntregues.style.display === "" ? "block" : "none";
+    }
+
 </script>
 
 {% endblock %}

@@ -509,15 +509,16 @@ def cad_atividades():
                 executar_query(query, (dis_id, tipo, descricao, data_entr, peso))
                 flash("Atividade cadastrada com sucesso!", "success")
 
+                # Atualizar a lista de atividades após inserção
                 with connection.cursor() as cursor:
-                    cursor.execute("""
+                    cursor.execute(""" 
                     SELECT a.ati_id, a.ati_tipo, a.ati_descricao, a.ati_data_entrega, a.ati_peso, d.dis_nome
                     FROM tb_atividades a
                     INNER JOIN tb_disciplinas d ON a.ati_dis_id = d.dis_id
                     """)
-                    
                     atividades = cursor.fetchall()
-
+                return redirect('/cad_atividades')
+            
             except IntegrityError as e:
                 if "Duplicate entry" in str(e):
                     flash("Erro: Atividade duplicada ou já cadastrada.", "danger")
@@ -526,9 +527,9 @@ def cad_atividades():
             except Exception as e:
                 flash(f"Erro inesperado: {str(e)}", "danger")
 
-        # Após cadastro ou ao carregar a página, buscar atividades novamente
+        # Buscar as atividades também no método GET
         with connection.cursor() as cursor:
-            cursor.execute("""
+            cursor.execute(""" 
             SELECT a.ati_id, a.ati_tipo, a.ati_descricao, a.ati_data_entrega, a.ati_peso, d.dis_nome
             FROM tb_atividades a
             INNER JOIN tb_disciplinas d ON a.ati_dis_id = d.dis_id
@@ -541,6 +542,8 @@ def cad_atividades():
     return render_template(
         'atividades/cad_atividades.html', atividades=atividades, disciplinas=disciplinas
     )
+
+
 
 # Editar atividades
 @app.route('/edit_atividade/<int:ati_id>', methods=['POST', 'GET'])
@@ -904,4 +907,7 @@ def relatorios():
         cursor.execute('SELECT * FROM tb_aula_frequencia ')
         aula_frequencia = cursor.fetchall()
 
-    return render_template('relatorios/relatorios.html', alunos=alunos, aula_frequencia=aula_frequencia)
+        cursor.execute('SELECT * FROM tb_atividades ')
+        atividades = cursor.fetchall()
+
+    return render_template('relatorios/relatorios.html', alunos=alunos, aula_frequencia=aula_frequencia, atividades=atividades)
