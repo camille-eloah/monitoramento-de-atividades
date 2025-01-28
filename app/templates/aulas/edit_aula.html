@@ -12,7 +12,7 @@ Editar Aula
             <form action="{{ url_for('edit_aula', aul_id=aula.aul_id) }}" method="post">
                 <div class="form-group">
                     <label for="descricao">Descrição da Aula:</label>
-                    <input class="form-control" type="text" id="descricao" name="descricao" value="{{ aula.aula_descricao }}" required>
+                    <input class="form-control" type="text" id="descricao" name="descricao" value="{{ aula.aul_descricao }}" required>
                 </div>
                 <div class="form-group">
                     <label for="data">Data da Aula:</label>
@@ -20,13 +20,22 @@ Editar Aula
                 </div>
                 <div class="form-group">
                     <label for="professor">Professor:</label>
-                    <select class="js-example-basic-single w-100" name="professor" id="professor" required>
+                    <select class="form-control" name="professor" id="professor" required>
                         {% for professor in professores %}
                             <option style="vertical-align: inherit;" value="{{ professor.prof_id }}">{{ professor.prof_nome }}</option>
                         {% endfor %}
                     </select>
                 </div>
         
+                <div class="form-group">
+                    <label for="disciplina">Disciplina:</label>
+                    <select class="form-control" name="disciplina" id="disciplina" required>
+                        {% for disciplina in disciplinas %}
+                            <option style="vertical-align: inherit;" value="{{ disciplina.dis_id }}">{{ disciplina.dis_nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <button type="submit">Atualizar</button>
             </form>
         </div>

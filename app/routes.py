@@ -314,6 +314,16 @@ def edit_disciplinas(dis_id):
         """, (dis_id,))
         disciplina = cursor.fetchone()
 
+        cursor.execute("""
+        SELECT * FROM tb_disciplinas WHERE dis_id = %s
+        """, (dis_id,))
+        disciplinas = cursor.fetchall()
+
+        cursor.execute("""
+        SELECT * FROM tb_professores
+        """)
+        professores = cursor.fetchall()
+
         # Obter IDs dos cursos associados à disciplina
         cursor.execute("""
         SELECT cd_cur_id FROM tb_cursos_disciplinas WHERE cd_dis_id = %s
@@ -372,10 +382,12 @@ def edit_disciplinas(dis_id):
 
     return render_template(
         'disciplinas/edit_disciplina.html',
+        disciplinas=disciplinas,
         disciplina=disciplina,
         cursos=cursos,
         cursos_associados_ids=cursos_associados_ids,
-        cursos_associados=cursos_associados
+        cursos_associados=cursos_associados,
+        professores=professores
     )
 
 
@@ -463,6 +475,16 @@ def cad_atividades():
             try:
                 executar_query(query, (dis_id, tipo, descricao, data_entr, peso))
                 flash("Atividade cadastrada com sucesso!", "success")
+
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                    SELECT a.ati_id, a.ati_tipo, a.ati_descricao, a.ati_data_entrega, a.ati_peso, d.dis_nome
+                    FROM tb_atividades a
+                    INNER JOIN tb_disciplinas d ON a.ati_dis_id = d.dis_id
+                    """)
+                    
+                    atividades = cursor.fetchall()
+
             except IntegrityError as e:
                 if "Duplicate entry" in str(e):
                     flash("Erro: Atividade duplicada ou já cadastrada.", "danger")
@@ -640,6 +662,12 @@ def edit_aula(aul_id):
         cursor.execute("SELECT * FROM tb_aulas WHERE aul_id = %s", (aul_id,))
         aula = cursor.fetchone()
 
+        cursor.execute('SELECT * FROM tb_professores')
+        professores = cursor.fetchall()
+
+        cursor.execute("SELECT * FROM tb_disciplinas")
+        disciplinas = cursor.fetchall()
+
     if request.method == 'POST':
         nova_descricao = request.form['descricao']
         nova_data = request.form['data']
@@ -655,7 +683,7 @@ def edit_aula(aul_id):
         return redirect('/cad_aulas')
 
     connection.close()
-    return render_template('aulas/edit_aula.html', aula=aula)
+    return render_template('aulas/edit_aula.html', aula=aula, professores=professores, disciplinas=disciplinas)
 
 #Deletar aulas
 @app.route('/delete_aula/<int:aul_id>', methods=['POST'])

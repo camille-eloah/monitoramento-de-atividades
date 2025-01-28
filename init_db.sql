@@ -50,7 +50,6 @@ create table if not exists tb_cursos (
     cur_descricao VARCHAR(255)
 );
 
-
 create table if not exists tb_cursos_disciplinas (
     cd_id integer auto_increment primary key,
     cd_cur_id integer not null,

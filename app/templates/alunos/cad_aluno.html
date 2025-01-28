@@ -35,14 +35,18 @@ Cadastro de Alunos
                     <label for="email">E-mail</label>
                     <input class="form-control" type="email" id="email" name="email" required>
                 </div>
+                
                 <div class="form-group">
                     <label for="curso">Curso:</label>
-                    <select class="js-example-basic-single w-100" name="curso" id="curso_id" required>
+                    <select class="form-control" id="curso" name="curso" required>
                         {% for curso in cursos %}
-                            <option style="vertical-align: inherit;" value="{{ curso.cur_nome }}">{{ curso.cur_nome }}</option>
+                            <option value="{{ curso.cur_id }}">
+                                {{ curso.cur_nome }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
+
                 <div class="form-group">
                     <label for="data-nascimento">Data de Nascimento</label>
                     <input class="form-control" type="date" id="data_nasc" name="data_nasc" required>

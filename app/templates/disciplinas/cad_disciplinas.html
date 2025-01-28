@@ -30,7 +30,7 @@ Cadastro de Aulas
                 </div>
                 <div class="form-group">
                     <label for="prof_responsavel">Professor:</label>
-                    <select class="js-example-basic-single w-100" name="prof_responsavel" id="prof_responsavel" required>
+                    <select class="form-control" name="prof_responsavel" id="prof_responsavel" required>
                         {% for professor in professores %}
                             <option style="vertical-align: inherit;" value="{{ professor.prof_id }}">{{ professor.prof_nome }}</option>
                         {% endfor %}
@@ -42,7 +42,7 @@ Cadastro de Aulas
                 </div>
                 <div class="form-group">
                     <label for="curso_id">Curso:</label>
-                    <select class="js-example-basic-single w-100" name="curso_id" id="curso_id" multiple required>
+                    <select class="form-control" name="curso_id" id="curso_id" multiple required>
                         {% for curso in cursos %}
                             <option style="vertical-align: inherit;" value="{{ curso.cur_id }}">{{ curso.cur_nome }}</option>
                         {% endfor %}
