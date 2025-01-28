@@ -1018,7 +1018,6 @@ def relatorios():
         medias=medias
     )
 
-
 @app.route('/registro_entrega/<int:ati_id>', methods=['GET', 'POST'])
 def registro_entrega(ati_id):
     connection = get_db_connection()
