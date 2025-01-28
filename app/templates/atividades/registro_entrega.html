@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block title %}Registro de Entrega de Atividades{% endblock %}
+
+{% block content %}
+<div class="card"
+    style="margin: 5px auto 0; padding: 20px; max-width: 600px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="card-body">
+        <h4 class="card-title">Registro de Entrega de Trabalho</h4>
+
+
+        <h5>{{ atividade.ati_tipo }} - {{ atividade.ati_descricao }}</h5>
+        <p><strong>Data de Entrega:</strong> {{ atividade.ati_data_entrega }}</p>
+
+        <form action="/registro_entrega/{{ ati_id }}" method="POST">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Situação</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aluno in alunos %}
+                    <tr>
+                        <td>{{ aluno.alu_nome }}</td>
+                        <td>
+                            <select class="form-control" name="situacao_{{ aluno.alu_id }}">
+                                <option value="Atrasado">Atrasado</option>
+                                <option value="Em andamento">Em andamento</option>
+                                <option value="Entregue">Entregue</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input class="form-control" type="number" step="0.1" name="nota_{{ aluno.alu_id }}"
+                                required>
+                            <input type="hidden" name="aluno_id" value="{{ aluno.alu_id }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button class="btn btn-primary" type="submit">Registrar Entregas</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

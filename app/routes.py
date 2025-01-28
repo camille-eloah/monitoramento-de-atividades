@@ -777,7 +777,6 @@ def cad_curso():
     return render_template('cursos/cad_curso.html', cursos=cursos)
 
 # Editar cursos
-# Editar cursos
 @app.route('/edit_curso/<int:cur_id>', methods=['POST', 'GET'])
 def edit_curso(cur_id):
     connection = get_db_connection()
@@ -954,3 +953,43 @@ def relatorios():
         alunos_faltas=alunos_faltas,  
         alunos_baixa_frequencia=alunos_baixa_frequencia
     )
+
+@app.route('/registro_entrega/<int:ati_id>', methods=['GET', 'POST'])
+def registro_entrega(ati_id):
+    connection = get_db_connection()
+
+    if request.method == 'POST':
+        # Registrar entrega de cada aluno
+        for aluno_id in request.form.getlist('aluno_id'):
+            situacao = request.form.get(f'situacao_{aluno_id}')
+            nota = request.form.get(f'nota_{aluno_id}')
+            if situacao and nota:
+                query = """
+                    INSERT INTO tb_aluno_atividade (alunoativ_alu_id, alunoativ_ati_id, alunoativ_situacao, alunoativ_nota)
+                    VALUES (%s, %s, %s, %s)
+                """
+                executar_query(query, (aluno_id, ati_id, situacao, float(nota)))
+
+        flash("Entregas registradas com sucesso!", "success")
+        return redirect(f'/registro_entrega/{ati_id}')
+
+    # Buscar dados para exibir
+    with connection.cursor() as cursor:
+        # Buscar informações da atividade
+        cursor.execute("""
+            SELECT ati_tipo, ati_descricao, ati_data_entrega
+            FROM tb_atividades
+            WHERE ati_id = %s
+        """, (ati_id,))
+        atividade = cursor.fetchone()
+
+        # Buscar alunos matriculados na disciplina da atividade
+        cursor.execute("""
+            SELECT a.alu_id, a.alu_nome
+            FROM tb_alunos a
+            JOIN tb_alunos_disciplinas ad ON a.alu_id = ad.ad_alu_id
+            WHERE ad.ad_dis_id = (SELECT ati_dis_id FROM tb_atividades WHERE ati_id = %s)
+        """, (ati_id,))
+        alunos = cursor.fetchall()
+
+    return render_template('atividades/registro_entrega.html', atividade=atividade, alunos=alunos, ati_id=ati_id)
