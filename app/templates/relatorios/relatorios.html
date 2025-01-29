@@ -70,7 +70,20 @@ Relatórios
         <div id="lista-relatorio-media-alunos" style="display: none;">
 
                 <h4 class="card-title">Relatório de Média</h4>
-
+                {% if medias_por_aluno_e_disciplina %}
+                {% for disciplina, alunos in medias_por_aluno_e_disciplina.items() %}
+                    <h5>{{ disciplina }}</h5>
+                    <ul style="margin-left: 40px;">
+                        {% for aluno, media in alunos.items() %}
+                            <li>
+                                <strong>{{ aluno }}:</strong> {{ media }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">Nenhuma média de nota encontrada.</p>
+            {% endif %}
         </div>
     </div>
 </div>

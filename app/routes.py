@@ -105,6 +105,7 @@ def logout():
 
 @app.route('/index')
 @app.route('/')
+@login_required
 def index():
     return render_template('index.html')
 
@@ -119,6 +120,7 @@ def executar_query(query, params=None):
 
 # Cadastrar aluno
 @app.route('/cad_aluno', methods=['POST', 'GET'])
+@login_required
 def cad_aluno():
     connection = get_db_connection()
 
@@ -157,6 +159,7 @@ def cad_aluno():
 
 # Editar aluno
 @app.route('/edit_aluno/<int:alu_matricula>', methods=['POST', 'GET'])
+@login_required
 def edit_aluno(alu_matricula):
     connection = get_db_connection()
     aluno = None
@@ -209,6 +212,7 @@ def edit_aluno(alu_matricula):
 
 # Remover aluno
 @app.route('/delete_aluno/<int:alu_matricula>', methods=['POST'])
+@login_required
 def delete_aluno(alu_matricula):
     connection = get_db_connection()
     try:
@@ -224,6 +228,7 @@ def delete_aluno(alu_matricula):
 
 # Cadastrar disciplina
 @app.route('/cad_disciplinas', methods=['POST', 'GET'])
+@login_required
 def cad_disciplinas():
     connection = get_db_connection()
     disciplinas = []
@@ -305,6 +310,7 @@ def cad_disciplinas():
 
 # Editar disciplina
 @app.route('/edit_disciplinas/<int:dis_id>', methods=['POST', 'GET']) 
+@login_required
 def edit_disciplinas(dis_id):
     connection = get_db_connection()
 
@@ -383,6 +389,7 @@ def edit_disciplinas(dis_id):
 
 # Remover disciplina
 @app.route('/delete_disciplina/<int:dis_id>', methods=['POST'])
+@login_required
 def delete_disciplina(dis_id):
     connection = get_db_connection()
 
@@ -399,6 +406,7 @@ def delete_disciplina(dis_id):
 
 # Adicionar alunos na disciplina
 @app.route('/adicionar_alunos_disciplina/<int:dis_id>', methods=['GET', 'POST'])
+@login_required
 def adicionar_alunos_disciplina(dis_id):
     connection = get_db_connection()
     alunos = []
@@ -484,6 +492,7 @@ def adicionar_alunos_disciplina(dis_id):
 
 # Cadastrar atividades
 @app.route('/cad_atividades', methods=['POST', 'GET'])
+@login_required
 def cad_atividades():
     connection = get_db_connection()
     atividades = []
@@ -546,6 +555,7 @@ def cad_atividades():
 
 # Editar atividades
 @app.route('/edit_atividade/<int:ati_id>', methods=['POST', 'GET'])
+@login_required
 def edit_atividade(ati_id):
     connection = get_db_connection()
     atividade = None
@@ -598,6 +608,7 @@ def edit_atividade(ati_id):
 
 # Deletar atividade
 @app.route('/delete_atividade/<int:ati_id>', methods=['POST'])
+@login_required
 def delete_atividade(ati_id):
     connection = get_db_connection()
 
@@ -616,6 +627,7 @@ def delete_atividade(ati_id):
 
 # Cadastro de aulas
 @app.route('/cad_aulas', methods=['POST', 'GET'])
+@login_required
 def cad_aulas():
     connection = get_db_connection()
     aulas = []
@@ -691,6 +703,7 @@ def cad_aulas():
 
 #Editar aulas
 @app.route('/edit_aula/<int:aul_id>', methods=['POST', 'GET'])
+@login_required
 def edit_aula(aul_id):
     connection = get_db_connection()
 
@@ -724,6 +737,7 @@ def edit_aula(aul_id):
 
 #Deletar aulas
 @app.route('/delete_aula/<int:aul_id>', methods=['POST'])
+@login_required
 def delete_aula(aul_id):
     connection = get_db_connection()
 
@@ -743,6 +757,7 @@ def delete_aula(aul_id):
 
 #Cadastrar cursos
 @app.route('/cad_curso', methods=['POST', 'GET'])
+@login_required
 def cad_curso():
     connection = get_db_connection()
     cursos = []
@@ -777,6 +792,7 @@ def cad_curso():
 
 # Editar cursos
 @app.route('/edit_curso/<int:cur_id>', methods=['POST', 'GET'])
+@login_required
 def edit_curso(cur_id):
     connection = get_db_connection()
 
@@ -812,6 +828,7 @@ def edit_curso(cur_id):
 
 #Deletar Cursos
 @app.route('/delete_curso/<int:cur_id>', methods=['POST'])
+@login_required
 def delete_curso(cur_id):
     connection = get_db_connection()
 
@@ -829,6 +846,7 @@ def delete_curso(cur_id):
     return redirect('/cad_curso')
 
 @app.route('/add_frequencia/<int:aul_id>', methods=['GET', 'POST'])
+@login_required
 def add_frequencia(aul_id):
     connection = get_db_connection()
     if request.method == "POST":
@@ -894,6 +912,7 @@ def add_frequencia(aul_id):
 
 
 @app.route('/relatorios')
+@login_required
 def relatorios():
     connection = get_db_connection()
 
@@ -934,11 +953,12 @@ def relatorios():
         """)
         alunos_faltas = cursor.fetchall()
 
+        # Consultar o relatório de médias ponderadas por aluno e disciplina
         cursor.execute("""
             SELECT 
-                a.alu_nome AS Aluno,
-                d.dis_nome AS Disciplina,
-                ROUND(AVG(aa.alunoativ_nota), 2) AS Media
+                a.alu_nome AS Aluno, 
+                d.dis_nome AS Disciplina, 
+                SUM(aa.alunoativ_nota * atv.ati_peso) / SUM(atv.ati_peso) AS Media
             FROM 
                 tb_aluno_atividade aa
             JOIN 
@@ -947,12 +967,23 @@ def relatorios():
                 tb_disciplinas d ON atv.ati_dis_id = d.dis_id
             JOIN 
                 tb_alunos a ON aa.alunoativ_alu_id = a.alu_id
+            WHERE 
+                aa.alunoativ_situacao = 'Entregue'
             GROUP BY 
                 a.alu_id, d.dis_id
             ORDER BY 
                 a.alu_nome, d.dis_nome;
         """)
-        medias = cursor.fetchall()
+        medias_ponderadas = cursor.fetchall()
+
+        # Organizar os dados de médias ponderadas por aluno e disciplina
+        medias_por_aluno_e_disciplina = {}
+        for media in medias_ponderadas:
+            disciplina = media['Disciplina']
+            aluno = media['Aluno']
+            if disciplina not in medias_por_aluno_e_disciplina:
+                medias_por_aluno_e_disciplina[disciplina] = {}
+            medias_por_aluno_e_disciplina[disciplina][aluno] = round(media['Media'], 2)
 
         # Calcular percentual de frequência por aluno e filtrar os abaixo de 75%
         alunos_baixa_frequencia = []
@@ -1060,11 +1091,12 @@ def relatorios():
         alunos_faltas=alunos_faltas,
         alunos_baixa_frequencia=alunos_baixa_frequencia,
         trabalhos_por_aluno_e_disciplina=trabalhos_por_aluno_e_disciplina,
-        medias=medias,
+        medias_por_aluno_e_disciplina=medias_por_aluno_e_disciplina,
         trabalhos_fora_prazo_por_aluno_e_disciplina=trabalhos_fora_prazo_por_aluno_e_disciplina
     )
 
 @app.route('/registro_entrega/<int:ati_id>', methods=['GET', 'POST'])
+@login_required
 def registro_entrega(ati_id):
     connection = get_db_connection()
 
