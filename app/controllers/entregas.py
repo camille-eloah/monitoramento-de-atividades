@@ -1,7 +1,7 @@
 from flask import Flask , Blueprint, render_template, request, redirect, url_for, flash
-from controllers.auth import executar_query
+from app.controllers.auth import executar_query
 from flask_login import LoginManager, current_user, login_required
-from app import app, get_db_connection
+from app import get_db_connection
 import pymysql
 from pymysql.err import IntegrityError
 

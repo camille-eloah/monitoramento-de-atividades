@@ -1,24 +1,34 @@
 from flask import render_template, request, redirect, url_for, flash, Blueprint
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
-from app import app, get_db_connection
+from app import get_db_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
 import pymysql
 from pymysql.err import IntegrityError 
 
-from models.models import Professor
+from app.models.models import Professor
 
 from passlib.context import CryptContext
 
-bp = Blueprint('auth', __name__, url_prefix='/auth',  template_folder='../templates')
+bp = Blueprint('auth', __name__, url_prefix='/auth',  template_folder='')
 
 # Configuração do contexto do Passlib para usar bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 @bp.route('/')
+@login_required
 def index():
-    return render_template('auth/index.html') 
+    return render_template('auth/index.html')
+
+def executar_query(query, params=None):
+    connection = get_db_connection()
+    try: 
+        with connection.cursor() as cursor: 
+            cursor.execute(query, params)
+            connection.commit()
+    finally: 
+        connection.close()
 
 # Cadastro (usuário)
 @bp.route('/cadastro', methods=['POST', 'GET'])
@@ -32,7 +42,7 @@ def cadastro():
         # Verificar se as senhas coincidem
         if senha != confirmar_senha:
             flash("As senhas não coincidem. Por favor, tente novamente.", category="error")
-            return redirect(url_for('cadastro'))
+            return redirect(url_for('auth.cadastro'))
 
         # Gerar a senha criptografada com passlib
         hashed_senha = pwd_context.hash(senha)
@@ -47,7 +57,7 @@ def cadastro():
 
             # Mensagem de sucesso
             flash('Usuário cadastrado com sucesso!', 'success')
-            return redirect('login')  # Redireciona para o login
+            return redirect('auth.login')  # Redireciona para o login
 
         except IntegrityError as e:
             # Tratamento de erro de duplicidade (e-mail ou nome já existente)
@@ -91,7 +101,7 @@ def login():
                     professor = Professor(usuario['prof_id'], usuario['prof_nome'], usuario['prof_email'], usuario['prof_senha'])
                     login_user(professor)
                     flash('Login realizado com sucesso!', 'success')
-                    return redirect('/')
+                    return redirect(url_for('auth.index'))
                 else:
                     flash('Nome de usuário ou senha inválidos.', 'error')
             else:
@@ -107,22 +117,9 @@ def login():
 def logout():
     logout_user() 
     flash('Você foi desconectado com sucesso.', 'success')
-    return redirect('/index')
+    return redirect(url_for('auth.index'))
 
-@bp.route('/index')
-@bp.route('/')
-@login_required
-def index():
-    return render_template('index.html')
 
-def executar_query(query, params=None):
-    connection = get_db_connection()
-    try: 
-        with connection.cursor() as cursor: 
-            cursor.execute(query, params)
-            connection.commit()
-    finally: 
-        connection.close()
 
 
 

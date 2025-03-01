@@ -1,10 +1,9 @@
 from flask import Flask , Blueprint, render_template, request, redirect, url_for, flash
 from app.controllers.alunos import executar_query
-from app.models.models import Aluno
 from flask_login import LoginManager, current_user, login_required
-from app import app, get_db_connection
+from app import get_db_connection
 
-bp = Blueprint('aluno_disciplina', __name__, url_prefix='')
+bp = Blueprint('aluno_disciplina', __name__, url_prefix='/aluno_disciplina')
 
 @bp.route('/')
 def index():

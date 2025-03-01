@@ -1,9 +1,7 @@
 from flask import Flask , Blueprint, render_template, request, redirect, url_for, flash
-from controllers.alunos import executar_query
-from app.models.models import Aluno
+from app.controllers.auth import executar_query
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
-from app import app, get_db_connection
-import pymysql
+from app import get_db_connection
 from pymysql.err import IntegrityError
 
 bp = Blueprint('alunos', __name__, url_prefix='/alunos')
@@ -11,6 +9,7 @@ bp = Blueprint('alunos', __name__, url_prefix='/alunos')
 @bp.route('/')
 def index():
     return render_template('alunos/index.html') 
+
 # Cadastrar aluno
 @bp.route('/cad_aluno', methods=['POST', 'GET'])
 @login_required

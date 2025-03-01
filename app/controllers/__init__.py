@@ -1,5 +1,4 @@
 from flask import Blueprint
-from main import app
 
 controllers = Blueprint('controllers',__name__ )
 
