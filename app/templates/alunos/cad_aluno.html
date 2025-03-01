@@ -22,7 +22,7 @@ Cadastro de Alunos
             {% endif %}
             {% endwith %}
             
-            <form action="{{ url_for('cad_aluno') }}" method="post" class="forms-sample">
+            <form action="{{ url_for('alunos.cad_aluno') }}" method="post" class="forms-sample">
                 <div class="form-group">
                     <label for="nome">Nome</label>
                     <input class="form-control" type="text" id="nome" name="nome" required>
