@@ -9,7 +9,7 @@ Editar Curso
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Editar Curso</h4>
-            <form action="/edit_curso/{{ curso.cur_id }}" method="POST">
+            <form action="{{ url_for('cursos.edit_curso', cur_id=curso.cur_id) }}" method="POST">
                 <div class="form-group">
                     <label for="descricao">Nome:</label>
                     <input class="form-control" type="text" name="nome" value="{{ curso.cur_nome }}" required>

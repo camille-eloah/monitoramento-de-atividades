@@ -22,7 +22,7 @@ Cadastro de Aulas
             {% endif %}
             {% endwith %}
             
-            <form action="{{ url_for('cad_aulas') }}" method="post" class="forms-sample">
+            <form action="{{ url_for('aulas.cad_aulas') }}" method="post" class="forms-sample">
                 <div class="form-group">
                     <label for="descricao">Descrição da Aula:</label>
                     <input class="form-control" type="text" id="descricao" name="descricao" required>
@@ -85,21 +85,21 @@ Cadastro de Aulas
                         </td>
                         <td style="padding: 8px; border: 1px solid #ddd;">
                         <!-- Botão para editar -->
-                        <form action="/edit_aula/{{ aula.aul_id }}" method="get" style="display: inline;">
+                        <form action="{{ url_for('aulas.edit_aula', aul_id=aula.aul_id) }}" method="get" style="display: inline;">
                             <button type="submit" style="background: none; border: none; color: blue; cursor: pointer; text-decoration: underline;">
                                 Editar
                             </button>
                         </form>
 
                         <!-- Botão para remover -->
-                        <form action="{{ url_for('delete_aula', aul_id=aula.aul_id) }}" method="post" style="display: inline;">
+                        <form action="{{ url_for('aulas.delete_aula', aul_id=aula.aul_id) }}" method="post" style="display: inline;">
                             <button type="submit" style="background: none; border: none; color: red; cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover esta aula?');">
                                 Remover
                             </button>
                         </form>
 
                         <!-- Botão para adicionar frequência -->
-                        <form action="{{ url_for('add_frequencia', aul_id=aula.aul_id) }}" method="get" style="display: inline;">
+                        <form action="{{ url_for('aulas.add_frequencia', aul_id=aula.aul_id) }}" method="get" style="display: inline;">
                             <button type="submit" style="background: none; border: none; color: var(--success-color); cursor: pointer; text-decoration: underline;">
                                 Frequência
                             </button>

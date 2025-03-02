@@ -22,7 +22,7 @@ Cadastro de Alunos
             {% endif %}
             {% endwith %}
             
-            <form action="{{ url_for('cad_aluno') }}" method="post" class="forms-sample">
+            <form action="{{ url_for('alunos.cad_aluno') }}" method="post" class="forms-sample">
                 <div class="form-group">
                     <label for="nome">Nome</label>
                     <input class="form-control" type="text" id="nome" name="nome" required>
@@ -85,14 +85,16 @@ Cadastro de Alunos
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ aluno.alu_data_nasc }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">
                         <!-- Botão para editar -->
-                        <form action="/edit_aluno/{{ aluno.alu_matricula }}" method="get" style="display: inline;">
+                        <form action="{{ url_for('alunos.edit_aluno', alu_matricula=aluno.alu_matricula) }}" method="get" style="display: inline;">
+                            
                             <button type="submit" style="background: none; border: none; color: blue; cursor: pointer; text-decoration: underline;">
                                 Editar
                             </button>
                         </form>
 
                         <!-- Botão para remover -->
-                        <form action="{{ url_for('delete_aluno', alu_matricula=aluno.alu_matricula) }}" method="post" style="display: inline;">
+                        <form action=" {{ url_for('alunos.delete_aluno', alu_matricula=aluno.alu_matricula) }}" method="post" style="display: inline;">
+                           
                             <button type="submit" style="background: none; border: none; color: red; cursor: pointer; text-decoration: underline;" onclick="return confirm('Tem certeza que deseja remover este aluno?');">
                                 Remover
                             </button>

@@ -24,7 +24,7 @@ Cadastro
             {% endwith %}
 
 
-            <form method="POST" action="/cadastro" class="forms-sample">
+            <form method="POST" action="{{url_for('auth.cadastro')}}" class="forms-sample">
                 <div class="form-group">
                     <label for="nome">Nome</label>
                     <input type="text" class="form-control" id="nome" name="nome" required>
@@ -45,7 +45,7 @@ Cadastro
                 <button class="btn btn-primary me-2" type="submit">Cadastrar</button>
             </form>
             <!-- Link para a página inicial -->
-            <p class="card-description">Já tem uma conta? <a href="/login">Faça login</a></p>
+            <p class="card-description">Já tem uma conta? <a href="{{url_for('auth.login')}}">Faça login</a></p>
         </div>
     </div>
 </main>
