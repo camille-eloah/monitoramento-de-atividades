@@ -46,7 +46,7 @@ def registro_entrega(ati_id):
                     executar_query(query_insert, (aluno_id, ati_id, situacao, float(nota), data_entrega))
 
         flash("Entregas registradas com sucesso!", "success")
-        return redirect(f'/registro_entrega/{ati_id}')
+        return redirect(url_for(f'entregas.registro_entrega',{ati_id}))
 
     with connection.cursor() as cursor:
         # Buscar informações da atividade

@@ -44,7 +44,7 @@ def cad_aluno():
             else:
                 flash("Erro ao cadastrar aluno. Tente novamente mais tarde.", "danger")
 
-        return redirect(url_for('cad_aluno'))
+        return redirect(url_for('alunos.cad_aluno'))
 
     connection.close()
     return render_template('alunos/cad_aluno.html', alunos=alunos, cursos=cursos)
@@ -70,7 +70,7 @@ def edit_aluno(alu_matricula):
 
         if not aluno:
             flash("Aluno não encontrado.", "warning")
-            return redirect('/cad_aluno')
+            return redirect(url_for('alunos.cad_aluno'))
 
         if request.method == 'POST':
             novo_nome = request.form['nome']
@@ -93,7 +93,7 @@ def edit_aluno(alu_matricula):
                 cursor.execute(query, (novo_nome, nova_matricula, novo_email, novo_curso, nova_data_nasc, alu_matricula))
             connection.commit()
             flash("Aluno atualizado com sucesso!", "success")
-            return redirect('/cad_aluno')
+            return redirect(url_for('alunos.cad_aluno'))
 
     except Exception as e:
         flash(f"Erro inesperado: {str(e)}", "danger")
@@ -116,7 +116,7 @@ def delete_aluno(alu_matricula):
     finally:
         connection.close()
     
-    return redirect(url_for('cad_aluno'))
+    return redirect(url_for('alunos.cad_aluno'))
 
 
 

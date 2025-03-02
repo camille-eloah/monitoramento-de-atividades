@@ -66,7 +66,7 @@ def adicionar_alunos_disciplina(dis_id):
                 connection.rollback()
                 flash(f"Erro ao adicionar alunos: {str(e)}", "error")
 
-            return redirect(url_for('adicionar_alunos_disciplina', dis_id=dis_id))
+            return redirect(url_for('aluno_disciplina.adicionar_alunos_disciplina', dis_id=dis_id))
 
         elif 'remover' in request.form:
             # Recebe os alunos para remover
@@ -86,7 +86,7 @@ def adicionar_alunos_disciplina(dis_id):
                 connection.rollback()
                 flash(f"Erro ao remover aluno: {str(e)}", "error")
 
-            return redirect(url_for('adicionar_alunos_disciplina', dis_id=dis_id))
+            return redirect(url_for('aluno_disciplina.adicionar_alunos_disciplina', dis_id=dis_id))
 
     connection.close()
     return render_template('disciplinas/adicionar_aluno_disciplina.html', 

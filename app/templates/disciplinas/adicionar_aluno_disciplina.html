@@ -24,7 +24,7 @@ Adicionar Alunos à Disciplina
             {% endwith %}
 
             <!-- Formulário para adicionar alunos -->
-            <form action="{{ url_for('adicionar_alunos_disciplina', dis_id=disciplina.dis_id) }}" method="post">
+            <form action="{{ url_for('aluno_disciplina.adicionar_alunos_disciplina', dis_id=disciplina.dis_id) }}" method="post">
                 <div class="form-group">
                     <label for="alunos">Selecione os Alunos:</label>
                     <select name="alunos" id="alunos" multiple class="form-control" style="height: 200px;">
@@ -41,7 +41,7 @@ Adicionar Alunos à Disciplina
                 {% for aluno in alunos_associados %}
                 <li class="list-group-item">
                     {{ aluno.alu_nome }}
-                    <form action="{{ url_for('adicionar_alunos_disciplina', dis_id=disciplina.dis_id) }}" method="post" style="display:inline;">
+                    <form action="{{ url_for('aluno_disciplina.adicionar_alunos_disciplina', dis_id=disciplina.dis_id) }}" method="post" style="display:inline;">
                         <input type="hidden" name="aluno_id" value="{{ aluno.alu_id }}">
                         <button type="submit" class="btn btn-danger btn-sm" name="remover">Remover</button>
                     </form>

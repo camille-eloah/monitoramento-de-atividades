@@ -24,7 +24,7 @@ Editar Alunos
                         {% endif %}
                         {% endwith %}
             
-            <form action="/edit_aluno/{{ aluno.alu_matricula }}" method="POST" class="forms-sample">
+            <form action="{{ url_for('alunos.edit_aluno', alu_matricula=aluno.alu_matricula) }}" method="POST" class="forms-sample">
                 <div class="form-group">
                     <label for="nome">Nome:</label>
                     <input class="form-control" type="text" id="nome" name="nome" value="{{ aluno.alu_nome }}" required>

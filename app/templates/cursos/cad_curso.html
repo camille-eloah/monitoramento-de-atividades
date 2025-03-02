@@ -23,7 +23,7 @@ Cadastro de Cursos
             {% endif %}
             {% endwith %}
 
-            <form action="{{ url_for('cad_curso') }}" method="post" class="forms-sample">
+            <form action="{{ url_for('cursos.cad_curso') }}" method="post" class="forms-sample">
                 <div class="form-group">
                     <label for="nome">Nome do Curso:</label>
                     <input class="form-control" type="text" id="nome" name="nome" required>
@@ -65,29 +65,28 @@ Cadastro de Cursos
                     <tr>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ curso.cur_nome }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ curso.cur_descricao }}</td>
-
                         <td style="padding: 8px; border: 1px solid #ddd;">
                             <!-- Botão para editar -->
-                            <form action="/edit_curso/{{ curso.cur_id }}" method="get" style="display: inline;">
-                                <button type="submit"
-                                    style="background: none; border: none; color: blue; cursor: pointer; text-decoration: underline;">
-                                    Editar
-                                </button>
-                            </form>
+                    <form action="{{ url_for('cursos.edit_curso', cur_id=curso.cur_id) }}" method="get" style="display: inline;">
+                        <button type="submit"
+                        style="background: none; border: none; color: blue; cursor: pointer; text-decoration: underline;">
+                        Editar
+                        </button>
+                    </form>
 
-                            <!-- Botão para remover -->
-                            <form action="{{ url_for('delete_curso', cur_id=curso.cur_id) }}" method="post"
-                                style="display: inline;">
-                                <button type="submit"
-                                    style="background: none; border: none; color: red; cursor: pointer; text-decoration: underline;"
-                                    onclick="return confirm('Tem certeza que deseja remover este curso?');">
-                                    Remover
-                                </button>
-                            </form>
+                <!-- Botão para remover -->
+                    <form action="{{ url_for('cursos.delete_curso', cur_id=curso.cur_id) }}" method="post"
+                        style="display: inline;">
+                        <button type="submit"
+                        style="background: none; border: none; color: red; cursor: pointer; text-decoration: underline;"
+                        onclick="return confirm('Tem certeza que deseja remover este curso?');">
+                        Remover
+                        </button>
+                    </form>
+                    </td>
+                </tr>
+{% endfor %}
 
-                        </td>
-                    </tr>
-                    {% endfor %}
                 </tbody>
             </table>
             {% else %}

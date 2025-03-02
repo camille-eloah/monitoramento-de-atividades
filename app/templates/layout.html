@@ -89,13 +89,13 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Cadastros</a>
                         <div class="dropdown-menu m-0">
-                            <a href="/cadastro" class="dropdown-item">Registre-se</a>
-                            <a href="/cad_curso" class="dropdown-item">Cadastrar Cursos</a>
-                            <a href="/cad_aluno" class="dropdown-item">Cadastrar Alunos</a>
-                            <a href="/cad_disciplinas" class="dropdown-item">Cadastrar Disciplinas</a>
-                            <a href="/cad_atividades" class="dropdown-item">Cadastrar Atividades</a>
-                            <a href="/cad_aulas" class="dropdown-item">Cadastrar Aulas</a>
-                            <a href="/relatorios" class="dropdown-item">Relatórios e Consultas</a>
+                            <a href="{{url_for('auth.cadastro')}}" class="dropdown-item">Registre-se</a>
+                            <a href="{{url_for('cursos.cad_curso')}}" class="dropdown-item">Cadastrar Cursos</a>
+                            <a href="{{url_for('alunos.cad_aluno')}}" class="dropdown-item">Cadastrar Alunos</a>
+                            <a href="{{url_for('disciplinas.cad_disciplinas')}}" class="dropdown-item">Cadastrar Disciplinas</a>
+                            <a href="{{url_for('atividades.cad_atividades')}}" class="dropdown-item">Cadastrar Atividades</a>
+                            <a href="{{url_for('aulas.cad_aulas')}}" class="dropdown-item">Cadastrar Aulas</a>
+                            <a href="{{url_for('relatorios.relatorios')}}" class="dropdown-item">Relatórios e Consultas</a>
                             {% if current_user.is_authenticated %}
                             <li><a href="/logout">Logout</a></li>
                             {% else %}

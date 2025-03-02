@@ -22,7 +22,7 @@ Editar Atividade
             {% endif %}
             {% endwith %}
             
-            <form action="{{ url_for('edit_atividade', ati_id=atividade.ati_id) }}" method="post" class="forms-sample">
+            <form action="{{ url_for('atividades.edit_atividade', ati_id=atividade.ati_id) }}" method="post" class="forms-sample">
                 <div class="form-group">
                     <label for="disciplina">Disciplina:</label>
                     <select class="form-control" id="disciplina" name="disciplina" required>

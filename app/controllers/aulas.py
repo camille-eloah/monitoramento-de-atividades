@@ -81,7 +81,7 @@ def cad_aulas():
             connection.rollback()
             flash(f"Erro inesperado: {str(e)}", "error")
         
-        return redirect(url_for('cad_aulas'))
+        return redirect(url_for('aulas.cad_aulas'))
 
     connection.close()
     return render_template('aulas/cad_aulas.html', aulas=aulas, professores=professores, disciplinas=disciplinas)
@@ -116,7 +116,7 @@ def edit_aula(aul_id):
         """
         executar_query(query, (nova_descricao, nova_data, aul_id))
 
-        return redirect('/cad_aulas')
+        return redirect(url_for('aulas.cad_aulas'))
 
     connection.close()
     return render_template('aulas/edit_aula.html', aula=aula, professores=professores, disciplinas=disciplinas)
@@ -138,5 +138,5 @@ def delete_aula(aul_id):
     finally:
         connection.close()
 
-    return redirect('/cad_aulas')
+    return redirect(url_for('aulas.cad_aulas'))
 

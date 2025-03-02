@@ -48,7 +48,7 @@ def cad_atividades():
                     INNER JOIN tb_disciplinas d ON a.ati_dis_id = d.dis_id
                     """)
                     atividades = cursor.fetchall()
-                return redirect('/cad_atividades')
+                return redirect(url_for('atividades.cad_atividades'))
             
             except IntegrityError as e:
                 if "Duplicate entry" in str(e):
@@ -118,7 +118,7 @@ def edit_atividade(ati_id):
                 cursor.execute(query, (dis_id, novo_tipo, nova_descricao, nova_data_entr, novo_peso, ati_id))
             connection.commit()
             flash("Atividade atualizada com sucesso!", "success")
-            return redirect('/cad_atividades')
+            return redirect(url_for('atividades.cad_atividades'))
 
     except Exception as e:
         flash(f"Erro inesperado: {str(e)}", "danger")
@@ -144,4 +144,4 @@ def delete_atividade(ati_id):
     finally:
         connection.close()
 
-    return redirect('/cad_atividades')
+    return redirect(url_for('atividades.cad_atividades'))

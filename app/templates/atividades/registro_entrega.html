@@ -26,7 +26,7 @@ main
         <p><strong>Disciplina:</strong> {{ disciplina.dis_nome }}</p>
         <p><strong>Prazo:</strong> {{ atividade.ati_data_entrega }}</p>
 
-        <form action="/registro_entrega/{{ ati_id }}" method="POST">
+        <form action="{{ url_for('entregas.registro_entrega', ati_id=atividade.ati_id) }}" method="POST">
             <table class="table table-bordered">
                 <thead>
                     <tr>

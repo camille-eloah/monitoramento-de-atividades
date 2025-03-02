@@ -41,7 +41,7 @@ def cad_curso():
             else:
                 flash("Erro ao cadastrar o curso. Tente novamente mais tarde.", "error")
         
-        return redirect(url_for('cad_curso'))
+        return redirect(url_for('cursos.cad_curso'))
 
     connection.close()
 
@@ -72,7 +72,7 @@ def edit_curso(cur_id):
 
             # Mensagem flash de sucesso
             flash("Curso atualizado com sucesso!", "success")
-            return redirect('/cad_curso')
+            return redirect(url_for('cursos.cad_curso'))
         
         except Exception as e:
             # Mensagem flash de erro
@@ -100,4 +100,4 @@ def delete_curso(cur_id):
     finally:
         connection.close()
 
-    return redirect('/cad_curso')
+    return redirect(url_for('cursos.cad_curso'))

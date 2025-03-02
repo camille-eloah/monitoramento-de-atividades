@@ -159,7 +159,7 @@ def edit_disciplinas(dis_id):
             connection.rollback()
             flash(f"Erro ao atualizar disciplina: {e}", category="error")
 
-        return redirect('/cad_disciplinas')
+        return redirect (url_for('disciplinas.cad_disciplinas'))
 
     connection.close()
 
@@ -187,4 +187,4 @@ def delete_disciplina(dis_id):
     finally:
         connection.close()
 
-    return redirect(url_for('cad_disciplinas'))
+    return redirect(url_for('disciplinas.cad_disciplinas'))
