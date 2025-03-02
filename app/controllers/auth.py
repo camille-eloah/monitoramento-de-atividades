@@ -57,7 +57,7 @@ def cadastro():
 
             # Mensagem de sucesso
             flash('Usuário cadastrado com sucesso!', 'success')
-            return redirect('auth.login')  # Redireciona para o login
+            return redirect(url_for('auth.login'))
 
         except IntegrityError as e:
             # Tratamento de erro de duplicidade (e-mail ou nome já existente)
@@ -118,8 +118,3 @@ def logout():
     logout_user() 
     flash('Você foi desconectado com sucesso.', 'success')
     return redirect(url_for('auth.index'))
-
-
-
-
-
