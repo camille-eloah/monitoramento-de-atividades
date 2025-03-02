@@ -6,7 +6,7 @@ def get_db_connection():
     connection = pymysql.connect(
         host='127.0.0.1',
         user='root',
-        password='usbw',
+        password='',
         database='db_monitoramento',
         cursorclass=pymysql.cursors.DictCursor
     )
@@ -31,7 +31,7 @@ def create_app():
     # Importação e registro dos Blueprints
     from app.controllers import (
         aluno_disciplina, alunos, atividades, aulas, cursos, 
-        disciplinas, relatorios, entregas, auth
+        disciplinas, relatorios, auth, index
     )
     
     app.register_blueprint(aluno_disciplina.bp)
@@ -42,6 +42,6 @@ def create_app():
     app.register_blueprint(disciplinas.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(relatorios.bp)
-    app.register_blueprint(entregas.bp)
+    app.register_blueprint(index.bp)
     
     return app

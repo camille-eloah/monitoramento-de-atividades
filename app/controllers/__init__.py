@@ -10,8 +10,8 @@ all = [
     'auth',
     'relatorios',
     'aulas',
-    'entregas',
     'disciplinas',
     'aluno_disciplina',
-    'atividades'
+    'atividades',
+    'index'
 ]
