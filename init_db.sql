@@ -12,7 +12,7 @@ create table if not exists tb_disciplinas (
 create table if not exists tb_alunos (
     alu_id integer auto_increment primary key,
     alu_nome VARCHAR(50) not null,
-    alu_matricula int not null unique,
+    alu_matricula text not null unique,
     alu_email VARCHAR(100) not null unique,
     alu_curso VARCHAR(50) not null,
     alu_data_nasc date not null
