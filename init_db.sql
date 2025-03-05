@@ -1,6 +1,5 @@
-create database db_monitoramento;
-use db_monitoramento;
-
+CREATE DATABASE IF NOT EXISTS db_monitoramento;
+USE db_monitoramento;
 
 create table if not exists tb_disciplinas (
     dis_id integer auto_increment primary key,
