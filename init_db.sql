@@ -57,8 +57,6 @@ create table if not exists tb_cursos_disciplinas (
     foreign key (cd_dis_id) references tb_disciplinas(dis_id) ON DELETE CASCADE
 );
 
-
-
 create table if not exists tb_atividades (
     ati_id integer auto_increment primary key,
     ati_dis_id integer not null,
@@ -89,4 +87,26 @@ CREATE TABLE if not exists tb_aluno_atividade (
     foreign key (alunoativ_ati_id) references tb_atividades(ati_id) ON DELETE CASCADE
 
 
+);
+
+CREATE TABLE IF NOT EXISTS tb_aluno_media (
+    media_id INT AUTO_INCREMENT PRIMARY KEY,
+    media_alu_id INT NOT NULL,
+    media_dis_id INT NOT NULL,
+    media_calculada FLOAT NOT NULL,
+    FOREIGN KEY (media_alu_id) REFERENCES tb_alunos(alu_id) ON DELETE CASCADE,
+    FOREIGN KEY (media_dis_id) REFERENCES tb_disciplinas(dis_id) ON DELETE CASCADE,
+    UNIQUE (media_alu_id, media_dis_id)  -- Garantindo que cada aluno tenha apenas uma média por disciplina
+);
+
+
+CREATE TABLE IF NOT EXISTS logs_notas (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    operacao VARCHAR(10),  -- Tipo de operação: INSERT, UPDATE ou DELETE
+    aluno_id INT,
+    disciplina_id INT,
+    nota FLOAT,
+    data_operacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tipo_avaliacao VARCHAR(200),
+    peso INT
 );
