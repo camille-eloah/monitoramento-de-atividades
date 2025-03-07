@@ -97,7 +97,7 @@ def create_function_calcular_media():
     connection = get_db_connection()
     try:
         with connection.cursor(dictionary=True) as cursor:
-            # Drop the function if it already exists
+            # Dropa a função se já existir
             drop_function_sql = "DROP FUNCTION IF EXISTS calcular_media;"
             print("Removendo função calcular_media existente (se houver)...")
             cursor.execute(drop_function_sql)
@@ -220,7 +220,7 @@ def create_trigger_verificar_frequencia():
     connection = get_db_connection()
     try:
         with connection.cursor(dictionary=True) as cursor:
-            # Drop the trigger if it already exists
+            # Dropa a trigger se já existir
             drop_trigger_sql = "DROP TRIGGER IF EXISTS verificar_frequencia;"
             print("Removendo trigger verificar_frequencia existente (se houver)...")
             cursor.execute(drop_trigger_sql)
@@ -279,7 +279,7 @@ def create_trigger_log_notas():
     connection = get_db_connection()
     try:
         with connection.cursor(dictionary=True) as cursor:
-            # Drop the triggers if they already exist
+            # Dropa a trigger se já existir
             drop_trigger_insert_sql = "DROP TRIGGER IF EXISTS log_notas;"
             drop_trigger_update_sql = "DROP TRIGGER IF EXISTS log_notas_update;"
             drop_trigger_delete_sql = "DROP TRIGGER IF EXISTS log_notas_delete;"
@@ -340,7 +340,7 @@ def create_trigger_log_notas():
 def create_app():
     # Criar a aplicação Flask
     app = Flask(__name__)
-    app.secret_key = 'SUPERULTRASEGREDO'  # Idealmente, use uma variável de ambiente
+    app.secret_key = 'SUPERULTRASEGREDO'  
 
     # Criar e inicializar o banco de dados
     initialize_database()
