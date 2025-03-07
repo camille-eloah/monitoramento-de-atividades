@@ -4,10 +4,10 @@ from passlib.context import CryptContext
 # Conexão com o banco de dados
 def get_db_connection():
     return pymysql.connect(
-        host='localhost',  # Altere conforme seu servidor de banco de dados
-        user='root',  # Altere conforme seu usuário de banco de dados
-        password='',  # Altere conforme a senha do seu banco
-        database='db_monitoramento',  # Nome do banco de dados
+        host='localhost', 
+        user='root', 
+        password='',  
+        database='db_monitoramento',  
         cursorclass=pymysql.cursors.DictCursor
     )
 
@@ -19,7 +19,7 @@ def insert_admin():
     admin_nome = "admin"
     admin_email = "admin@gmail.com"
     admin_senha = "123"
-    admin_prof_admin = 1  # Tornando o usuário um administrador
+    admin_prof_admin = 1 
     
     # Criptografando a senha com passlib (bcrypt)
     hashed_senha = pwd_context.hash(admin_senha)
