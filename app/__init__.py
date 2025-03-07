@@ -234,11 +234,17 @@ def create_trigger_verificar_frequencia():
                     DECLARE total_aulas INT;
                     DECLARE aulas_presentes INT;
                     DECLARE frequencia_percentual FLOAT;
+                    DECLARE disciplina_id INT;
+
+                    -- Obtém o ID da disciplina da tabela tb_aulas
+                    SELECT aul_dis_id INTO disciplina_id
+                    FROM tb_aulas
+                    WHERE aul_id = NEW.freq_aula_id;
 
                     -- Calcula o total de aulas da disciplina
                     SELECT COUNT(*) INTO total_aulas
                     FROM tb_aulas
-                    WHERE aul_dis_id = NEW.freq_aula_id;
+                    WHERE aul_dis_id = disciplina_id;
 
                     -- Conta quantas presenças o aluno teve na disciplina
                     SELECT COUNT(*) INTO aulas_presentes
@@ -246,7 +252,7 @@ def create_trigger_verificar_frequencia():
                     JOIN tb_aulas a ON af.freq_aula_id = a.aul_id
                     WHERE af.freq_alu_id = NEW.freq_alu_id
                     AND af.freq_frequencia = 1
-                    AND a.aul_dis_id = NEW.freq_dis_id;
+                    AND a.aul_dis_id = disciplina_id;
 
                     -- Calcula o percentual de frequência
                     IF total_aulas > 0 THEN
@@ -255,10 +261,9 @@ def create_trigger_verificar_frequencia():
                         SET frequencia_percentual = 0;
                     END IF;
 
-                    -- Aqui não fazemos o UPDATE diretamente na tabela tb_aluno_media,
-                    -- apenas registramos o resultado de frequência.
-                    INSERT INTO tb_aluno_frequencia (freq_alu_id, freq_dis_id, frequencia_percentual)
-                    VALUES (NEW.freq_alu_id, NEW.freq_dis_id, frequencia_percentual);
+                    -- Inserir os resultados na tabela de frequências calculadas
+                    INSERT INTO tb_frequencia_calculada (freq_aula_id, freq_alu_id, frequencia_percentual)
+                    VALUES (NEW.freq_aula_id, NEW.freq_alu_id, frequencia_percentual);
 
                 END;
             """
@@ -266,11 +271,14 @@ def create_trigger_verificar_frequencia():
             print("Criando trigger verificar_frequencia...")
             cursor.execute(create_trigger_sql)
             print("Trigger verificar_frequencia criado com sucesso!")
+
         connection.commit()
+
     except Exception as e:
         print(f"Erro ao criar o trigger verificar_frequencia: {e}")
     finally:
         connection.close()
+
 
 
 

@@ -111,3 +111,12 @@ CREATE TABLE IF NOT EXISTS logs_notas (
     tipo_avaliacao VARCHAR(200),
     peso INT
 );
+
+CREATE TABLE if not exists tb_frequencia_calculada (
+    freq_calculada_id INT AUTO_INCREMENT PRIMARY KEY,
+    freq_aula_id INT NOT NULL,
+    freq_alu_id INT NOT NULL,
+    frequencia_percentual FLOAT,
+    FOREIGN KEY (freq_aula_id) REFERENCES tb_aulas(aul_id) ON DELETE CASCADE,
+    FOREIGN KEY (freq_alu_id) REFERENCES tb_alunos(alu_id) ON DELETE CASCADE
+);
