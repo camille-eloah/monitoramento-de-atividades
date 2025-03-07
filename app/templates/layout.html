@@ -107,6 +107,7 @@
                             <a href="{{url_for('aulas.cad_aulas')}}" class="dropdown-item">Cadastrar Aulas</a>
                             <a href="{{url_for('relatorios.relatorios')}}" class="dropdown-item">Relatórios e Consultas</a>
                             <a href="{{url_for('relatorios.media_alunos')}}" class="dropdown-item">Média dos alunos</a>
+                            <a href="{{url_for('logs.index')}}" class="dropdown-item">Logs</a>
                             {% if current_user.is_authenticated %}
                             <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                             {% else %}
