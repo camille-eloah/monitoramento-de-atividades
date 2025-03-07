@@ -17,7 +17,7 @@ def relatorios():
     connection = get_db_connection()
 
     # Busca os dados necessários para os relatórios
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         # Consulta os alunos
         cursor.execute("SELECT * FROM tb_alunos")
         alunos = cursor.fetchall()

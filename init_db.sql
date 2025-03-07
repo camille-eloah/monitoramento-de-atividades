@@ -111,9 +111,9 @@ CREATE TABLE IF NOT EXISTS logs_notas (
     peso INT
 );
 
-------------------------------
+-- ----------------------------
 -- NÃO ESTÁ FUNCIONANDO NO INIT_DB.SQL! SÓ FUNCIONA NO MYSQL WORKBENCH:
-------------------------------
+-- ----------------------------
 
 -- ---------------- FUNÇÕES, TRIGGERS E PROCEDURES ------------------ 
 -- ---------------------------------------------------------------------- 
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS logs_notas (
 
 DROP FUNCTION IF EXISTS calcular_media;
 
-DELIMITER $$
+
 
 CREATE FUNCTION calcular_media(id_aluno INT, id_disciplina INT) 
 RETURNS FLOAT
@@ -172,9 +172,9 @@ BEGIN
     ON DUPLICATE KEY UPDATE media_calculada = media;  -- Se já existir um registro, atualiza a média
 
     RETURN media;
-END $$
+END;
 
-DELIMITER ;
+
 
 -- ---------------------------------------------------------------------- 
 -- 2. REGISTRAR_NOTA (registra nota do aluno em uma atividade)
@@ -182,7 +182,7 @@ DELIMITER ;
 -- EXEMPLO DE USO: registrar_nota(id_aluno, id_disciplina, nota, tipo_avaliacao, peso)
 -- CALL registrar_nota(1, 1, 95, 'Prova 4', 50);
 
-DELIMITER $$
+
 
 CREATE PROCEDURE registrar_nota(
     IN id_aluno INT,
@@ -233,9 +233,7 @@ BEGIN
         VALUES (id_aluno, atividade_id, nota, 'Entregue', NOW());
     END IF;
 
-END $$
-
-DELIMITER ;
+END;
 
 -- ---------------------------------------------------------------------- 
 -- 3. VERIFICAR FREQUÊNCIA (impede calcular_media caso a frequência do aluno na disciplina seja menor que 75%)
@@ -243,7 +241,7 @@ DELIMITER ;
 
 DROP TRIGGER IF EXISTS verificar_frequencia;
 
-DELIMITER $$
+
 
 CREATE TRIGGER verificar_frequencia
 BEFORE INSERT ON tb_aluno_media
@@ -276,9 +274,7 @@ BEGIN
     IF frequencia_percentual < 75 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Frequência insuficiente para calcular a média (menor que 75%)';
     END IF;
-END $$
-
-DELIMITER ;
+END; 
 
 -- ---------------------------------------------------------------------- 
 -- 4. LOG_NOTAS (registra inserção, edição e exclusão de notas na tabela logs_notas)
@@ -286,7 +282,6 @@ DELIMITER ;
 
 DROP TRIGGER IF EXISTS log_notas;
 
-DELIMITER $$
 
 CREATE TRIGGER log_notas
 AFTER INSERT ON tb_aluno_atividade
@@ -297,11 +292,9 @@ BEGIN
     VALUES ('INSERT', NEW.alunoativ_alu_id, (SELECT ati_dis_id FROM tb_atividades WHERE ati_id = NEW.alunoativ_ati_id), NEW.alunoativ_nota, 
             (SELECT ati_tipo FROM tb_atividades WHERE ati_id = NEW.alunoativ_ati_id), 
             (SELECT ati_peso FROM tb_atividades WHERE ati_id = NEW.alunoativ_ati_id));
-END $$
+END; 
 
-DELIMITER ;
 
-DELIMITER $$
 
 CREATE TRIGGER log_notas_update
 AFTER UPDATE ON tb_aluno_atividade
@@ -312,11 +305,9 @@ BEGIN
     VALUES ('UPDATE', NEW.alunoativ_alu_id, (SELECT ati_dis_id FROM tb_atividades WHERE ati_id = NEW.alunoativ_ati_id), NEW.alunoativ_nota, 
             (SELECT ati_tipo FROM tb_atividades WHERE ati_id = NEW.alunoativ_ati_id), 
             (SELECT ati_peso FROM tb_atividades WHERE ati_id = NEW.alunoativ_ati_id));
-END $$
+END; 
 
-DELIMITER ;
 
-DELIMITER $$
 
 CREATE TRIGGER log_notas_delete
 AFTER DELETE ON tb_aluno_atividade
@@ -327,6 +318,5 @@ BEGIN
     VALUES ('DELETE', OLD.alunoativ_alu_id, (SELECT ati_dis_id FROM tb_atividades WHERE ati_id = OLD.alunoativ_ati_id), OLD.alunoativ_nota, 
             (SELECT ati_tipo FROM tb_atividades WHERE ati_id = OLD.alunoativ_ati_id), 
             (SELECT ati_peso FROM tb_atividades WHERE ati_id = OLD.alunoativ_ati_id));
-END $$
+END; 
 
-DELIMITER ;

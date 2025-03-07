@@ -20,7 +20,7 @@ def adicionar_alunos_disciplina(dis_id):
     ids_alunos_associados = []  # Lista para armazenar os ids dos alunos associados
 
     # Busca todos os alunos
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM tb_alunos")
         alunos = cursor.fetchall()
 
@@ -46,7 +46,7 @@ def adicionar_alunos_disciplina(dis_id):
             alunos_selecionados = request.form.getlist('alunos')  # Lista de IDs dos alunos selecionados
 
             try:
-                with connection.cursor() as cursor:
+                with connection.cursor(dictionary=True) as cursor:
                     for aluno_id in alunos_selecionados:
                         # Verifica se o aluno já está associado à disciplina
                         cursor.execute("""
@@ -73,7 +73,7 @@ def adicionar_alunos_disciplina(dis_id):
             aluno_remover_id = request.form['aluno_id']  # ID do aluno a ser removido
 
             try:
-                with connection.cursor() as cursor:
+                with connection.cursor(dictionary=True) as cursor:
                     # Remove o aluno da tabela de relacionamento tb_alunos_disciplinas
                     cursor.execute("""
                         DELETE FROM tb_alunos_disciplinas

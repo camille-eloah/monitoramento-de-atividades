@@ -21,7 +21,7 @@ def cad_atividades():
 
     try:
         # Selecionar disciplinas existentes
-        with connection.cursor() as cursor:
+        with connection.cursor(dictionary=True) as cursor:
             cursor.execute("SELECT dis_id, dis_nome FROM tb_disciplinas")
             disciplinas = cursor.fetchall()
 
@@ -41,7 +41,7 @@ def cad_atividades():
                 flash("Atividade cadastrada com sucesso!", "success")
 
                 # Atualizar a lista de atividades após inserção
-                with connection.cursor() as cursor:
+                with connection.cursor(dictionary=True) as cursor:
                     cursor.execute(""" 
                     SELECT a.ati_id, a.ati_tipo, a.ati_descricao, a.ati_data_entrega, a.ati_peso, d.dis_nome
                     FROM tb_atividades a
@@ -59,7 +59,7 @@ def cad_atividades():
                 flash(f"Erro inesperado: {str(e)}", "danger")
 
         # Buscar as atividades também no método GET
-        with connection.cursor() as cursor:
+        with connection.cursor(dictionary=True) as cursor:
             cursor.execute(""" 
             SELECT a.ati_id, a.ati_tipo, a.ati_descricao, a.ati_data_entrega, a.ati_peso, d.dis_nome
             FROM tb_atividades a
@@ -82,12 +82,12 @@ def edit_atividade(ati_id):
 
     try:
         # Selecionar atividade específica
-        with connection.cursor() as cursor:
+        with connection.cursor(dictionary=True) as cursor:
             cursor.execute("SELECT * FROM tb_atividades WHERE ati_id = %s", (ati_id,))
             atividade = cursor.fetchone()
 
         # Selecionar disciplinas existentes para preencher o select
-        with connection.cursor() as cursor:
+        with connection.cursor(dictionary=True) as cursor:
             cursor.execute("SELECT dis_id, dis_nome FROM tb_disciplinas")
             disciplinas = cursor.fetchall()
 
@@ -112,7 +112,7 @@ def edit_atividade(ati_id):
             SET ati_dis_id = %s, ati_tipo = %s, ati_descricao = %s, ati_data_entrega = %s, ati_peso = %s
             WHERE ati_id = %s
             """
-            with connection.cursor() as cursor:
+            with connection.cursor(dictionary=True) as cursor:
                 cursor.execute(query, (dis_id, novo_tipo, nova_descricao, nova_data_entr, novo_peso, ati_id))
             connection.commit()
             flash("Atividade atualizada com sucesso!", "success")
@@ -132,7 +132,7 @@ def delete_atividade(ati_id):
     connection = get_db_connection()
 
     try:
-        with connection.cursor() as cursor:
+        with connection.cursor(dictionary=True) as cursor:
             cursor.execute("DELETE FROM tb_atividades WHERE ati_id = %s", (ati_id,))
             connection.commit()
             flash("Atividade deletada com sucesso!", "success")
@@ -160,7 +160,7 @@ def registro_entrega(ati_id):
                     FROM tb_aluno_atividade
                     WHERE alunoativ_alu_id = %s AND alunoativ_ati_id = %s
                 """
-                with connection.cursor() as cursor:
+                with connection.cursor(dictionary=True) as cursor:
                     cursor.execute(query_check, (aluno_id, ati_id))
                     existing_record = cursor.fetchone()
 
@@ -182,7 +182,7 @@ def registro_entrega(ati_id):
         return redirect(url_for('atividades.registro_entrega', ati_id=ati_id))
 
 
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         # Buscar informações da atividade
         cursor.execute("""
             SELECT ati_id, ati_tipo, ati_descricao, ati_data_entrega, ati_dis_id
