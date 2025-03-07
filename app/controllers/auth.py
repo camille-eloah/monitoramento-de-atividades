@@ -24,7 +24,7 @@ def index():
 def executar_query(query, params=None):
     connection = get_db_connection()
     try: 
-        with connection.cursor() as cursor: 
+        with connection.cursor(dictionary=True) as cursor: 
             cursor.execute(query, params)
             connection.commit()
     finally: 
@@ -50,7 +50,7 @@ def cadastro():
         connection = get_db_connection()
         try:
             # Inserir o novo usuário no banco de dados
-            with connection.cursor() as cursor:
+            with connection.cursor(dictionary=True) as cursor:
                 cursor.execute('INSERT INTO tb_professores (prof_nome, prof_email, prof_senha) VALUES (%s, %s, %s)', 
                                (nome, email, hashed_senha))
                 connection.commit()
@@ -81,7 +81,7 @@ def login():
 
         # Conectar ao banco de dados
         connection = get_db_connection()
-        with connection.cursor() as cursor:
+        with connection.cursor(dictionary=True) as cursor:
             # Verifique se está pegando o usuário correto
             cursor.execute('SELECT * FROM tb_professores WHERE prof_nome = %s', (nome,))
             usuario = cursor.fetchone()

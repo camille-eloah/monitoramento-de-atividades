@@ -17,12 +17,13 @@ create table if not exists tb_alunos (
     alu_data_nasc date not null
 );
 
-create table if not exists tb_professores (
-    prof_id integer auto_increment primary key,
-    prof_nome VARCHAR(50) not null,
-    prof_email VARCHAR(100) not null unique,
-    prof_senha VARCHAR(255) not null
-
+CREATE TABLE IF NOT EXISTS tb_professores (
+    prof_id INT AUTO_INCREMENT PRIMARY KEY,
+    prof_nome VARCHAR(50) NOT NULL,
+    prof_email VARCHAR(100) NOT NULL UNIQUE,
+    prof_senha VARCHAR(255) NOT NULL,
+    prof_admin TINYINT(1) DEFAULT 0,  -- Definindo como TINYINT e padrão 0
+    CHECK (prof_admin IN (0, 1))  -- Restringindo os valores para 0 ou 1
 );
 
 create table if not exists tb_aulas (
@@ -93,7 +94,7 @@ CREATE TABLE IF NOT EXISTS tb_aluno_media (
     media_id INT AUTO_INCREMENT PRIMARY KEY,
     media_alu_id INT NOT NULL,
     media_dis_id INT NOT NULL,
-    media_calculada FLOAT NOT NULL,
+    media_calculada FLOAT DEFAULT 0,
     FOREIGN KEY (media_alu_id) REFERENCES tb_alunos(alu_id) ON DELETE CASCADE,
     FOREIGN KEY (media_dis_id) REFERENCES tb_disciplinas(dis_id) ON DELETE CASCADE,
     UNIQUE (media_alu_id, media_dis_id)  -- Garantindo que cada aluno tenha apenas uma média por disciplina

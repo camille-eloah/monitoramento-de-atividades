@@ -13,7 +13,7 @@ class Professor(UserMixin):
         from app import get_db_connection
         
         connection = get_db_connection()
-        with connection.cursor() as cursor:
+        with connection.cursor(dictionary=True) as cursor:
             cursor.execute('SELECT * FROM tb_professores WHERE prof_id = %s', (prof_id,))
             usuario = cursor.fetchone()
             if usuario:

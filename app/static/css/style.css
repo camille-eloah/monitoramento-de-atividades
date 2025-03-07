@@ -73,6 +73,7 @@
     transition: 0.5s;
 }
 
+
 .btn.btn-primary:hover {
     background: var(--bs-white) !important;
     color: var(--bs-primary) !important;

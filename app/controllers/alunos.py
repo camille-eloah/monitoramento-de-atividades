@@ -8,7 +8,7 @@ bp = Blueprint('alunos', __name__, url_prefix='/alunos')
 
 @bp.route('/')
 def index():
-    return render_template('alunos/index.html') 
+    return redirect(url_for('alunos.cad_aluno'))
 
 # Cadastrar aluno
 @bp.route('/cad_aluno', methods=['POST', 'GET'])
@@ -17,7 +17,7 @@ def cad_aluno():
     connection = get_db_connection()
 
     # Busca os alunos para exibir na página
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM tb_alunos")
         alunos = cursor.fetchall()
 
@@ -59,12 +59,12 @@ def edit_aluno(alu_matricula):
 
     try:
         # Selecionar aluno específico
-        with connection.cursor() as cursor:
+        with connection.cursor(dictionary=True) as cursor:
             cursor.execute("SELECT * FROM tb_alunos WHERE alu_matricula = %s", (alu_matricula,))
             aluno = cursor.fetchone()
 
         # Selecionar cursos existentes
-        with connection.cursor() as cursor:
+        with connection.cursor(dictionary=True) as cursor:
             cursor.execute("SELECT cur_id, cur_nome FROM tb_cursos")  # Ajuste para a tabela correta
             cursos = cursor.fetchall()
 
@@ -89,7 +89,7 @@ def edit_aluno(alu_matricula):
             SET alu_nome = %s, alu_matricula = %s, alu_email = %s, alu_curso = %s, alu_data_nasc = %s
             WHERE alu_matricula = %s
             """
-            with connection.cursor() as cursor:
+            with connection.cursor(dictionary=True) as cursor:
                 cursor.execute(query, (novo_nome, nova_matricula, novo_email, novo_curso, nova_data_nasc, alu_matricula))
             connection.commit()
             flash("Aluno atualizado com sucesso!", "success")

@@ -9,7 +9,7 @@ bp = Blueprint('disciplinas', __name__, url_prefix='/disciplinas')
 
 @bp.route('/')
 def index():
-    return render_template('disciplinas/index.html') 
+    return redirect(url_for('disciplinas.cad_disciplinas'))
 
 # Cadastrar disciplina
 @bp.route('/cad_disciplinas', methods=['POST', 'GET'])
@@ -32,7 +32,7 @@ def cad_disciplinas():
             INSERT INTO tb_disciplinas (dis_nome, dis_prof_responsavel, dis_carga_hr)
             VALUES (%s, %s, %s)
             """
-            with connection.cursor() as cursor:
+            with connection.cursor(dictionary=True) as cursor:
                 cursor.execute(query, (nome, prof_responsavel, carga_hr))
                 connection.commit()
 
@@ -53,7 +53,7 @@ def cad_disciplinas():
             flash(f"Erro ao cadastrar disciplina: {e}", category="error")
 
     # Consultar disciplinas, cursos e professores
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         # Buscar todas as disciplinas
         cursor.execute("""
         SELECT d.*, p.prof_nome 
@@ -100,7 +100,7 @@ def edit_disciplinas(dis_id):
     connection = get_db_connection()
 
     # Obter detalhes da disciplina
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         cursor.execute("""
         SELECT * FROM tb_disciplinas WHERE dis_id = %s
         """, (dis_id,))
@@ -131,7 +131,7 @@ def edit_disciplinas(dis_id):
         novos_cursos_ids = request.form.getlist('curso_id')  # IDs dos cursos selecionados
 
         try:
-            with connection.cursor() as cursor:
+            with connection.cursor(dictionary=True) as cursor:
                 # Atualizar detalhes da disciplina
                 cursor.execute("""
                 UPDATE tb_disciplinas 

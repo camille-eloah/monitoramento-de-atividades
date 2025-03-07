@@ -9,7 +9,7 @@ bp = Blueprint('aulas', __name__, url_prefix='/aulas')
 
 @bp.route('/')
 def index():
-    return render_template('aulas/index.html') 
+    return redirect(url_for('aulas.cad_aulas'))
 
 # Cadastro de aulas
 @bp.route('/cad_aulas', methods=['POST', 'GET'])
@@ -21,7 +21,7 @@ def cad_aulas():
     disciplinas = []
 
     # Coleta os professores e disciplinas para o formulário
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM tb_professores")
         professores = cursor.fetchall()
 
@@ -29,7 +29,7 @@ def cad_aulas():
         disciplinas = cursor.fetchall()
 
     # Exibe as aulas já cadastradas
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM tb_aulas")
         aulas = cursor.fetchall()
 
@@ -44,10 +44,10 @@ def cad_aulas():
         VALUES (%s, %s, %s, %s)
         """
         try:
-            with connection.cursor() as cursor:
+            with connection.cursor(dictionary=True) as cursor:
                 # Inserir a nova aula
                 cursor.execute(query_aula, (aul_descricao, aul_data, aul_prof_id, aul_dis_id))
-                aula_id = connection.insert_id()  # Obter o ID da aula recém-criada
+                aula_id = cursor.lastrowid  # Usando lastrowid para pegar o ID da última inserção
 
                 # Obter os alunos da disciplina correspondente
                 cursor.execute("""
@@ -56,7 +56,7 @@ def cad_aulas():
                 WHERE ad_dis_id = %s
                 """, (aul_dis_id,))
                 alunos = cursor.fetchall()
-                
+
                 print("Resultado da consulta alunos:", alunos)
 
                 # Inicializar frequência com "1" para cada aluno
@@ -86,7 +86,6 @@ def cad_aulas():
     connection.close()
     return render_template('aulas/cad_aulas.html', aulas=aulas, professores=professores, disciplinas=disciplinas)
 
-
 #Editar aulas
 @bp.route('/edit_aula/<int:aul_id>', methods=['POST', 'GET'])
 @login_required
@@ -94,7 +93,7 @@ def edit_aula(aul_id):
     connection = get_db_connection()
 
     # Selecionar aula específica
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM tb_aulas WHERE aul_id = %s", (aul_id,))
         aula = cursor.fetchone()
 
@@ -128,7 +127,7 @@ def delete_aula(aul_id):
     connection = get_db_connection()
 
     try:
-        with connection.cursor() as cursor:
+        with connection.cursor(dictionary=True) as cursor:
             cursor.execute("DELETE FROM tb_aulas WHERE aul_id = %s", (aul_id,))
             connection.commit()
             flash("Aula deletada com sucesso!", "success")
@@ -148,7 +147,7 @@ def add_frequencia(aul_id):
         print("Conteúdo do form:", request.form)
         
         try:
-            with connection.cursor() as cursor:
+            with connection.cursor(dictionary=True) as cursor:
                 # Processa cada aluno e sua frequência
                 for alu_id in request.form:
                     if alu_id.startswith('frequencias['):  # Verifica se a chave pertence à frequência
@@ -191,7 +190,7 @@ def add_frequencia(aul_id):
         return redirect(url_for('aulas.add_frequencia', aul_id=aul_id))
 
     # Busca alunos e frequências da aula
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         cursor.execute("""
             SELECT a.alu_id, a.alu_nome, IFNULL(f.freq_frequencia, 0) AS freq_frequencia
             FROM tb_alunos a

@@ -10,7 +10,7 @@ bp = Blueprint('cursos', __name__, url_prefix='/cursos')
 
 @bp.route('/')
 def index():
-    return render_template('cursos/index.html') 
+    return redirect(url_for('cursos.cad_curso'))
 
 #Cadastrar cursos
 @bp.route('/cad_curso', methods=['POST', 'GET'])
@@ -20,7 +20,7 @@ def cad_curso():
     cursos = []
 
     # Exibe os cursos já cadastrados
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM tb_cursos")
         cursos = cursor.fetchall()
 
@@ -54,7 +54,7 @@ def edit_curso(cur_id):
     connection = get_db_connection()
 
     # Selecionar atividade específica
-    with connection.cursor() as cursor:
+    with connection.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM tb_cursos WHERE cur_id = %s", (cur_id,))
         curso = cursor.fetchone()
 
@@ -90,7 +90,7 @@ def delete_curso(cur_id):
     connection = get_db_connection()
 
     try:
-        with connection.cursor() as cursor:
+        with connection.cursor(dictionary=True) as cursor:
             cursor.execute("DELETE FROM tb_cursos WHERE cur_id = %s", (cur_id,))
             connection.commit()
             flash("Curso deletado com sucesso!", "success")
