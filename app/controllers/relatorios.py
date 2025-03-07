@@ -278,7 +278,7 @@ def media_alunos():
 
                     # Substituir a média insuficiente (-1) por None para não causar erro no banco de dados
                     if media_calculada == -1:
-                        media_calculada = None  # Não vamos inserir -1 no banco, mas sim None
+                        media_calculada = None  
 
                     if media_calculada is not None:
                         # Atualiza ou insere a média

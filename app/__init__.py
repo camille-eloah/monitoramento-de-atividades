@@ -148,7 +148,7 @@ def create_procedure_registrar_nota():
     connection = get_db_connection()
     try:
         with connection.cursor(dictionary=True) as cursor:
-            # Drop the procedure if it already exists
+            # Dropa a procedure se já existir
             drop_procedure_sql = "DROP PROCEDURE IF EXISTS registrar_nota;"
             print("Removendo procedimento registrar_nota existente (se houver)...")
             cursor.execute(drop_procedure_sql)
