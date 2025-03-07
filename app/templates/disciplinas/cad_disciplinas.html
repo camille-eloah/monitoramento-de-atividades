@@ -80,7 +80,7 @@ Cadastro de Aulas
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ disciplina.prof_nome if disciplina.prof_nome else 'Professor não informado'  }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">{{ disciplina.dis_carga_hr }}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">
-                            <ul>
+                            <ul style="list-style-type: none; padding-left: 0;">
                             {% if disciplina.cursos_associados %}
                                 {% for curso in disciplina.cursos_associados %}
                                     <li>{{ curso }}</li>
