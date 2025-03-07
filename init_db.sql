@@ -17,12 +17,13 @@ create table if not exists tb_alunos (
     alu_data_nasc date not null
 );
 
-create table if not exists tb_professores (
-    prof_id integer auto_increment primary key,
-    prof_nome VARCHAR(50) not null,
-    prof_email VARCHAR(100) not null unique,
-    prof_senha VARCHAR(255) not null
-
+CREATE TABLE IF NOT EXISTS tb_professores (
+    prof_id INT AUTO_INCREMENT PRIMARY KEY,
+    prof_nome VARCHAR(50) NOT NULL,
+    prof_email VARCHAR(100) NOT NULL UNIQUE,
+    prof_senha VARCHAR(255) NOT NULL,
+    prof_admin TINYINT(1) DEFAULT 0,  -- Definindo como TINYINT e padrão 0
+    CHECK (prof_admin IN (0, 1))  -- Restringindo os valores para 0 ou 1
 );
 
 create table if not exists tb_aulas (
