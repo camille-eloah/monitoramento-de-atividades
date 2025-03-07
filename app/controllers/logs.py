@@ -28,15 +28,20 @@ def index():
             result = cursor.fetchone()
 
             if result and result['prof_admin'] == 1:
-                # Se o usuário for um administrador, renderiza a página de logs
-                return render_template('logs/logs.html')
+                # Se o usuário for um administrador, buscar os logs de notas
+                cursor.execute("SELECT * FROM logs_notas ORDER BY data_operacao DESC")
+                logs = cursor.fetchall()
+
+                # Renderiza a página de logs com os logs encontrados
+                return render_template('logs/logs.html', logs=logs)
+
             else:
                 # Caso contrário, redireciona para a página inicial
                 flash("Você não tem permissão para acessar essa página.", "warning")
                 return redirect(url_for('index.index'))  # Altere 'home.index' para o nome correto da sua página inicial
 
     except Exception as e:
-        flash(f"Erro ao verificar permissões: {e}", "danger")
+        flash(f"Erro ao verificar permissões ou buscar logs: {e}", "danger")
         return redirect(url_for('index.index'))  # Em caso de erro, redireciona para a página inicial
     finally:
         connection.close()

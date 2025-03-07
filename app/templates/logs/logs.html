@@ -22,4 +22,45 @@
 {% endwith %}
 <h1>Você está logado como {{ current_user.prof_nome }}</h1>
 
+<div class="header">
+    <p>Visualize os registros do sistema.</p>
+</div>
+
+<div class="logins-container">
+    
+    {% if logs %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID do Log</th>
+                <th>Operação</th>
+                <th>Aluno ID</th>
+                <th>Disciplina ID</th>
+                <th>Nota</th>
+                <th>Data da Operação</th>
+                <th>Tipo de Avaliação</th>
+                <th>Peso</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.log_id }}</td>
+                <td>{{ log.operacao }}</td>
+                <td>{{ log.aluno_id }}</td>
+                <td>{{ log.disciplina_id }}</td>
+                <td>{{ "%.2f"|format(log.nota) }}</td>
+                <td>{{ log.data_operacao }}</td>
+                <td>{{ log.tipo_avaliacao }}</td>
+                <td>{{ log.peso }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">Nenhum log encontrado.</p>
+    {% endif %}
+
+</div>
+
 {% endblock %}

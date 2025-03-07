@@ -12,26 +12,32 @@ Médias por disciplina
         
         <div id="lista-relatorio-media-alunos" style="display: none;">
 
-                <h4 class="card-title">Relatório de Média</h4>
-                {% if medias %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Aluno</th>
-                            <th>Disciplina</th>
-                            <th>Média</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for media in medias %}
-                        <tr>
-                            <td>{{ media.alu_nome }}</td>
-                            <td>{{ media.dis_nome }}</td>
-                            <td>{{ "%.2f"|format(media.media_calculada) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <h4 class="card-title">Relatório de Média</h4>
+            {% if medias %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Disciplina</th>
+                        <th>Média</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for media in medias %}
+                    <tr>
+                        <td>{{ media.alu_nome }}</td>
+                        <td>{{ media.dis_nome }}</td>
+                        <td>
+                            {% if media.media_calculada == -1 %}
+                                Frequência Insuficiente
+                            {% else %}
+                                {{ "%.2f"|format(media.media_calculada) }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             {% else %}
                 <p class="text-muted">Nenhuma média de nota encontrada.</p>
             {% endif %}
@@ -40,7 +46,7 @@ Médias por disciplina
 </div>
 
 <script>
-        function relatorioMediaAlunos() {
+    function relatorioMediaAlunos() {
         const relatorioMediaAlunos = document.getElementById("lista-relatorio-media-alunos");
         relatorioMediaAlunos.style.display = relatorioMediaAlunos.style.display === "none" || relatorioMediaAlunos.style.display === "" ? "block" : "none";
     }
