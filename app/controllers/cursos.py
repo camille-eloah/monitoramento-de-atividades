@@ -83,7 +83,7 @@ def edit_curso(cur_id):
     return render_template('cursos/edit_curso.html', curso=curso)
 
 
-#Deletar Cursos
+# Deletar Cursos
 @bp.route('/delete_curso/<int:cur_id>', methods=['POST'])
 @login_required
 def delete_curso(cur_id):

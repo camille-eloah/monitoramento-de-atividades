@@ -289,9 +289,9 @@ def media_alunos():
                         ON DUPLICATE KEY UPDATE media_calculada = %s
                         """, (aluno['alu_id'], disciplina['dis_id'], media_calculada, media_calculada))
 
-            connection.commit()  # Grava as médias no banco de dados
+            connection.commit()  # Registra as médias no banco de dados
 
-            # Agora busca todas as médias já calculadas
+            # Busca todas as médias já calculadas
             query = """
             SELECT 
                 a.alu_id, a.alu_nome, 

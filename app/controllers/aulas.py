@@ -120,7 +120,7 @@ def edit_aula(aul_id):
     connection.close()
     return render_template('aulas/edit_aula.html', aula=aula, professores=professores, disciplinas=disciplinas)
 
-#Deletar aulas
+# Deletar aulas
 @bp.route('/delete_aula/<int:aul_id>', methods=['POST'])
 @login_required
 def delete_aula(aul_id):
