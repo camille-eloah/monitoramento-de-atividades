@@ -9,7 +9,7 @@ bp = Blueprint('aulas', __name__, url_prefix='/aulas')
 
 @bp.route('/')
 def index():
-    return render_template('aulas/index.html') 
+    return redirect(url_for('aulas.cad_aulas'))
 
 # Cadastro de aulas
 @bp.route('/cad_aulas', methods=['POST', 'GET'])

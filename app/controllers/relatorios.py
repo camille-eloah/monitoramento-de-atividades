@@ -9,7 +9,7 @@ bp = Blueprint('relatorios', __name__, url_prefix='/relatorios')
 
 @bp.route('/')
 def index():
-    return render_template('relatorios/index.html') 
+    return redirect(url_for('relatorios.relatorios'))
 
 @bp.route('/relatorios')
 @login_required
