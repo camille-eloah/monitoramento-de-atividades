@@ -14,30 +14,31 @@ Médias por disciplina
 
             <h4 class="card-title">Relatório de Média</h4>
             {% if medias %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Aluno</th>
-                        <th>Disciplina</th>
-                        <th>Média</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for media in medias %}
-                    <tr>
-                        <td>{{ media.alu_nome }}</td>
-                        <td>{{ media.dis_nome }}</td>
-                        <td>
-                            {% if media.media_calculada == -1 %}
-                                Frequência Insuficiente
-                            {% else %}
-                                {{ "%.2f"|format(media.media_calculada) }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                {% for aluno in medias|groupby('alu_nome') %}
+                    <h5>{{ aluno.grouper }}</h5>
+                    <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 10px; border: 1px solid #ddd;">Disciplina</th>
+                                <th style="padding: 10px; border: 1px solid #ddd;">Média</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for media in aluno.list %}
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">{{ media.dis_nome }}</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">
+                                        {% if media.media_calculada == -1 %}
+                                            Frequência Insuficiente
+                                        {% else %}
+                                            {{ "%.2f"|format(media.media_calculada) }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endfor %}
             {% else %}
                 <p class="text-muted">Nenhuma média de nota encontrada.</p>
             {% endif %}
