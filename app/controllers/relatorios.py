@@ -194,3 +194,50 @@ def relatorios():
         medias_por_aluno_e_disciplina=medias_por_aluno_e_disciplina,
         trabalhos_fora_prazo_por_aluno_e_disciplina=trabalhos_fora_prazo_por_aluno_e_disciplina
     )
+
+@bp.route('/media_alunos')
+@login_required
+def media_alunos():
+    """Calcula e exibe as médias dos alunos por disciplina."""
+    connection = get_db_connection()
+
+    try:
+        with connection.cursor(dictionary=True) as cursor:
+            # Buscar todos os alunos e disciplinas existentes
+            cursor.execute("SELECT alu_id FROM tb_alunos")
+            alunos = cursor.fetchall()  # Consumimos os resultados
+
+            cursor.execute("SELECT dis_id FROM tb_disciplinas")
+            disciplinas = cursor.fetchall()  # Consumimos os resultados
+
+            # Para cada aluno e disciplina, calcular a média
+            for aluno in alunos:
+                for disciplina in disciplinas:
+                    cursor.execute("SELECT calcular_media(%s, %s)", (aluno['alu_id'], disciplina['dis_id']))
+                    cursor.fetchone()  # Consumimos o resultado da função
+
+            connection.commit()  # Grava as médias no banco de dados
+
+            # Agora busca todas as médias já calculadas
+            query = """
+            SELECT 
+                a.alu_id, a.alu_nome, 
+                d.dis_id, d.dis_nome, 
+                m.media_calculada
+            FROM tb_alunos a
+            JOIN tb_aluno_media m ON a.alu_id = m.media_alu_id
+            JOIN tb_disciplinas d ON m.media_dis_id = d.dis_id
+            ORDER BY a.alu_nome, d.dis_nome;
+            """
+            cursor.execute(query)
+            medias = cursor.fetchall()
+
+        return render_template('relatorios/media_alunos.html', medias=medias)
+
+    except Exception as e:
+        print(f"Erro ao calcular ou buscar médias: {e}")
+        return "Erro ao calcular médias."
+
+    finally:
+        connection.close()
+

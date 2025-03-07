@@ -13,5 +13,6 @@ all = [
     'disciplinas',
     'aluno_disciplina',
     'atividades',
-    'index'
+    'index',
+    'logs'
 ]

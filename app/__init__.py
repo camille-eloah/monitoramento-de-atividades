@@ -358,7 +358,7 @@ def create_app():
     # Importação e registro dos Blueprints
     from app.controllers import (
         aluno_disciplina, alunos, atividades, aulas, cursos, 
-        disciplinas, relatorios, auth, index
+        disciplinas, relatorios, auth, index, logs
     )
     
     app.register_blueprint(aluno_disciplina.bp)
@@ -370,5 +370,6 @@ def create_app():
     app.register_blueprint(auth.bp)
     app.register_blueprint(relatorios.bp)
     app.register_blueprint(index.bp)
+    app.register_blueprint(logs.bp)
 
     return app

@@ -9,4 +9,4 @@ bp = Blueprint('logs', __name__, url_prefix='/logs')
 
 @bp.route('/logs')
 def index():
-    return render_template('disciplinas/index.html') 
+    return render_template('logs/logs.html') 

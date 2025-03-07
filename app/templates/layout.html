@@ -49,7 +49,19 @@
 
     <!-- Template Stylesheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        /* Garantir que o HTML e o Body ocupem 100% da altura da tela */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
 
+        /* A div ocupa 100% da largura e altura da janela */
+        .full-screen-div {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 
 <body>
@@ -91,6 +103,7 @@
                             <a href="{{url_for('atividades.cad_atividades')}}" class="dropdown-item">Cadastrar Atividades</a>
                             <a href="{{url_for('aulas.cad_aulas')}}" class="dropdown-item">Cadastrar Aulas</a>
                             <a href="{{url_for('relatorios.relatorios')}}" class="dropdown-item">Relatórios e Consultas</a>
+                            <a href="{{url_for('relatorios.media_alunos')}}" class="dropdown-item">Média dos alunos</a>
                             {% if current_user.is_authenticated %}
                             <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                             {% else %}
@@ -105,13 +118,13 @@
 
 
         <!-- Hero Header Start -->
-        <div class="hero-header overflow-hidden px-5">
+        <div class="hero-header overflow-hidden px-5" style="height: 100%;">
             <div class="rotate-img">
                 <img src="{{ url_for('static', filename='img/sty-1.png') }}" class="img-fluid w-100" alt="">
                 <div class="rotate-sty-2"></div>
             </div>
             <div class="row gy-5 align-items-center">
-                <div class="conteudo">{% block content %}{% endblock %}</div>
+                <div class="conteudo"; >{% block content %}{% endblock %}</div>
             </div>
         </div>
         <!-- Hero Header End -->
