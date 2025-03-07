@@ -47,7 +47,7 @@ def cad_aulas():
             with connection.cursor(dictionary=True) as cursor:
                 # Inserir a nova aula
                 cursor.execute(query_aula, (aul_descricao, aul_data, aul_prof_id, aul_dis_id))
-                aula_id = connection.insert_id()  # Obter o ID da aula recém-criada
+                aula_id = cursor.lastrowid  # Usando lastrowid para pegar o ID da última inserção
 
                 # Obter os alunos da disciplina correspondente
                 cursor.execute("""
@@ -56,7 +56,7 @@ def cad_aulas():
                 WHERE ad_dis_id = %s
                 """, (aul_dis_id,))
                 alunos = cursor.fetchall()
-                
+
                 print("Resultado da consulta alunos:", alunos)
 
                 # Inicializar frequência com "1" para cada aluno
@@ -85,7 +85,6 @@ def cad_aulas():
 
     connection.close()
     return render_template('aulas/cad_aulas.html', aulas=aulas, professores=professores, disciplinas=disciplinas)
-
 
 #Editar aulas
 @bp.route('/edit_aula/<int:aul_id>', methods=['POST', 'GET'])

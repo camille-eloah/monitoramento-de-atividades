@@ -128,11 +128,7 @@ def create_function_calcular_media():
                     SET media = 0;  -- Caso não haja atividades entregues ou peso, a média é 0
                 END IF;
 
-                -- Registra ou atualiza a média na tabela tb_aluno_media
-                INSERT INTO tb_aluno_media (media_alu_id, media_dis_id, media_calculada)
-                VALUES (id_aluno, id_disciplina, media)
-                ON DUPLICATE KEY UPDATE media_calculada = media;  -- Se já existir um registro, atualiza a média
-
+                -- Apenas retorna a média sem tentar atualizar tb_aluno_media
                 RETURN media;
             END;
             """
@@ -145,6 +141,7 @@ def create_function_calcular_media():
         print(f"Erro ao criar a função calcular_media: {e}")
     finally:
         connection.close()
+
 
 def create_procedure_registrar_nota():
     """Executa a criação do procedimento registrar_nota."""
@@ -231,7 +228,7 @@ def create_trigger_verificar_frequencia():
             # Script SQL para criar o trigger
             create_trigger_sql = """
                 CREATE TRIGGER verificar_frequencia
-                AFTER INSERT ON tb_aluno_media
+                AFTER INSERT ON tb_aula_frequencia
                 FOR EACH ROW
                 BEGIN
                     DECLARE total_aulas INT;
@@ -241,15 +238,15 @@ def create_trigger_verificar_frequencia():
                     -- Calcula o total de aulas da disciplina
                     SELECT COUNT(*) INTO total_aulas
                     FROM tb_aulas
-                    WHERE aul_dis_id = NEW.media_dis_id;
+                    WHERE aul_dis_id = NEW.freq_aula_id;
 
                     -- Conta quantas presenças o aluno teve na disciplina
                     SELECT COUNT(*) INTO aulas_presentes
                     FROM tb_aula_frequencia af
                     JOIN tb_aulas a ON af.freq_aula_id = a.aul_id
-                    WHERE af.freq_alu_id = NEW.media_alu_id
+                    WHERE af.freq_alu_id = NEW.freq_alu_id
                     AND af.freq_frequencia = 1
-                    AND a.aul_dis_id = NEW.media_dis_id;
+                    AND a.aul_dis_id = NEW.freq_dis_id;
 
                     -- Calcula o percentual de frequência
                     IF total_aulas > 0 THEN
@@ -258,13 +255,11 @@ def create_trigger_verificar_frequencia():
                         SET frequencia_percentual = 0;
                     END IF;
 
-                    -- Se a frequência for menor que 75%, define a média como NULL
-                    IF frequencia_percentual < 75 THEN
-                        UPDATE tb_aluno_media
-                        SET media_calculada = NULL
-                        WHERE media_alu_id = NEW.media_alu_id
-                        AND media_dis_id = NEW.media_dis_id;
-                    END IF;
+                    -- Aqui não fazemos o UPDATE diretamente na tabela tb_aluno_media,
+                    -- apenas registramos o resultado de frequência.
+                    INSERT INTO tb_aluno_frequencia (freq_alu_id, freq_dis_id, frequencia_percentual)
+                    VALUES (NEW.freq_alu_id, NEW.freq_dis_id, frequencia_percentual);
+
                 END;
             """
             # Executa a criação do trigger
@@ -276,6 +271,7 @@ def create_trigger_verificar_frequencia():
         print(f"Erro ao criar o trigger verificar_frequencia: {e}")
     finally:
         connection.close()
+
 
 
 def create_trigger_log_notas():
