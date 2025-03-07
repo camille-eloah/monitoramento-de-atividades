@@ -400,95 +400,66 @@ def media_alunos():
 
     try:
         with connection.cursor(dictionary=True) as cursor:
-            # Buscar todos os alunos e disciplinas existentes
             cursor.execute("SELECT alu_id FROM tb_alunos")
             alunos = cursor.fetchall()
 
             cursor.execute("SELECT dis_id FROM tb_disciplinas")
             disciplinas = cursor.fetchall()
 
-            # Para cada aluno e disciplina, calcular a média
             for aluno in alunos:
                 for disciplina in disciplinas:
-                    # Chama a função calcular_media
                     cursor.execute("SELECT calcular_media(%s, %s) AS media_calculada", (aluno['alu_id'], disciplina['dis_id']))
-                    result = cursor.fetchone()  # Consumir o resultado da função
-                    
-                    # Debug: Verificar o que está sendo retornado
-                    print(f"Resultado da função calcular_media para aluno {aluno['alu_id']} e disciplina {disciplina['dis_id']}: {result}")
-                    
+                    result = cursor.fetchone()
+
+                    print(f"Resultado calcular_media para aluno {aluno['alu_id']}, disciplina {disciplina['dis_id']}: {result}")
+
                     if result and 'media_calculada' in result:
-                        media_calculada = result['media_calculada']  # Verifica se existe o campo 'media_calculada'
-                        print(f"Média calculada (antes de verificação) para aluno {aluno['alu_id']} e disciplina {disciplina['dis_id']}: {media_calculada}")
-                    else:
-                        media_calculada = None  # Caso não haja retorno, definir como None
-                    
-                    # Verifique se a média é válida e um número real (float)
-                    if media_calculada is not None:
                         try:
-                            media_calculada = float(media_calculada)  # Forçar para tipo float
-                            print(f"Média validada como float para aluno {aluno['alu_id']} e disciplina {disciplina['dis_id']}: {media_calculada}")
-                        except ValueError:
-                            print(f"Erro ao converter média para float para aluno {aluno['alu_id']} e disciplina {disciplina['dis_id']}: {media_calculada}")
-                            media_calculada = None  # Se não for numérico, setar como None
-
-                    # Adicionar debug para confirmar o valor de media_calculada
-                    if media_calculada is not None:
-                        print(f"Valor final da média para aluno {aluno['alu_id']} e disciplina {disciplina['dis_id']}: {media_calculada}")
+                            media_calculada = float(result['media_calculada'])  # Garantir conversão para float
+                        except (ValueError, TypeError):
+                            media_calculada = None  # Se não for possível converter, definir como None
                     else:
-                        print(f"Média calculada é None para aluno {aluno['alu_id']} e disciplina {disciplina['dis_id']}")
+                        media_calculada = None
 
-                    if media_calculada is not None:
-                        # Verificar a frequência antes de inserir ou atualizar a média
-                        cursor.execute("""
-                        SELECT COUNT(*) AS total_aulas
-                        FROM tb_aulas
-                        WHERE aul_dis_id = %s
-                        """, (disciplina['dis_id'],))
+                    print(f"Aluno {aluno['alu_id']}, Disciplina {disciplina['dis_id']} -> Média antes da frequência: {media_calculada}, Tipo: {type(media_calculada)}")
 
-                        total_aulas_result = cursor.fetchone()
-                        total_aulas = total_aulas_result['total_aulas'] if total_aulas_result else 0
-                        print(f"Total de aulas para disciplina {disciplina['dis_id']}: {total_aulas}")
+                    cursor.execute("""
+                        SELECT COUNT(*) AS total_aulas FROM tb_aulas WHERE aul_dis_id = %s
+                    """, (disciplina['dis_id'],))
+                    total_aulas = cursor.fetchone().get('total_aulas', 0)
 
-                        cursor.execute("""
+                    cursor.execute("""
                         SELECT COUNT(*) AS aulas_presentes
                         FROM tb_aula_frequencia af
                         JOIN tb_aulas a ON af.freq_aula_id = a.aul_id
                         WHERE af.freq_alu_id = %s AND af.freq_frequencia = 1 AND a.aul_dis_id = %s
-                        """, (aluno['alu_id'], disciplina['dis_id']))
+                    """, (aluno['alu_id'], disciplina['dis_id']))
+                    aulas_presentes = cursor.fetchone().get('aulas_presentes', 0)
 
-                        aulas_presentes_result = cursor.fetchone()
-                        aulas_presentes = aulas_presentes_result['aulas_presentes'] if aulas_presentes_result else 0
-                        print(f"Aulas presentes para aluno {aluno['alu_id']} e disciplina {disciplina['dis_id']}: {aulas_presentes}")
+                    frequencia_percentual = (aulas_presentes / total_aulas) * 100 if total_aulas > 0 else 0
 
-                        # Calcula o percentual de frequência
-                        if total_aulas > 0:
-                            frequencia_percentual = (aulas_presentes / total_aulas) * 100
-                        else:
-                            frequencia_percentual = 0
-                        print(f"Percentual de frequência para aluno {aluno['alu_id']} e disciplina {disciplina['dis_id']}: {frequencia_percentual}")
+                    print(f"Aluno {aluno['alu_id']}, Disciplina {disciplina['dis_id']} -> Total aulas: {total_aulas}, Presentes: {aulas_presentes}, Frequência: {frequencia_percentual:.2f}%, Tipo: {type(frequencia_percentual)}")
 
-                        # Se a frequência for menor que 75%, define a média como -1
-                        if frequencia_percentual < 75:
-                            media_calculada = -1  # Definimos -1 para indicar frequência insuficiente
-                            print(f"Frequência insuficiente para aluno {aluno['alu_id']} e disciplina {disciplina['dis_id']}. Média definida como -1.")
+                    if frequencia_percentual < 75:
+                        media_calculada = -1  # Definir -1 para indicar frequência insuficiente
+                        print(f"Frequência insuficiente para aluno {aluno['alu_id']} na disciplina {disciplina['dis_id']}. Média definida como -1.")
 
-                    # Substituir a média insuficiente (-1) por None para não causar erro no banco de dados
+                    # **Correção**: Certificar que `-1` seja tratado corretamente
                     if media_calculada == -1:
-                        media_calculada = None  
+                        media_para_banco = -1.0  
+                    else:
+                        media_para_banco = float(media_calculada)  # Garantir que seja um float válido
 
-                    if media_calculada is not None:
-                        # Atualiza ou insere a média
-                        print(f"Inserindo ou atualizando média para aluno {aluno['alu_id']} e disciplina {disciplina['dis_id']}: {media_calculada}")
-                        cursor.execute("""
+                    print(f"Salvando média para aluno {aluno['alu_id']}, disciplina {disciplina['dis_id']}: {media_para_banco}, Tipo: {type(media_para_banco)}")
+
+                    cursor.execute("""
                         INSERT INTO tb_aluno_media (media_alu_id, media_dis_id, media_calculada)
                         VALUES (%s, %s, %s)
                         ON DUPLICATE KEY UPDATE media_calculada = %s
-                        """, (aluno['alu_id'], disciplina['dis_id'], media_calculada, media_calculada))
+                    """, (aluno['alu_id'], disciplina['dis_id'], media_para_banco, media_para_banco))
 
-            connection.commit()  # Registra as médias no banco de dados
+            connection.commit()
 
-            # Busca todas as médias já calculadas
             query = """
             SELECT 
                 a.alu_id, a.alu_nome, 
@@ -502,12 +473,13 @@ def media_alunos():
             cursor.execute(query)
             medias = cursor.fetchall()
 
-            # Substituir None por "Nota Insuficiente" e arredondar as médias normais
             for media in medias:
+                print(f"Banco de Dados -> Aluno {media['alu_id']}, Disciplina {media['dis_id']}, Média: {media['media_calculada']}, Tipo: {type(media['media_calculada'])}")
+
                 if media['media_calculada'] is None:
                     media['media_calculada'] = "Nota Insuficiente"
                 else:
-                    media['media_calculada'] = round(media['media_calculada'], 2)  # Arredondar as médias normais
+                    media['media_calculada'] = round(float(media['media_calculada']), 2)
 
         return render_template('relatorios/media_alunos.html', medias=medias)
 
@@ -517,3 +489,4 @@ def media_alunos():
 
     finally:
         connection.close()
+

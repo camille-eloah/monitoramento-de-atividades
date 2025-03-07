@@ -235,40 +235,25 @@ def create_trigger_verificar_frequencia():
                 AFTER INSERT ON tb_aula_frequencia
                 FOR EACH ROW
                 BEGIN
-                    DECLARE total_aulas INT;
-                    DECLARE aulas_presentes INT;
-                    DECLARE frequencia_percentual FLOAT;
                     DECLARE disciplina_id INT;
 
-                    -- Obtém o ID da disciplina da tabela tb_aulas
+                    -- Obtém o ID da disciplina da aula afetada
                     SELECT aul_dis_id INTO disciplina_id
                     FROM tb_aulas
                     WHERE aul_id = NEW.freq_aula_id;
 
-                    -- Calcula o total de aulas da disciplina (aulas realizadas)
-                    SELECT COUNT(*) INTO total_aulas
-                    FROM tb_aulas
-                    WHERE aul_dis_id = disciplina_id;
-
-                    -- Conta quantas presenças o aluno teve na disciplina
-                    SELECT COUNT(*) INTO aulas_presentes
+                    -- Recalcula a frequência de todos os alunos matriculados na disciplina
+                    INSERT INTO tb_frequencia_calculada (freq_aula_id, freq_alu_id, frequencia_percentual)
+                    SELECT 
+                        NEW.freq_aula_id, 
+                        ad.ad_alu_id, 
+                        (COUNT(CASE WHEN af.freq_frequencia = 1 THEN 1 END) / COUNT(*)) * 100
                     FROM tb_aula_frequencia af
                     JOIN tb_aulas a ON af.freq_aula_id = a.aul_id
-                    WHERE af.freq_alu_id = NEW.freq_alu_id
-                    AND af.freq_frequencia = 1
-                    AND a.aul_dis_id = disciplina_id;
-
-                    -- Calcula o percentual de frequência
-                    IF total_aulas > 0 THEN
-                        SET frequencia_percentual = (aulas_presentes / total_aulas) * 100;
-                    ELSE
-                        SET frequencia_percentual = 0;
-                    END IF;
-
-                    -- Inserir ou atualizar os resultados na tabela de frequências calculadas
-                    INSERT INTO tb_frequencia_calculada (freq_aula_id, freq_alu_id, frequencia_percentual)
-                    VALUES (NEW.freq_aula_id, NEW.freq_alu_id, frequencia_percentual)
-                    ON DUPLICATE KEY UPDATE frequencia_percentual = frequencia_percentual;
+                    JOIN tb_alunos_disciplinas ad ON a.aul_dis_id = ad.ad_dis_id
+                    WHERE a.aul_dis_id = disciplina_id
+                    GROUP BY ad.ad_alu_id
+                    ON DUPLICATE KEY UPDATE frequencia_percentual = VALUES(frequencia_percentual);
                 END;
             """
             # Executa a criação do trigger AFTER INSERT
@@ -282,40 +267,25 @@ def create_trigger_verificar_frequencia():
                 AFTER UPDATE ON tb_aula_frequencia
                 FOR EACH ROW
                 BEGIN
-                    DECLARE total_aulas INT;
-                    DECLARE aulas_presentes INT;
-                    DECLARE frequencia_percentual FLOAT;
                     DECLARE disciplina_id INT;
 
-                    -- Obtém o ID da disciplina da tabela tb_aulas
+                    -- Obtém o ID da disciplina da aula afetada
                     SELECT aul_dis_id INTO disciplina_id
                     FROM tb_aulas
                     WHERE aul_id = NEW.freq_aula_id;
 
-                    -- Calcula o total de aulas da disciplina (aulas realizadas)
-                    SELECT COUNT(*) INTO total_aulas
-                    FROM tb_aulas
-                    WHERE aul_dis_id = disciplina_id;
-
-                    -- Conta quantas presenças o aluno teve na disciplina
-                    SELECT COUNT(*) INTO aulas_presentes
+                    -- Recalcula a frequência de todos os alunos matriculados na disciplina
+                    INSERT INTO tb_frequencia_calculada (freq_aula_id, freq_alu_id, frequencia_percentual)
+                    SELECT 
+                        NEW.freq_aula_id, 
+                        ad.ad_alu_id, 
+                        (COUNT(CASE WHEN af.freq_frequencia = 1 THEN 1 END) / COUNT(*)) * 100
                     FROM tb_aula_frequencia af
                     JOIN tb_aulas a ON af.freq_aula_id = a.aul_id
-                    WHERE af.freq_alu_id = NEW.freq_alu_id
-                    AND af.freq_frequencia = 1
-                    AND a.aul_dis_id = disciplina_id;
-
-                    -- Calcula o percentual de frequência
-                    IF total_aulas > 0 THEN
-                        SET frequencia_percentual = (aulas_presentes / total_aulas) * 100;
-                    ELSE
-                        SET frequencia_percentual = 0;
-                    END IF;
-
-                    -- Inserir ou atualizar os resultados na tabela de frequências calculadas
-                    INSERT INTO tb_frequencia_calculada (freq_aula_id, freq_alu_id, frequencia_percentual)
-                    VALUES (NEW.freq_aula_id, NEW.freq_alu_id, frequencia_percentual)
-                    ON DUPLICATE KEY UPDATE frequencia_percentual = frequencia_percentual;
+                    JOIN tb_alunos_disciplinas ad ON a.aul_dis_id = ad.ad_dis_id
+                    WHERE a.aul_dis_id = disciplina_id
+                    GROUP BY ad.ad_alu_id
+                    ON DUPLICATE KEY UPDATE frequencia_percentual = VALUES(frequencia_percentual);
                 END;
             """
             # Executa a criação do trigger AFTER UPDATE
@@ -329,6 +299,7 @@ def create_trigger_verificar_frequencia():
         print(f"Erro ao criar os triggers verificar_frequencia: {e}")
     finally:
         connection.close()
+
 
 
 def create_trigger_log_notas():
