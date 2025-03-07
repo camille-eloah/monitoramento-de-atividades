@@ -231,6 +231,14 @@ def media_alunos():
             """
             cursor.execute(query)
             medias = cursor.fetchall()
+                        
+            # Substituir NULL ou -1 por "Frequência Insuficiente"
+            for media in medias:
+                if media['media_calculada'] is None:  # Ou `if media['media_calculada'] == -1:`
+                    media['media_calculada'] = "Frequência Insuficiente"
+                else:
+                    media['media_calculada'] = round(media['media_calculada'], 2)  # Arredondar as médias normais
+
 
         return render_template('relatorios/media_alunos.html', medias=medias)
 

@@ -230,38 +230,39 @@ def create_trigger_verificar_frequencia():
 
             # Script SQL para criar o trigger
             create_trigger_sql = """
-            CREATE TRIGGER verificar_frequencia
-            BEFORE INSERT ON tb_aluno_media
-            FOR EACH ROW
-            BEGIN
-                DECLARE total_aulas INT;
-                DECLARE aulas_presentes INT;
-                DECLARE frequencia_percentual FLOAT;
+                CREATE TRIGGER verificar_frequencia
+                BEFORE INSERT ON tb_aluno_media
+                FOR EACH ROW
+                BEGIN
+                    DECLARE total_aulas INT;
+                    DECLARE aulas_presentes INT;
+                    DECLARE frequencia_percentual FLOAT;
 
-                -- Calcula o total de aulas e o total de frequências presentes do aluno na disciplina
-                SELECT COUNT(*) INTO total_aulas
-                FROM tb_aulas
-                WHERE aul_dis_id = NEW.media_dis_id;  -- Disciplina relacionada ao aluno
+                    -- Calcula o total de aulas da disciplina
+                    SELECT COUNT(*) INTO total_aulas
+                    FROM tb_aulas
+                    WHERE aul_dis_id = NEW.media_dis_id;
 
-                SELECT COUNT(*) INTO aulas_presentes
-                FROM tb_aula_frequencia af
-                JOIN tb_aulas a ON af.freq_aula_id = a.aul_id
-                WHERE af.freq_alu_id = NEW.media_alu_id  -- Aluno relacionado à frequência
-                AND af.freq_frequencia = 1
-                AND a.aul_dis_id = NEW.media_dis_id;  -- Disciplina relacionada à aula
+                    -- Conta quantas presenças o aluno teve na disciplina
+                    SELECT COUNT(*) INTO aulas_presentes
+                    FROM tb_aula_frequencia af
+                    JOIN tb_aulas a ON af.freq_aula_id = a.aul_id
+                    WHERE af.freq_alu_id = NEW.media_alu_id
+                    AND af.freq_frequencia = 1
+                    AND a.aul_dis_id = NEW.media_dis_id;
 
-                -- Calcula o percentual de frequência
-                IF total_aulas > 0 THEN
-                    SET frequencia_percentual = (aulas_presentes / total_aulas) * 100;
-                ELSE
-                    SET frequencia_percentual = 0;  -- Se não houver aulas, a frequência é considerada 0
-                END IF;
+                    -- Calcula o percentual de frequência
+                    IF total_aulas > 0 THEN
+                        SET frequencia_percentual = (aulas_presentes / total_aulas) * 100;
+                    ELSE
+                        SET frequencia_percentual = 0;
+                    END IF;
 
-                -- Verifica se a frequência é menor que 75% e impede o cálculo da média
-                IF frequencia_percentual < 75 THEN
-                    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Frequência insuficiente para calcular a média (menor que 75%)';
-                END IF;
-            END;
+                    -- Se a frequência for menor que 75%, define a média como NULL ou -1
+                    IF frequencia_percentual < 75 THEN
+                        SET NEW.media_calculada = -1;
+                    END IF;
+                END;
             """
             # Executa a criação do trigger
             print("Criando trigger verificar_frequencia...")
