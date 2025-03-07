@@ -7,7 +7,7 @@ Relatórios
 
 {% block content %}
 
-<div class="card" style="display: flex; align-items: center; width: 100%; justify-content: space-between; flex-direction: row; margin: 5px auto 0; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+<div class="card" style="display: flex; align-items: center; width: 100%; justify-content: space-between; flex-direction: row; margin: 5px auto 0; padding: 5px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body" style="flex: 1 1 auto; padding: 10px;">
         <button class="btn btn-primary me-2" style="" onclick="listarFrequenciaAlunos()">Frequência dos Alunos</button>
     </div>
@@ -24,7 +24,6 @@ Relatórios
         <button class="btn btn-primary me-2" onclick="listarTrabalhosEntregues()">Trabalhos Entregues</button>
     </div>
 </div>
-
 
 <div class="card" style="display: flex; flex-wrap: wrap; margin: 5px auto 0; padding: 20px; width: 100%; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body">
@@ -138,6 +137,7 @@ Relatórios
         </div>
     </div>
 </div>
+
 <script>
     // Função para ocultar todas as divs
     function esconderTodasDivs() {
@@ -199,6 +199,5 @@ Relatórios
         listarFrequenciaAlunos(document.getElementById("btnFrequencia"));  // Exibe a primeira div e adiciona a borda inline
     };
 </script>
-
 
 {% endblock %}

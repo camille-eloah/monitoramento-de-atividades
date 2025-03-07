@@ -205,14 +205,15 @@ def media_alunos():
         with connection.cursor(dictionary=True) as cursor:
             # Buscar todos os alunos e disciplinas existentes
             cursor.execute("SELECT alu_id FROM tb_alunos")
-            alunos = cursor.fetchall()  # Consumimos os resultados
+            alunos = cursor.fetchall()
 
             cursor.execute("SELECT dis_id FROM tb_disciplinas")
-            disciplinas = cursor.fetchall()  # Consumimos os resultados
+            disciplinas = cursor.fetchall()
 
             # Para cada aluno e disciplina, calcular a média
             for aluno in alunos:
                 for disciplina in disciplinas:
+                    # Chama a função calcular_media
                     cursor.execute("SELECT calcular_media(%s, %s)", (aluno['alu_id'], disciplina['dis_id']))
                     cursor.fetchone()  # Consumimos o resultado da função
 
@@ -231,7 +232,7 @@ def media_alunos():
             """
             cursor.execute(query)
             medias = cursor.fetchall()
-                        
+
             # Substituir NULL ou -1 por "Frequência Insuficiente"
             for media in medias:
                 if media['media_calculada'] is None:  # Ou `if media['media_calculada'] == -1:`
@@ -239,6 +240,44 @@ def media_alunos():
                 else:
                     media['media_calculada'] = round(media['media_calculada'], 2)  # Arredondar as médias normais
 
+            # Verificar e ajustar as médias após a inserção (garante que o trigger foi acionado corretamente)
+            for aluno in alunos:
+                for disciplina in disciplinas:
+                    # Verifica a frequência e corrige manualmente se necessário
+                    cursor.execute("""
+                    SELECT COUNT(*) AS total_aulas
+                    FROM tb_aulas
+                    WHERE aul_dis_id = %s
+                    """, (disciplina['dis_id'],))
+
+                    total_aulas_result = cursor.fetchone()
+                    total_aulas = total_aulas_result['total_aulas'] if total_aulas_result else 0
+
+                    cursor.execute("""
+                    SELECT COUNT(*) AS aulas_presentes
+                    FROM tb_aula_frequencia af
+                    JOIN tb_aulas a ON af.freq_aula_id = a.aul_id
+                    WHERE af.freq_alu_id = %s AND af.freq_frequencia = 1 AND a.aul_dis_id = %s
+                    """, (aluno['alu_id'], disciplina['dis_id']))
+
+                    aulas_presentes_result = cursor.fetchone()
+                    aulas_presentes = aulas_presentes_result['aulas_presentes'] if aulas_presentes_result else 0
+
+                    # Calcula o percentual de frequência
+                    if total_aulas > 0:
+                        frequencia_percentual = (aulas_presentes / total_aulas) * 100
+                    else:
+                        frequencia_percentual = 0
+
+                    # Se a frequência for menor que 75%, define a média como NULL
+                    if frequencia_percentual < 75:
+                        cursor.execute("""
+                        UPDATE tb_aluno_media
+                        SET media_calculada = NULL
+                        WHERE media_alu_id = %s AND media_dis_id = %s
+                        """, (aluno['alu_id'], disciplina['dis_id']))
+
+            connection.commit()
 
         return render_template('relatorios/media_alunos.html', medias=medias)
 
@@ -248,4 +287,3 @@ def media_alunos():
 
     finally:
         connection.close()
-
