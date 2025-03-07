@@ -231,7 +231,7 @@ def create_trigger_verificar_frequencia():
             # Script SQL para criar o trigger
             create_trigger_sql = """
                 CREATE TRIGGER verificar_frequencia
-                BEFORE INSERT ON tb_aluno_media
+                AFTER INSERT ON tb_aluno_media
                 FOR EACH ROW
                 BEGIN
                     DECLARE total_aulas INT;
@@ -258,9 +258,12 @@ def create_trigger_verificar_frequencia():
                         SET frequencia_percentual = 0;
                     END IF;
 
-                    -- Se a frequência for menor que 75%, define a média como NULL ou -1
+                    -- Se a frequência for menor que 75%, define a média como NULL
                     IF frequencia_percentual < 75 THEN
-                        SET NEW.media_calculada = -1;
+                        UPDATE tb_aluno_media
+                        SET media_calculada = NULL
+                        WHERE media_alu_id = NEW.media_alu_id
+                        AND media_dis_id = NEW.media_dis_id;
                     END IF;
                 END;
             """
@@ -273,6 +276,7 @@ def create_trigger_verificar_frequencia():
         print(f"Erro ao criar o trigger verificar_frequencia: {e}")
     finally:
         connection.close()
+
 
 def create_trigger_log_notas():
     """Executa a criação dos triggers para log de notas."""

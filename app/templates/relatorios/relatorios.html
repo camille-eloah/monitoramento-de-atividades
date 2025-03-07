@@ -7,10 +7,9 @@ Relatórios
 
 {% block content %}
 
-<!-- Div de teste -->
 <div class="card" style="display: flex; align-items: center; width: 100%; justify-content: space-between; flex-direction: row; margin: 5px auto 0; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="card-body" style="flex: 1 1 auto; padding: 10px;">
-        <button class="btn btn-primary me-2" onclick="listarFrequenciaAlunos()">Frequência dos Alunos</button>
+        <button class="btn btn-primary me-2" style="" onclick="listarFrequenciaAlunos()">Frequência dos Alunos</button>
     </div>
     <div class="card-body" style="flex: 1 1 auto; padding: 10px;">
         <button class="btn btn-primary me-2" onclick="listarBaixaFrequencia()">Alunos com Baixa Frequência</button>
@@ -25,7 +24,6 @@ Relatórios
         <button class="btn btn-primary me-2" onclick="listarTrabalhosEntregues()">Trabalhos Entregues</button>
     </div>
 </div>
-
 
 
 <div class="card" style="display: flex; flex-wrap: wrap; margin: 5px auto 0; padding: 20px; width: 100%; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
@@ -140,7 +138,6 @@ Relatórios
         </div>
     </div>
 </div>
-
 <script>
     // Função para ocultar todas as divs
     function esconderTodasDivs() {
@@ -157,31 +154,51 @@ Relatórios
         div.style.display = div.style.display === "none" || div.style.display === "" ? "block" : "none";
     }
 
-    function listarFrequenciaAlunos() {
+    // Função para gerenciar a borda inline nos botões
+    function adicionarClasseActive(button) {
+        // Remove a borda de todos os botões
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.style.borderColor = "";
+            btn.style.borderWidth = "";
+        });
+
+        // Adiciona a borda inline ao botão clicado
+        button.style.borderColor = "#f74780";
+        button.style.borderWidth = "4px";
+    }
+
+    // Funções para os botões
+    function listarFrequenciaAlunos(button) {
         mostrarDiv("lista-frequencia-alunos");
+        adicionarClasseActive(button);
     }
 
-    function listarBaixaFrequencia() {
+    function listarBaixaFrequencia(button) {
         mostrarDiv("lista-alunos-baixa-frequencia");
+        adicionarClasseActive(button);
     }
 
-    function relatorioMediaAlunos() {
+    function relatorioMediaAlunos(button) {
         mostrarDiv("lista-relatorio-media-alunos");
+        adicionarClasseActive(button);
     }
 
-    function listarForaPrazo() {
+    function listarForaPrazo(button) {
         mostrarDiv("listar-fora-prazo");
+        adicionarClasseActive(button);
     }
 
-    function listarTrabalhosEntregues() {
+    function listarTrabalhosEntregues(button) {
         mostrarDiv("listar-trabalhos-entregues");
+        adicionarClasseActive(button);
     }
 
     // Selecionar o primeiro botão e exibir a div correspondente assim que a página for carregada
     window.onload = function() {
-        listarFrequenciaAlunos();  // Exibe a primeira div (Frequência dos Alunos)
-        document.getElementById("btnFrequencia").classList.add("active");  // Adiciona a classe active ao primeiro botão
+        listarFrequenciaAlunos(document.getElementById("btnFrequencia"));  // Exibe a primeira div e adiciona a borda inline
     };
 </script>
+
 
 {% endblock %}

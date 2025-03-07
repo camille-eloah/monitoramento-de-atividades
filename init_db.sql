@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS tb_aluno_media (
     media_id INT AUTO_INCREMENT PRIMARY KEY,
     media_alu_id INT NOT NULL,
     media_dis_id INT NOT NULL,
-    media_calculada FLOAT NOT NULL,
+    media_calculada FLOAT DEFAULT 0,
     FOREIGN KEY (media_alu_id) REFERENCES tb_alunos(alu_id) ON DELETE CASCADE,
     FOREIGN KEY (media_dis_id) REFERENCES tb_disciplinas(dis_id) ON DELETE CASCADE,
     UNIQUE (media_alu_id, media_dis_id)  -- Garantindo que cada aluno tenha apenas uma média por disciplina
